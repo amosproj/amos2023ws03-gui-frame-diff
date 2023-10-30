@@ -10,7 +10,7 @@ path.
 
 ### Prerequisites
 
-Before you get started, make sure you have the following installed:[kotlin](src%2Fmain%2Fkotlin)
+Before you get started, make sure you have the following installed:
 
 - Java
 - Gradle
