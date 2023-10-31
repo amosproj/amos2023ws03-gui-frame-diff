@@ -14,3 +14,19 @@
 - This library accepts two videos from two test runs as input.
 - It calculates the difference between these two videos.
 - The resulting image difference is then saved as a video.
+
+## Coding Guidelines 💅
+
+- Use the Kotlin coding style defined here: https://kotlinlang.org/docs/coding-conventions.html
+- Use ktlint to ensure a uniform coding style.
+
+### Setup 
+
+Install ktlint: https://pinterest.github.io/ktlint/1.0.1/install/cli/
+
+We have a pre-commit hook that runs ktlint. Please activate it as follows:
+1. Run `git config --local core.hooksPath .githooks` in the root directory of the project.
+2. Mark the hook as executable: `chmod +x .githooks/pre-commit`
+
+It makes sense to run `ktlint` more often to prevent a lot of formatting errors from piling up.
+It is also encouraged to use an on-save formatter as provided by IDEs like IntelliJ, Android Studio and VS Code.
