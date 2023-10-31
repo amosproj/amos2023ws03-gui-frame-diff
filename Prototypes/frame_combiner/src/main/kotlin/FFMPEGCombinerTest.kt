@@ -2,7 +2,6 @@ import org.junit.Assert.*
 import java.io.File
 
 class FFMPEGCombinerTest {
-
     @org.junit.Test(timeout = Long.MAX_VALUE)
     fun addFrame() {
         val outputFileName = "output.mkv"
@@ -10,7 +9,7 @@ class FFMPEGCombinerTest {
         val width = 1024
         val ffmpegCombiner = FFMPEGCombiner(outputFileName, width, height)
 
-        //clean old video output
+        // clean old video output
         ffmpegCombiner.runCommand("rm $outputFileName")
 
         println("starting mkv generation\n")
