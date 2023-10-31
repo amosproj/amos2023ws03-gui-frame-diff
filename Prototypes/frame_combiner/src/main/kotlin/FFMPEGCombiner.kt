@@ -28,7 +28,7 @@ class FFMPEGCombiner(private val outputPath: String, private val width: Int, pri
     /**
      * Executes a terminal Commands e.g. a ffmpeg command
      */
-    fun runCommand(command: String)  {
+    fun runCommand(command: String) {
         try {
             val processBuilder = ProcessBuilder(command.split(" "))
             val process = processBuilder.start()
