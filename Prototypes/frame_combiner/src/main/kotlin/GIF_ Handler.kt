@@ -1,11 +1,10 @@
-import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
 import javax.imageio.IIOImage
 import javax.imageio.ImageIO
 import javax.imageio.ImageWriteParam
-import javax.imageio.stream.FileImageOutputStream
 import javax.imageio.ImageWriter
+import javax.imageio.stream.FileImageOutputStream
 
 class GifCreator {
     private lateinit var gifWriter: ImageWriter

@@ -5,7 +5,6 @@
  * @param outputPath The path to the output video.
  */
 
-
 abstract class AbstractVideoGenerator(private val outputPath: String) {
     private val videoPath: String = outputPath
 
@@ -21,7 +20,6 @@ abstract class AbstractVideoGenerator(private val outputPath: String) {
     fun init() {
     }
 
-
     /**
      * Adds a single frame to the video.
      * This is where you should add a frame to the video.
@@ -30,7 +28,6 @@ abstract class AbstractVideoGenerator(private val outputPath: String) {
      * @param framePath The path to the frame to be added. Image type is dynamic.
      */
     abstract fun addFrame(framePath: String)
-
 
     /**
      * Adds multiple frames to the video.
@@ -51,5 +48,4 @@ abstract class AbstractVideoGenerator(private val outputPath: String) {
      * If possible reuse variables from the init() method.
      */
     abstract fun save()
-
 }
