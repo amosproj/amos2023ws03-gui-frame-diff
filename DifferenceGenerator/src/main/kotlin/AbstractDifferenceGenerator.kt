@@ -6,12 +6,10 @@
  * @param outputPath the path to the output file
  */
 
-
-abstract class AbstractDifferenceGenerator(video1Path: String, video2Path: String, outputPath: String)  {
+abstract class AbstractDifferenceGenerator(video1Path: String, video2Path: String, outputPath: String) {
     private val video1Path: String = video1Path
     private val video2Path: String = video2Path
     private val outputPath: String = outputPath
-
 
     /**
      * Loads the video1 and video2 files into memory.
@@ -38,6 +36,4 @@ abstract class AbstractDifferenceGenerator(video1Path: String, video2Path: Strin
      * @return the video1Path
      */
     abstract fun saveDifferences()
-
-
 }
