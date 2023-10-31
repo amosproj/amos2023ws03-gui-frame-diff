@@ -39,7 +39,7 @@ abstract class AbstractVideoGenerator(private val outputPath: String) {
      *
      * @param framePaths The paths to the frames to be added. Image type is dynamic.
      */
-    fun addFrame(framePaths: List<String>) {
+    fun addFrames(framePaths: List<String>) {
         for (framePath in framePaths) {
             addFrame(framePath)
         }
