@@ -24,4 +24,4 @@ Before you get started, make sure you have the following installed:
 
 ### Initialization
 
-Your video generator should extend the `AbstractVideoGenerator` class. You can then initialize your video generator.
+Your difference generator should extend the `AbstractDifferenceGenerator` class. You can then initialize your difference generator.
