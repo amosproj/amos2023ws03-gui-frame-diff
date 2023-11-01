@@ -15,6 +15,10 @@
 - It calculates the difference between these two videos.
 - The resulting image difference is then saved as a video.
 
+**Library 3**
+- Is the final GUI, that should look like a video editing tool  
+- Can show the two input videos and the frame diff 
+
 ## Coding Guidelines 💅
 
 - Use the Kotlin coding style defined here: https://kotlinlang.org/docs/coding-conventions.html
