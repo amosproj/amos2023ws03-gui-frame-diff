@@ -1,3 +1,6 @@
+import org.bytedeco.javacv.FFmpegFrameGrabber
+import java.awt.image.BufferedImage
+
 /**
  * Abstract class for the DifferenceGenerator.
  *
@@ -5,35 +8,29 @@
  * @param video2Path the path to the second video
  * @param outputPath the path to the output file
  */
-
-abstract class AbstractDifferenceGenerator(video1Path: String, video2Path: String, outputPath: String) {
-    private val video1Path: String = video1Path
-    private val video2Path: String = video2Path
-    private val outputPath: String = outputPath
-
-    /**
-     * Loads the video1 and video2 files into memory.
-     * Saves them into local variables.
-     *
-     * Calls the generateDifference() method!!!
-     *
-     * @return the video1Path
-     */
-    abstract fun init()
+abstract class AbstractDifferenceGenerator(
+    video1Path: String,
+    video2Path: String,
+    outputPath: String,
+) {
+    val video1Path: String = video1Path
+    val video2Path: String = video2Path
+    val outputPath: String = outputPath
 
     /**
      * Generates the difference between the two videos.
      *
      * Calls the saveDifferences() method.
-     *
-     *
      */
-    abstract fun generateDifference()
+    abstract fun generateDifference(
+        oldFileGrabber: FFmpegFrameGrabber,
+        newFileGrabber: FFmpegFrameGrabber,
+    )
 
     /**
      * Saves the differences to the output file.
      *
      * @return the video1Path
      */
-    abstract fun saveDifferences()
+    abstract fun saveDifferences(differences: List<BufferedImage>)
 }
