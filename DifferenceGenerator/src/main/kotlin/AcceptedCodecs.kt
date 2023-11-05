@@ -5,6 +5,15 @@
 class AcceptedCodecs {
     companion object {
         val ACCEPTED_CODECS =
-            listOf("ffv1", "YUV", "flashsv", "gif", "png", "tiff", "ljpeg", "Uncompressed")
+            setOf(
+                "ffv1",
+                "YUV",
+                "flashsv",
+                "gif",
+                "png",
+                "tiff",
+                "ljpeg",
+                "Uncompressed YUV 422 10-bit",
+            )
     }
 }

@@ -1,6 +1,3 @@
-import org.bytedeco.javacv.FFmpegFrameGrabber
-import java.awt.image.BufferedImage
-
 /**
  * Abstract class for the DifferenceGenerator.
  *
@@ -22,15 +19,12 @@ abstract class AbstractDifferenceGenerator(
      *
      * Calls the saveDifferences() method.
      */
-    abstract fun generateDifference(
-        oldFileGrabber: FFmpegFrameGrabber,
-        newFileGrabber: FFmpegFrameGrabber,
-    )
+    abstract fun generateDifference()
 
     /**
      * Saves the differences to the output file.
      *
      * @return the video1Path
      */
-    abstract fun saveDifferences(differences: List<BufferedImage>)
+    abstract fun saveDifferences()
 }
