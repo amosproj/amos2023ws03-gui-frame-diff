@@ -1,6 +1,13 @@
 # Apply standard rules to all Kotlin files
 [*.{kt,kts}]
 ktlint_standard = enabled
+
 # Ignore code in Prototype directory
 [Prototypes/**/*.kt]
+ktlint_standard = disabled
+
+[VideoGenerator/**/*.{kt,kts}]
+ktlint_code_style = android_studio
+
+[VideoGenerator/example/app/**/*.{kt,kts}]
 ktlint_standard = disabled
