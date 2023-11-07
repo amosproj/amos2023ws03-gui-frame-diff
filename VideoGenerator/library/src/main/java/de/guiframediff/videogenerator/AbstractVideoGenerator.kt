@@ -1,3 +1,5 @@
+import android.graphics.Bitmap
+
 /**
  * Abstract class for video generators.
  * Extend this class to create your own video generator.
@@ -9,38 +11,12 @@ abstract class AbstractVideoGenerator(private val outputPath: String) {
     private val videoPath: String = outputPath
 
     /**
-     * Initializes a video generator.
-     * Saves the generator into a private variable to be reused.
-     *
-     * Initializes an output video instance.
-     * Saves the instance into a private variable to be reused.
-     *
-     * Override this method to initialize your video generator. Otherwise ignore.
-     */
-    fun init() {
-    }
-
-    /**
      * Adds a single frame to the video.
      * This is where you should add a frame to the video.
-     * If possible reuse variables from the init() method.
      *
-     * @param framePath The path to the frame to be added. Image type is dynamic.
+     * @param image An image in the form of a Bitmap passed by the user.
      */
-    abstract fun addFrame(framePath: String)
-
-    /**
-     * Adds multiple frames to the video.
-     * Reuses the addFrame() method.
-     *
-     *
-     * @param framePaths The paths to the frames to be added. Image type is dynamic.
-     */
-    fun addFrames(framePaths: List<String>) {
-        for (framePath in framePaths) {
-            addFrame(framePath)
-        }
-    }
+    abstract fun loadFrame(image: Bitmap)
 
     /**
      * Saves the video to the output path.
