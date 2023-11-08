@@ -9,5 +9,8 @@ ktlint_standard = disabled
 [VideoGenerator/**/*.{kt,kts}]
 ktlint_code_style = android_studio
 
+# android code style is not correctly interpreted by ktlint
+# so we have to manually turn of certain flags for the example app
 [VideoGenerator/example/app/**/*.{kt,kts}]
-ktlint_standard = disabled
+ktlint_function_naming_ignore_when_annotated_with=Composable
+ktlint_standard_no-wildcard-imports = disabled
