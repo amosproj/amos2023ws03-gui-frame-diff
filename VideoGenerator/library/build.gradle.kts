@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.8.0"
+    kotlin("jvm")
     application
 }
 
@@ -7,21 +7,19 @@ group = "org.example"
 version = "1.0-SNAPSHOT"
 
 repositories {
-    mavenCentral()
 }
 
 dependencies {
     testImplementation(kotlin("test"))
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
-
 kotlin {
     jvmToolchain(11)
 }
 
+// commented out, as this is now a library not containing a main function
+/*
 application {
     mainClass.set("MainKt")
 }
+*/
