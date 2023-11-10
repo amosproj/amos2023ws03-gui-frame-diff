@@ -7,13 +7,22 @@ class VideoGeneratorImpl(videoPath: String, imageWidth: Int, imageHeight: Int) :
     imageWidth,
     imageHeight,
 ) {
-    val queue: Queue<ByteArray> = LinkedList()
+    private val _queue: Queue<ByteArray> = LinkedList()
+    private val _videoPath: String = videoPath
+    private val _imageWidth: Int = imageWidth
+    private val _imageHeight: Int = imageHeight
+
+    /**
+     * Here, you can initialize your complex member object and
+     * make sure that the instance is prepared for incoming frames.
+     */
+    init { }
 
     /**
      * Appends the image bytes to the internal queue for further processing.
      */
     override fun loadFrame(frameBytes: ByteArray) {
-        queue.add(frameBytes)
+        _queue.add(frameBytes)
     }
 
     override fun save() {
