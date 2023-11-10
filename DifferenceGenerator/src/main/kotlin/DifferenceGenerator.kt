@@ -4,11 +4,11 @@ import java.io.File
 class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: String) :
     AbstractDifferenceGenerator(video1Path, video2Path, outputPath) {
     val outputFile = File(outputPath)
-    val video1File = File(video1Path)
-    val video2File = File(video2Path)
+    private val video1File = File(video1Path)
+    private val video2File = File(video2Path)
 
-    val video1Grabber = FFmpegFrameGrabber(video1File)
-    val video2Grabber = FFmpegFrameGrabber(video2File)
+    private val video1Grabber = FFmpegFrameGrabber(video1File)
+    private val video2Grabber = FFmpegFrameGrabber(video2File)
 
     /**
      * Initializes a new instance of the [DifferenceGenerator] class.
