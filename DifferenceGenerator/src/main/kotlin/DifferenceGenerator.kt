@@ -41,7 +41,9 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
         return codecName in AcceptedCodecs.ACCEPTED_CODECS
     }
 
-    override fun generateDifference() {}
+    override fun generateDifference() {
+        println("Generating difference")
+    }
 
     override fun saveDifferences() {}
 }
