@@ -42,7 +42,7 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
     }
 
     override fun generateDifference() {
-        println("Generating difference")
+        println("Generating difference ")
     }
 
     override fun saveDifferences() {}
