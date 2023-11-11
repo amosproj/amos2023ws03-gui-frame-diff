@@ -2,45 +2,18 @@
  * Abstract class for video generators.
  * Extend this class to create your own video generator.
  *
- * @param outputPath The path to the output video.
+ * @param videoPath Output filesystem path for the resulting video.
+ * @param imageWidth Horizontal number of pixels to be expected in images.
+ * @param imageHeight Vertical number of pixels to be expected in images.
  */
 
-abstract class AbstractVideoGenerator(private val outputPath: String) {
-    private val videoPath: String = outputPath
-
+abstract class AbstractVideoGenerator(videoPath: String, imageWidth: Int, imageHeight: Int) {
     /**
-     * Initializes a video generator.
-     * Saves the generator into a private variable to be reused.
+     * Endpoint to load images into the generator.
      *
-     * Initializes an output video instance.
-     * Saves the instance into a private variable to be reused.
-     *
-     * Override this method to initialize your video generator. Otherwise ignore.
+     * @param frameBytes A byte array containing image data.
      */
-    fun init() {
-    }
-
-    /**
-     * Adds a single frame to the video.
-     * This is where you should add a frame to the video.
-     * If possible reuse variables from the init() method.
-     *
-     * @param framePath The path to the frame to be added. Image type is dynamic.
-     */
-    abstract fun addFrame(framePath: String)
-
-    /**
-     * Adds multiple frames to the video.
-     * Reuses the addFrame() method.
-     *
-     *
-     * @param framePaths The paths to the frames to be added. Image type is dynamic.
-     */
-    fun addFrames(framePaths: List<String>) {
-        for (framePath in framePaths) {
-            addFrame(framePath)
-        }
-    }
+    abstract fun loadFrame(frameBytes: ByteArray)
 
     /**
      * Saves the video to the output path.

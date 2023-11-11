@@ -1,49 +1,66 @@
 package de.guiframediff.videogeneratorexample
 
+import VideoGeneratorImpl
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.View
+import android.widget.TextView
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import de.guiframediff.videogeneratorexample.ui.theme.ExampleTheme
+import java.nio.ByteBuffer
+import java.util.Random
+import java.util.Timer
+import kotlin.concurrent.timerTask
 
 class MainActivity : ComponentActivity() {
+    private val handler = Handler(Looper.getMainLooper())
+    private val random = Random()
+    private lateinit var randomTextView: TextView
+    private val videoGenerator = VideoGeneratorImpl("test.gif", 1920, 720)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            ExampleTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background,
-                ) {
-                    Greeting("Android")
+        setContentView(R.layout.main)
+        randomTextView = findViewById(R.id.randomTextView)
+        Timer().schedule(
+            timerTask {
+                handler.post {
+                    generateRandomNumber()
+                    takeScreenshot()
                 }
-            }
-        }
+            },
+            0,
+            5000,
+        )
     }
-}
 
-@Composable
-fun Greeting(
-    name: String,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier,
-    )
-}
+    override fun onDestroy() {
+        super.onDestroy()
+        videoGenerator.save()
+    }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ExampleTheme {
-        Greeting("Android")
+    private fun generateRandomNumber() {
+        val randomNumber = random.nextInt(100)
+        randomTextView.text = "Random Number: $randomNumber"
+    }
+
+    private fun takeScreenshot() {
+        val view: View = window.decorView.rootView
+        val bitmap = Bitmap.createBitmap(1920, 720, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val bgDrawable = view.background
+        if (bgDrawable != null) {
+            bgDrawable.draw(canvas)
+        } else {
+            canvas.drawColor(Color.WHITE)
+        }
+        view.draw(canvas)
+        val size = bitmap.rowBytes * bitmap.height
+        val byteBuffer = ByteBuffer.allocate(size)
+        bitmap.copyPixelsToBuffer(byteBuffer)
+        videoGenerator.loadFrame(byteBuffer.array())
     }
 }
