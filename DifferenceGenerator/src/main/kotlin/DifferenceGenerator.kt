@@ -47,6 +47,16 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
      * Loops through each frame of the videos and calculates the difference between the two frames.
      */
     override fun generateDifference() {
+        if (this.video1Grabber.imageWidth != this.video2Grabber.imageWidth ||
+            this.video1Grabber.imageHeight != this.video2Grabber.imageHeight
+        ) {
+            throw Exception("Videos must have the same dimensions")
+        }
+
+        if (this.video1Grabber.lengthInFrames != this.video2Grabber.lengthInFrames) {
+            throw Exception("Videos must have the same number of frames")
+        }
+
         val encoder = FFmpegFrameRecorder(this.outputFile, video1Grabber.imageWidth, video1Grabber.imageHeight)
         encoder.videoCodec = AV_CODEC_ID_FFV1
         encoder.start()
