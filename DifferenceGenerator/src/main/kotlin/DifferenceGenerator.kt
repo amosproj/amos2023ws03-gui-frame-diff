@@ -1,22 +1,14 @@
 import org.bytedeco.ffmpeg.global.avcodec.AV_CODEC_ID_FFV1
-
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.FFmpegFrameRecorder
 import org.bytedeco.javacv.Frame
-import org.bytedeco.javacv.OpenCVFrameConverter.ToMat
-import org.bytedeco.opencv.global.opencv_core.CV_8UC3
-import org.bytedeco.opencv.global.opencv_core.absdiff
-
-import org.bytedeco.opencv.opencv_core.*
-import org.bytedeco.opencv.opencv_imgproc.*
-import org.bytedeco.opencv.opencv_core.Mat
-
-
+import org.bytedeco.javacv.Java2DFrameConverter
+import java.awt.image.BufferedImage
 import java.io.File
 
 class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: String) :
     AbstractDifferenceGenerator(video1Path, video2Path, outputPath) {
-    val outputFile = File(outputPath)
+    private val outputFile = File(outputPath)
     private val video1File = File(video1Path)
     private val video2File = File(video2Path)
 
@@ -46,14 +38,14 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
     private fun isLosslessCodec(grabber: FFmpegFrameGrabber): Boolean {
         grabber.start()
         val codecName = grabber.videoMetadata["encoder"]
-        if (codecName == null) {
-            grabber.stop()
-            throw Exception("Video must have a codec")
-        }
-
         return codecName in AcceptedCodecs.ACCEPTED_CODECS
     }
 
+    /**
+     * Generates a difference video from the two videos given in the constructor.
+     *
+     * Loops through each frame of the videos and calculates the difference between the two frames.
+     */
     override fun generateDifference() {
         val encoder = FFmpegFrameRecorder(this.outputFile, video1Grabber.imageWidth, video1Grabber.imageHeight)
         encoder.videoCodec = AV_CODEC_ID_FFV1
@@ -75,26 +67,43 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
         this.video2Grabber.stop()
     }
 
-
-    private fun getDifferences(frame1: Frame, frame2: Frame): Frame {
+    /**
+     * Calculates the difference between two frames.
+     *
+     * @param frame1 the first frame
+     * @param frame2 the second frame
+     * @return a frame where different pixels are red and the same pixels are black
+     */
+    private fun getDifferences(
+        frame1: Frame,
+        frame2: Frame,
+    ): Frame {
         val width = frame1.imageWidth
         val height = frame1.imageHeight
-        val differences = Frame(width, height, frame1.imageDepth, frame1.imageChannels)
+        val differences = BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR)
 
+        val converter = Java2DFrameConverter()
+        val frame1Image = converter.convert(frame1)
+        val frame2Image = converter.convert(frame2)
 
-        val frame1Pixels = frame1.image[0]
-        val frame2Pixels = frame2.image[0]
+        for (x in 0 until width) {
+            for (y in 0 until height) {
+                val frame1Pixel = frame1Image.getRGB(x, y)
+                val frame2Pixel = frame2Image.getRGB(x, y)
+                if (frame1Pixel - frame2Pixel == 0) {
+                    differences.setRGB(x, y, -16777216)
+                } else {
+                    differences.setRGB(x, y, -65536)
+                }
+            }
+        }
 
-
-        val capacity = frame1Pixels.capacity()
-
-
-
-        return differences
-
+        return converter.getFrame(differences, 1.0)
     }
 
-
-
+    /**
+     * Overridden to finish class implementation.
+     * Possibly remove from abstract class in the future.
+     */
     override fun saveDifferences() {}
 }
