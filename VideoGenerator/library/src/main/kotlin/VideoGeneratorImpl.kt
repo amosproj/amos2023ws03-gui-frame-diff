@@ -2,15 +2,12 @@
 import java.util.LinkedList
 import java.util.Queue
 
-class VideoGeneratorImpl(videoPath: String, imageWidth: Int, imageHeight: Int) : AbstractVideoGenerator(
+class VideoGeneratorImpl(private val videoPath: String, private val imageWidth: Int, private val imageHeight: Int) : AbstractVideoGenerator(
     videoPath,
     imageWidth,
     imageHeight,
 ) {
-    private val _queue: Queue<ByteArray> = LinkedList()
-    private val _videoPath: String = videoPath
-    private val _imageWidth: Int = imageWidth
-    private val _imageHeight: Int = imageHeight
+    private val queue: Queue<ByteArray> = LinkedList()
 
     /**
      * Here, you can initialize your complex member object and
@@ -22,7 +19,7 @@ class VideoGeneratorImpl(videoPath: String, imageWidth: Int, imageHeight: Int) :
      * Appends the image bytes to the internal queue for further processing.
      */
     override fun loadFrame(frameBytes: ByteArray) {
-        _queue.add(frameBytes)
+        queue.add(frameBytes)
     }
 
     override fun save() {
