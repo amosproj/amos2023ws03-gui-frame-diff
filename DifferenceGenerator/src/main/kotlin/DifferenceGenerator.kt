@@ -92,9 +92,11 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
         val height = frame1.imageHeight
         val differences = BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR)
 
-        val converter = Java2DFrameConverter()
-        val frame1Image = converter.convert(frame1)
-        val frame2Image = converter.convert(frame2)
+        val converterFrame1 = Java2DFrameConverter()
+        val converterFrame2 = Java2DFrameConverter()
+
+        val frame1Image = converterFrame1.convert(frame1)
+        val frame2Image = converterFrame2.convert(frame2)
 
         for (x in 0 until width) {
             for (y in 0 until height) {
@@ -108,7 +110,8 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
             }
         }
 
-        return converter.getFrame(differences, 1.0)
+        val converterOutput = Java2DFrameConverter()
+        return converterOutput.getFrame(differences, 1.0)
     }
 
     /**
