@@ -10,9 +10,9 @@ abstract class AbstractDifferenceGenerator(
     video2Path: String,
     outputPath: String,
 ) {
-    val video1Path: String = video1Path
-    val video2Path: String = video2Path
-    val outputPath: String = outputPath
+    private val video1Path: String = video1Path
+    private val video2Path: String = video2Path
+    private val outputPath: String = outputPath
 
     /**
      * Generates the difference between the two videos.
