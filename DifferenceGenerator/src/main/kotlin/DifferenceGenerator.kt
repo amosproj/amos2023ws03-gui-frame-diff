@@ -3,6 +3,7 @@ import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.FFmpegFrameRecorder
 import org.bytedeco.javacv.Frame
 import org.bytedeco.javacv.Java2DFrameConverter
+import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
 
@@ -103,9 +104,9 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
                 val frame1Pixel = frame1Image.getRGB(x, y)
                 val frame2Pixel = frame2Image.getRGB(x, y)
                 if (frame1Pixel - frame2Pixel == 0) {
-                    differences.setRGB(x, y, -16777216)
+                    differences.setRGB(x, y, Color.BLACK.rgb)
                 } else {
-                    differences.setRGB(x, y, -65536)
+                    differences.setRGB(x, y, Color.RED.rgb)
                 }
             }
         }
