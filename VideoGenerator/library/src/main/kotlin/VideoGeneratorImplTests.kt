@@ -19,15 +19,14 @@ class VideoGeneratorImplTest {
 
     @AfterEach
     fun cleanUp() {
-        File(videoPath).delete() // cleanup created test video
+        File(videoPath).delete()
     }
 
     @Test
-    fun `Test loadFrame and processFrames`() {
+    fun testLoadFrameAndProcessFrames() {
         videoGenerator.loadFrame(exampleImageData)
         videoGenerator.processFrames()
 
-        // after processing frames, expect the video file to be created
         assertTrue(Files.exists(Paths.get(videoPath)))
     }
 }
