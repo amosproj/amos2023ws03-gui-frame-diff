@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
+    implementation("org.bytedeco:javacv:1.5.9")
 }
 
 kotlin {
