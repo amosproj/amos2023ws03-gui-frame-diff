@@ -27,8 +27,11 @@ class VideoGeneratorImpl(private val videoPath: String, private val imageWidth: 
 
     /**
      * Process frames from a queue and record them into a video file.
+     *
+     * @throws Exception if any error occurs during the processing.
      */
     override fun processFrames() {
+        // FFmpegFrameRecorder is created (class provided by JavaCV library)
         val recorder: FFmpegFrameRecorder =
             FFmpegFrameRecorder(videoPath, imageWidth, imageHeight).apply {
                 videoCodec = avcodec.AV_CODEC_ID_FFV1
@@ -36,21 +39,28 @@ class VideoGeneratorImpl(private val videoPath: String, private val imageWidth: 
                 frameRate = 25.0
             }
 
+        // Java2DFrameConverter is created (allowing conversion between Java's
+        // native image data structure (BufferedImage) and JavaCV's Frame object)
         val converter = Java2DFrameConverter()
 
         try {
             recorder.start()
             while (queue.isNotEmpty()) {
+                // fetch image from the queue
                 val image = queue.poll()
                 ByteArrayInputStream(image).use { bis ->
+                    // 'image' bytes are read and converted to BufferedImage object 'bImage'
                     val bImage = ImageIO.read(bis)
+                    // BufferedImage object is converted to Frame object
                     val frame = converter.convert(bImage)
+                    // Frame object is recorded into video file
                     recorder.record(frame)
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
+            // video recording is stopped and the resources are released
             recorder.stop()
             recorder.release()
         }
