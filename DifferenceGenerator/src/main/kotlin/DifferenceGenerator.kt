@@ -6,6 +6,7 @@ import org.bytedeco.javacv.Java2DFrameConverter
 import java.awt.image.BufferedImage
 import java.io.File
 
+
 class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: String) :
     AbstractDifferenceGenerator(video1Path, video2Path, outputPath) {
     private val outputFile = File(outputPath)
@@ -114,9 +115,5 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
         return converterOutput.getFrame(differences, 1.0)
     }
 
-    /**
-     * Overridden to finish class implementation.
-     * Possibly remove from abstract class in the future.
-     */
-    override fun saveDifferences() {}
+
 }

@@ -21,10 +21,5 @@ abstract class AbstractDifferenceGenerator(
      */
     abstract fun generateDifference()
 
-    /**
-     * Saves the differences to the output file.
-     *
-     * @return the video1Path
-     */
-    abstract fun saveDifferences()
+
 }
