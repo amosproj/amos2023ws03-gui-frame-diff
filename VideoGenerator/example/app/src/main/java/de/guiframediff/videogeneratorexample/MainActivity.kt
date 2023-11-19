@@ -30,6 +30,7 @@ class MainActivity : ComponentActivity() {
                 handler.post {
                     generateRandomNumber()
                     takeScreenshot()
+                    videoGenerator.processFrames()
                 }
             },
             0,
@@ -44,7 +45,10 @@ class MainActivity : ComponentActivity() {
 
     private fun generateRandomNumber() {
         val randomNumber = random.nextInt(100)
-        randomTextView.text = "Random Number: $randomNumber"
+        randomTextView.text = buildString {
+        append("Random Number: ")
+        append(randomNumber)
+    }
     }
 
     private fun takeScreenshot() {
