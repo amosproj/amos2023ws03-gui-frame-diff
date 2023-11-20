@@ -4,6 +4,9 @@ import org.bytedeco.javacv.Java2DFrameConverter
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import javax.imageio.ImageIO
+import java.io.ByteArrayInputStream
+import java.util.*
+import javax.imageio.ImageIO
 
 /**
  * A class that implements the AbstractVideoGenerator interface to generate video files.

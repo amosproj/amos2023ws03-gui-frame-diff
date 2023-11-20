@@ -3,6 +3,8 @@ import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.FFmpegFrameRecorder
 import org.bytedeco.javacv.Frame
 import org.bytedeco.javacv.Java2DFrameConverter
+import java.awt.Color
+import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import java.io.File
 
@@ -15,6 +17,9 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
     private val video1Grabber = FFmpegFrameGrabber(video1File)
     private val video2Grabber = FFmpegFrameGrabber(video2File)
 
+    private var width = 0
+    private var height = 0
+
     /**
      * Initializes a new instance of the [DifferenceGenerator] class.
      *
@@ -24,6 +29,19 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
         if (!isLosslessCodec(video1Grabber) || !isLosslessCodec(video2Grabber)) {
             throw Exception("Videos must be in a lossless codec")
         }
+
+        if (this.video1Grabber.imageWidth != this.video2Grabber.imageWidth ||
+            this.video1Grabber.imageHeight != this.video2Grabber.imageHeight
+        ) {
+            throw Exception("Videos must have the same dimensions")
+        }
+
+        if (this.video1Grabber.lengthInFrames != this.video2Grabber.lengthInFrames) {
+            throw Exception("Videos must have the same number of frames")
+        }
+
+        this.width = this.video1Grabber.imageWidth
+        this.height = this.video1Grabber.imageHeight
         generateDifference()
     }
 
@@ -47,16 +65,6 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
      * Loops through each frame of the videos and calculates the difference between the two frames.
      */
     override fun generateDifference() {
-        if (this.video1Grabber.imageWidth != this.video2Grabber.imageWidth ||
-            this.video1Grabber.imageHeight != this.video2Grabber.imageHeight
-        ) {
-            throw Exception("Videos must have the same dimensions")
-        }
-
-        if (this.video1Grabber.lengthInFrames != this.video2Grabber.lengthInFrames) {
-            throw Exception("Videos must have the same number of frames")
-        }
-
         val encoder = FFmpegFrameRecorder(this.outputFile, video1Grabber.imageWidth, video1Grabber.imageHeight)
         encoder.videoCodec = AV_CODEC_ID_FFV1
         encoder.start()
@@ -88,9 +96,7 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
         frame1: Frame,
         frame2: Frame,
     ): Frame {
-        val width = frame1.imageWidth
-        val height = frame1.imageHeight
-        val differences = BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR)
+        val differences = getBufferedImage(Color.BLACK)
 
         val converterFrame1 = Java2DFrameConverter()
         val converterFrame2 = Java2DFrameConverter()
@@ -98,14 +104,13 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
         val frame1Image = converterFrame1.convert(frame1)
         val frame2Image = converterFrame2.convert(frame2)
 
+        // using a BufferedImage.raster.dataBuffer or just .raster might be faster
         for (x in 0 until width) {
             for (y in 0 until height) {
                 val frame1Pixel = frame1Image.getRGB(x, y)
                 val frame2Pixel = frame2Image.getRGB(x, y)
-                if (frame1Pixel - frame2Pixel == 0) {
-                    differences.setRGB(x, y, -16777216)
-                } else {
-                    differences.setRGB(x, y, -65536)
+                if (frame1Pixel - frame2Pixel != 0) {
+                    differences.setRGB(x, y, Color.RED.rgb)
                 }
             }
         }
@@ -115,8 +120,28 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
     }
 
     /**
-     * Overridden to finish class implementation.
-     * Possibly remove from abstract class in the future.
+     * Creates a Buffered Image with a given color.
+     *
+     * @param color the color
+     * @return a Buffered Imnage colored in the given color
      */
-    override fun saveDifferences() {}
+    private fun getBufferedImage(color: Color): BufferedImage {
+        val result = BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR)
+        val g2d: Graphics2D = result.createGraphics()
+        g2d.paint = color
+        g2d.fillRect(0, 0, width, height)
+        g2d.dispose()
+        return result
+    }
+
+    /**
+     * Creates a Frame with a given color.
+     *
+     * @param color the color
+     * @return a frame colored in the given color
+     */
+    private fun getFrame(color: Color): Frame {
+        val converterOutput = Java2DFrameConverter()
+        return converterOutput.getFrame(getBufferedImage(color), 1.0)
+    }
 }
