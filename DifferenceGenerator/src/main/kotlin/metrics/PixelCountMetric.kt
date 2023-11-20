@@ -9,23 +9,23 @@ class PixelCountMetric(private val normalize: Boolean = true) : MetricInterface<
     /**
      * Measures the number of different pixels between two BufferedImages.
      *
-     * @param frame1 The first BufferedImage.
-     * @param frame2 The second BufferedImage.
+     * @param a The first BufferedImage.
+     * @param b The second BufferedImage.
      * @return The count of different pixels between the two images.
      */
     override fun measureDistance(
-        frame1: BufferedImage,
-        frame2: BufferedImage,
+        a: BufferedImage,
+        b: BufferedImage,
     ): Double {
         var count = 0
 
-        val width = frame1.width
-        val height = frame1.height
+        val width = a.width
+        val height = a.height
 
         for (y in 0 until height) {
             for (x in 0 until width) {
-                val color1 = frame1.getRGB(x, y)
-                val color2 = frame2.getRGB(x, y)
+                val color1 = a.getRGB(x, y)
+                val color2 = b.getRGB(x, y)
 
                 if (color1 != color2) {
                     count++

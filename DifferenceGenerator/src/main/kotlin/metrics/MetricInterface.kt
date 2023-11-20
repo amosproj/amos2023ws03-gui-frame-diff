@@ -7,12 +7,12 @@ interface MetricInterface<T> {
     /**
      * Measures the distance between two objects of type T.
      *
-     * @param frame1 the first object.
-     * @param frame2 the second object.
+     * @param a the first object.
+     * @param b the second object.
      * @return the distance between the two objects.
      */
     fun measureDistance(
-        frame1: T,
-        frame2: T,
+        a: T,
+        b: T,
     ): Double
 }

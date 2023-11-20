@@ -8,7 +8,7 @@ import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import java.io.File
 
-class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: String) :
+class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: String, metric: MetricInterface<BufferedImage>) :
     AbstractDifferenceGenerator(video1Path, video2Path, outputPath) {
     private val outputFile = File(outputPath)
     private val video1File = File(video1Path)
