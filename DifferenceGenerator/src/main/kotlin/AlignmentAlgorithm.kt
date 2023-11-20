@@ -1,12 +1,3 @@
-class DnaMetric : MetricInterface<Char> {
-    override fun measureDistance(
-        a: Char,
-        b: Char,
-    ): Double {
-        return if (a == b) 0.0 else 1.0
-    }
-}
-
 enum class AlignmentElement {
     MATCH,
     INSERTION,
