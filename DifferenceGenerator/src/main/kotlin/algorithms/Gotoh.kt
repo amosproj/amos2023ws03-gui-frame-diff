@@ -42,14 +42,16 @@ class Gotoh<T>(
                     maxOf(
                         score[i - 1][j] + gapOpenPenalty,
                         gapA[i - 1][j] + gapExtensionPenalty,
+                        gapB[i - 1][j] + gapExtensionPenalty,
                     )
                 gapB[i][j] =
                     maxOf(
                         score[i][j - 1] + gapOpenPenalty,
+                        gapA[i][j - 1] + gapExtensionPenalty,
                         gapB[i][j - 1] + gapExtensionPenalty,
                     )
 
-                val similarity = -metric.measureDistance(a[i - 1], b[j - 1])
+                val similarity = metric.measureDistance(a[i - 1], b[j - 1])
                 val matchScore = score[i - 1][j - 1] + similarity // last pair was match and this one too
                 val gapAScore = gapA[i - 1][j - 1] + similarity // gap in A and then a match
                 val gapBScore = gapB[i - 1][j - 1] + similarity // gap in B and then a match
@@ -64,11 +66,6 @@ class Gotoh<T>(
         var i: Int = n
         var j: Int = m
 
-        var c = 0
-        println(score[n][m])
-        println(gapA[n][m])
-        println(gapB[n][m])
-        println(finalScore)
         var origin = (
             if (finalScore == score[n][m]) {
                 AlignmentElement.MATCH
@@ -79,39 +76,45 @@ class Gotoh<T>(
             }
         )
 
-        while ((i > 0 || j > 0) && c < 30) {
-            c++
-            println("i: $i, j: $j")
+        while (i > 0 || j > 0) {
+            traceback.add(origin)
 
-            val current = (
-                if (origin == AlignmentElement.MATCH) {
-                    score[i][j]
-                } else if (origin == AlignmentElement.DELETION) {
-                    gapA[i][j]
-                } else {
-                    gapB[i][j]
+            when (origin) {
+                AlignmentElement.MATCH -> {
+                    val similarity = metric.measureDistance(a[i - 1], b[j - 1])
+                    origin =
+                        if (score[i][j] == score[i - 1][j - 1] + similarity) {
+                            AlignmentElement.MATCH
+                        } else if (score[i][j] == gapA[i - 1][j - 1] + similarity) {
+                            AlignmentElement.DELETION
+                        } else {
+                            AlignmentElement.INSERTION
+                        }
+                    i--
+                    j--
                 }
-            )
-            println("origin: $origin")
-            println("current: $current")
-            println("score[i-1][j-1]: ${score[i - 1][j - 1]}")
-            println("gapA[i-1][j]: ${gapA[i - 1][j]}")
-            println("gapB[i][j-1]: ${gapB[i][j - 1]}")
-            println("a[i-1]: ${a[i - 1]}")
-            println("b[j-1]: ${b[j - 1]}\n")
-            if (i > 0 && j > 0 && current == score[i - 1][j - 1] + metric.measureDistance(a[i - 1], b[j - 1])) {
-                traceback.add(AlignmentElement.MATCH)
-                origin = AlignmentElement.MATCH
-                i--
-                j--
-            } else if (j > 0 && (current == gapB[i][j - 1] + gapExtensionPenalty || current == gapB[i][j - 1] + gapOpenPenalty)) {
-                traceback.add(AlignmentElement.INSERTION)
-                origin = AlignmentElement.INSERTION
-                j--
-            } else if (i > 0 && (current == gapA[i - 1][j] + gapExtensionPenalty || current == gapA[i - 1][j] + gapOpenPenalty)) {
-                traceback.add(AlignmentElement.DELETION)
-                origin = AlignmentElement.DELETION
-                i--
+                AlignmentElement.DELETION -> {
+                    origin =
+                        if (gapA[i][j] == gapA[i - 1][j] + gapExtensionPenalty) {
+                            AlignmentElement.DELETION
+                        } else if (gapA[i][j] == gapB[i - 1][j] + gapExtensionPenalty) {
+                            AlignmentElement.INSERTION
+                        } else {
+                            AlignmentElement.MATCH
+                        }
+                    i--
+                }
+                AlignmentElement.INSERTION -> {
+                    origin =
+                        if (gapB[i][j] == gapA[i][j - 1] + gapExtensionPenalty) {
+                            AlignmentElement.DELETION
+                        } else if (gapB[i][j] == gapB[i][j - 1] + gapExtensionPenalty) {
+                            AlignmentElement.INSERTION
+                        } else {
+                            AlignmentElement.MATCH
+                        }
+                    j--
+                }
             }
         }
 
