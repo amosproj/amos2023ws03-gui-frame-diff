@@ -8,8 +8,6 @@ import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import java.io.File
 
-
-
 class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: String) :
     AbstractDifferenceGenerator(video1Path, video2Path, outputPath) {
     private val outputFile = File(outputPath)
@@ -87,10 +85,6 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
         this.video2Grabber.stop()
     }
 
-
-
-
-
     /**
      * Calculates the difference between two frames.
      *
@@ -98,7 +92,10 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
      * @param frame2 the second frame
      * @return a frame where different pixels are red and the same pixels are black
      */
-    private fun getDifferences(frame1: Frame,frame2: Frame): Frame {
+    private fun getDifferences(
+        frame1: Frame,
+        frame2: Frame,
+    ): Frame {
         val differences = getBufferedImage(Color.BLACK)
 
         val converterFrame1 = Java2DFrameConverter()
@@ -122,17 +119,13 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
         return converterOutput.getFrame(differences, 1.0)
     }
 
-
-
     /**
      * Creates a Buffered Image with a given color.
      *
      * @param color the color
-     * @param height of the image (optional)
-     * @param width of the image  (optional)
      * @return a Buffered Imnage colored in the given color
      */
-    private fun getBufferedImage(color: Color, height:Int = this.height , width:Int = this.width):BufferedImage {
+    private fun getBufferedImage(color: Color): BufferedImage {
         val result = BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR)
         val g2d: Graphics2D = result.createGraphics()
         g2d.paint = color
@@ -145,13 +138,10 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
      * Creates a Frame with a given color.
      *
      * @param color the color
-     * @param height of the image (optional)
-     * @param width of the image  (optional)
      * @return a frame colored in the given color
      */
-    private fun getFrame(color: Color, height:Int = this.height, width:Int = this.width):Frame {
+    private fun getFrame(color: Color): Frame {
         val converterOutput = Java2DFrameConverter()
-        return converterOutput.getFrame(getBufferedImage(color, height, width), 1.0)
+        return converterOutput.getFrame(getBufferedImage(color), 1.0)
     }
-
 }

@@ -20,6 +20,4 @@ abstract class AbstractDifferenceGenerator(
      * Calls the saveDifferences() method.
      */
     abstract fun generateDifference()
-
-
 }
