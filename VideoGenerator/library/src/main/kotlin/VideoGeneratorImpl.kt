@@ -4,9 +4,6 @@ import org.bytedeco.javacv.Java2DFrameConverter
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import javax.imageio.ImageIO
-import java.io.ByteArrayInputStream
-import java.util.*
-import javax.imageio.ImageIO
 
 /**
  * A class that implements the AbstractVideoGenerator interface to generate video files.
@@ -35,9 +32,18 @@ class VideoGeneratorImpl(
      */
     override fun loadFrame(frameBytes: ByteArray) {
         ByteArrayInputStream(frameBytes).use { bis ->
-            val bImage = ImageIO.read(bis)
-            bImage?.let {
-                recordFrame(it)
+            val loadedImage = ImageIO.read(bis)
+            loadedImage?.let {
+                val bImage = BufferedImage(
+                    loadedImage.width,
+                    loadedImage.height,
+                    BufferedImage.TYPE_3BYTE_BGR
+                )
+                bImage.createGraphics().run {
+                    drawImage(loadedImage, 0, 0, null)
+                    dispose()
+                }
+                recordFrame(bImage)
             }
         }
     }
