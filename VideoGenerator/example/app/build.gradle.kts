@@ -49,25 +49,7 @@ android {
             excludes += "META-INF/LICENSE-notice.md"
         }
     }
-
-    configurations {
-        create("javacpp")
-    }
-
-    // Define the custom Gradle task to extract native libraries
-    task("javacppExtract", Copy::class) {
-        dependsOn(configurations["javacpp"])
-
-        from(configurations["javacpp"].files().flatMap { zipTree(it).files })
-        include("lib/**")
-        into("$buildDir/javacpp/")
-
-        // Dynamically get the correct source set
-        val sourceSet = sourceSets.findByName("main")
-        sourceSet?.jniLibs?.srcDirs(files("$buildDir/javacpp/lib/"))
-
-        tasks.getByName("preBuild").dependsOn(this)
-    }
+    buildToolsVersion = "34.0.0"
 }
 
 dependencies {

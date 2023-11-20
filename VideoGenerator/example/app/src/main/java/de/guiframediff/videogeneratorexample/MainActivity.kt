@@ -30,12 +30,12 @@ class MainActivity : ComponentActivity() {
                 handler.post {
                     generateRandomNumber()
                     takeScreenshot()
-                    videoGenerator.processFrames()
                 }
             },
             0,
             5000,
         )
+        videoGenerator.processFrames()
     }
 
     override fun onDestroy() {

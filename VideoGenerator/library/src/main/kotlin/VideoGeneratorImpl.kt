@@ -1,4 +1,4 @@
-import org.bytedeco.ffmpeg.global.avcodec
+import org.bytedeco.javacpp.avcodec
 import org.bytedeco.javacv.FFmpegFrameRecorder
 import org.bytedeco.javacv.Java2DFrameConverter
 import java.io.ByteArrayInputStream
