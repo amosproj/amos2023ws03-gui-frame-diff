@@ -49,7 +49,7 @@ class Gotoh<T>(
                         gapB[i][j - 1] + gapExtensionPenalty,
                     )
 
-                val similarity = metric.measureDistance(a[i - 1], b[j - 1])
+                val similarity = 1 - metric.measureDistance(a[i - 1], b[j - 1])
                 val matchScore = score[i - 1][j - 1] + similarity // last pair was match and this one too
                 val gapAScore = gapA[i - 1][j - 1] + similarity // gap in A and then a match
                 val gapBScore = gapB[i - 1][j - 1] + similarity // gap in B and then a match
@@ -79,7 +79,7 @@ class Gotoh<T>(
 
             when (origin) {
                 AlignmentElement.MATCH -> {
-                    val similarity = metric.measureDistance(a[i - 1], b[j - 1])
+                    val similarity = 1 - metric.measureDistance(a[i - 1], b[j - 1])
                     origin =
                         if (score[i][j] == score[i - 1][j - 1] + similarity) {
                             AlignmentElement.MATCH
