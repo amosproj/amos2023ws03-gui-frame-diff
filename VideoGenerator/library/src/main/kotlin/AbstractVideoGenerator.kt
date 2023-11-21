@@ -16,13 +16,6 @@ abstract class AbstractVideoGenerator(videoPath: String, imageWidth: Int, imageH
     abstract fun loadFrame(frameBytes: ByteArray)
 
     /**
-     * Processes the frames of a byte array and creates a  video file.
-     *
-     *
-     */
-    abstract fun processFrames()
-
-    /**
      * Saves the video to the output path.
      * This is where you should save the video.
      * If possible reuse variables from the init() method.
