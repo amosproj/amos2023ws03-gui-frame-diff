@@ -17,7 +17,6 @@ class VideoGeneratorImpl(
     private val imageWidth: Int,
     private val imageHeight: Int,
 ) : AbstractVideoGenerator(videoPath, imageWidth, imageHeight) {
-
     private val recorder: FFmpegFrameRecorder = initializeRecorder()
 
     init {

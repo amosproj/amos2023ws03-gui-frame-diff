@@ -6,7 +6,7 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 
-class VideoGeneratorImplTest {
+class VideoGeneratorImplTests {
     private lateinit var videoGenerator: VideoGeneratorImpl
     private val videoPath = "src/resources/testOutput.mkv"
     private lateinit var exampleImageData1: ByteArray
