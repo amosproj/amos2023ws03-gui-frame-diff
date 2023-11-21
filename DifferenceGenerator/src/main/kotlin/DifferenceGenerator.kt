@@ -8,8 +8,12 @@ import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import java.io.File
 
-class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: String, metric: MetricInterface<BufferedImage>) :
-    AbstractDifferenceGenerator(video1Path, video2Path, outputPath) {
+class DifferenceGenerator(
+    video1Path: String,
+    video2Path: String,
+    outputPath: String,
+    private val algorithm: AlignmentAlgorithm<BufferedImage>,
+) : AbstractDifferenceGenerator(video1Path, video2Path, outputPath) {
     private val outputFile = File(outputPath)
     private val video1File = File(video1Path)
     private val video2File = File(video2Path)
@@ -69,14 +73,31 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
         encoder.videoCodec = AV_CODEC_ID_FFV1
         encoder.start()
 
-        var frame1 = this.video1Grabber.grabImage()
-        var frame2 = this.video2Grabber.grabImage()
+        val video1Images = grabBufferedImages(this.video1Grabber)
+        val video2Images = grabBufferedImages(this.video2Grabber)
 
-        while (frame1 != null && frame2 != null) {
-            val differences = getDifferences(frame1, frame2)
-            encoder.record(differences)
-            frame1 = this.video1Grabber.grabImage()
-            frame2 = this.video2Grabber.grabImage()
+        val alignment = algorithm.run(video1Images, video2Images)
+
+        val video1It = video1Images.iterator()
+        val video2It = video2Images.iterator()
+
+        for (a in alignment) {
+            when (a) {
+                AlignmentElement.MATCH -> {
+                    val differences = getDifferences(video1It.next(), video2It.next())
+                    encoder.record(differences)
+                }
+                AlignmentElement.INSERTION -> {
+                    encoder.record(getColoredFrame(Color.GREEN))
+                    // skipping the second video's frame (insertion)
+                    video2It.next()
+                }
+                AlignmentElement.DELETION -> {
+                    encoder.record(getColoredFrame(Color.BLUE))
+                    // skipping the first video's frame (deletion)
+                    video1It.next()
+                }
+            }
         }
 
         encoder.stop()
@@ -86,29 +107,23 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
     }
 
     /**
-     * Calculates the difference between two frames.
+     * Calculates the difference between two images.
      *
-     * @param frame1 the first frame
-     * @param frame2 the second frame
-     * @return a frame where different pixels are red and the same pixels are black
+     * @param image1 the first image
+     * @param image2 the second image
+     * @return a frame where different pixels are red and identical pixels are black
      */
     private fun getDifferences(
-        frame1: Frame,
-        frame2: Frame,
+        image1: BufferedImage,
+        image2: BufferedImage,
     ): Frame {
         val differences = getBufferedImage(Color.BLACK)
-
-        val converterFrame1 = Java2DFrameConverter()
-        val converterFrame2 = Java2DFrameConverter()
-
-        val frame1Image = converterFrame1.convert(frame1)
-        val frame2Image = converterFrame2.convert(frame2)
 
         // using a BufferedImage.raster.dataBuffer or just .raster might be faster
         for (x in 0 until width) {
             for (y in 0 until height) {
-                val frame1Pixel = frame1Image.getRGB(x, y)
-                val frame2Pixel = frame2Image.getRGB(x, y)
+                val frame1Pixel = image1.getRGB(x, y)
+                val frame2Pixel = image2.getRGB(x, y)
                 if (frame1Pixel - frame2Pixel != 0) {
                     differences.setRGB(x, y, Color.RED.rgb)
                 }
@@ -135,12 +150,29 @@ class DifferenceGenerator(video1Path: String, video2Path: String, outputPath: St
     }
 
     /**
+     * Grabs all the frames from a video as BufferedImages.
+     *
+     * @param grabber the frame grabber of the video
+     * @return an array of BufferedImages
+     */
+    private fun grabBufferedImages(grabber: FFmpegFrameGrabber): Array<BufferedImage> {
+        val frames = ArrayList<BufferedImage>()
+        var frame = grabber.grabImage()
+        while (frame != null) {
+            val converter = Java2DFrameConverter()
+            frames.add(converter.convert(frame))
+            frame = grabber.grabImage()
+        }
+        return frames.toTypedArray()
+    }
+
+    /**
      * Creates a Frame with a given color.
      *
      * @param color the color
      * @return a frame colored in the given color
      */
-    private fun getFrame(color: Color): Frame {
+    private fun getColoredFrame(color: Color): Frame {
         val converterOutput = Java2DFrameConverter()
         return converterOutput.getFrame(getBufferedImage(color), 1.0)
     }
