@@ -70,7 +70,12 @@ class DifferenceGenerator(
     /**
      * Generates a difference video from the two videos given in the constructor.
      *
-     * Loops through each frame of the videos and calculates the difference between the two frames.
+     * Uses the algorithm given in the constructor to align the frames of both videos.
+     *
+     * The resulting video consists of frames which are one of types:
+     *  - only blue pixels: a frame was deleted (only in first video)
+     *  - only green pixels: a frame was inserted (only in second video)
+     *  - red and black pixels: a frame was modified (both videos contain the frame)
      */
     override fun generateDifference() {
         val encoder = FFmpegFrameRecorder(this.outputFile, video1Grabber.imageWidth, video1Grabber.imageHeight)
@@ -80,11 +85,13 @@ class DifferenceGenerator(
         val video1Images = grabBufferedImages(this.video1Grabber)
         val video2Images = grabBufferedImages(this.video2Grabber)
 
+        // execute the alignment algorithm with the images of both videos
         alignment = algorithm.run(video1Images, video2Images)
 
         val video1It = video1Images.iterator()
         val video2It = video2Images.iterator()
 
+        // iterate through the alignment sequence to build the image sequence
         for (a in alignment) {
             when (a) {
                 AlignmentElement.MATCH -> {
@@ -145,14 +152,14 @@ class DifferenceGenerator(
      * @return an array of BufferedImages
      */
     private fun grabBufferedImages(grabber: FFmpegFrameGrabber): Array<BufferedImage> {
-        val frames = ArrayList<BufferedImage>()
+        val images = ArrayList<BufferedImage>()
         var frame = grabber.grabImage()
         while (frame != null) {
             val converter = Java2DFrameConverter()
-            frames.add(converter.convert(frame))
+            images.add(converter.convert(frame))
             frame = grabber.grabImage()
         }
-        return frames.toTypedArray()
+        return images.toTypedArray()
     }
 
     /**
