@@ -1,3 +1,5 @@
+import algorithms.AlignmentAlgorithm
+import algorithms.AlignmentElement
 import org.bytedeco.ffmpeg.global.avcodec.AV_CODEC_ID_FFV1
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.FFmpegFrameRecorder

@@ -1,7 +1,5 @@
 package algorithms
 
-import AlignmentAlgorithm
-import AlignmentElement
 import MetricInterface
 
 class Gotoh<T>(

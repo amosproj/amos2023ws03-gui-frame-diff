@@ -1,3 +1,5 @@
+import algorithms.AlignmentAlgorithm
+import algorithms.AlignmentElement
 import algorithms.Gotoh
 
 class DnaMetric : MetricInterface<Char> {

@@ -1,3 +1,7 @@
+package algorithms
+
+import MetricInterface
+
 enum class AlignmentElement {
     MATCH,
     INSERTION,
