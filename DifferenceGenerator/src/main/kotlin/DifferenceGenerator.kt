@@ -44,10 +44,6 @@ class DifferenceGenerator(
             throw Exception("Videos must have the same dimensions")
         }
 
-        if (this.video1Grabber.lengthInFrames != this.video2Grabber.lengthInFrames) {
-            throw Exception("Videos must have the same number of frames")
-        }
-
         this.width = this.video1Grabber.imageWidth
         this.height = this.video1Grabber.imageHeight
         generateDifference()

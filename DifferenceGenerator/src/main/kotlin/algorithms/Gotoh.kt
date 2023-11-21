@@ -5,9 +5,10 @@ import MetricInterface
 /**
  * An implementation of the Gotoh algorithm for sequence alignment.
  *
- * It uses a similar approach as the dynamic programming algorithm by Needleman and Wunsch.
- * In addition, it accounts for the gap size in the alignment. Depending on the hyperparameters, a newly opened gap
- * can be very costly ([gapOpenPenalty]), while extending an existing gap can be made cheaper ([gapExtensionPenalty]).
+ * It uses a similar approach as the dynamic programming algorithm by Needleman and Wunsch. In
+ * addition, it accounts for the gap size in the alignment. Depending on the hyperparameters, a
+ * newly opened gap can be very costly ([gapOpenPenalty]), while extending an existing gap can be
+ * made cheaper ([gapExtensionPenalty]).
  *
  * @param T the type of the objects to align
  * @param metric the metric to use for calculating the distance between two objects
@@ -25,7 +26,8 @@ class Gotoh<T>(
      * @param a the first sequence of objects
      * @param b the second sequence of objects
      *
-     * Returns an array of [AlignmentElement]s that represent the alignment between the two sequences.
+     * Returns an array of [AlignmentElement]s that represent the alignment between the two
+     * sequences.
      */
     override fun run(
         a: Array<T>,
@@ -88,7 +90,8 @@ class Gotoh<T>(
 
                 // calculate the score for having choosing matching alignment instead of gaps
                 val similarity = 1 - metric.measureDistance(a[i - 1], b[j - 1])
-                val matchScore = score[i - 1][j - 1] + similarity // last pair was match and this one too
+                val matchScore =
+                    score[i - 1][j - 1] + similarity // last pair was match and this one too
                 val gapAScore = gapA[i - 1][j - 1] + similarity // gap in A and then a match
                 val gapBScore = gapB[i - 1][j - 1] + similarity // gap in B and then a match
 
@@ -100,7 +103,8 @@ class Gotoh<T>(
         val finalScore: Double = maxOf(score[n][m], gapA[n][m], gapB[n][m])
 
         // now, we need to trace back through the matrices to retrieve the optimal alignment
-        // for that, we start at the end of the alignment, store the alignment elements and reverse them afterwards
+        // for that, we start at the end of the alignment, store the alignment elements and reverse
+        // them afterwards
         // to get the final alignment sequence
 
         val traceback: ArrayList<AlignmentElement> = ArrayList<AlignmentElement>()
@@ -109,15 +113,16 @@ class Gotoh<T>(
         var j: Int = m
 
         // variable to store the last alignment "action"
-        var origin = (
-            if (finalScore == score[n][m]) {
-                AlignmentElement.MATCH
-            } else if (finalScore == gapA[n][m]) {
-                AlignmentElement.DELETION
-            } else {
-                AlignmentElement.INSERTION
-            }
-        )
+        var origin =
+            (
+                if (finalScore == score[n][m]) {
+                    AlignmentElement.MATCH
+                } else if (finalScore == gapA[n][m]) {
+                    AlignmentElement.DELETION
+                } else {
+                    AlignmentElement.INSERTION
+                }
+            )
 
         while (i > 0 || j > 0) {
             traceback.add(origin)
