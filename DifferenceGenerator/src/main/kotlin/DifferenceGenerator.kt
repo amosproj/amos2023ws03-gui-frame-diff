@@ -26,6 +26,8 @@ class DifferenceGenerator(
     private var width = 0
     private var height = 0
 
+    lateinit var alignment: Array<AlignmentElement>
+
     /**
      * Initializes a new instance of the [DifferenceGenerator] class.
      *
@@ -78,7 +80,7 @@ class DifferenceGenerator(
         val video1Images = grabBufferedImages(this.video1Grabber)
         val video2Images = grabBufferedImages(this.video2Grabber)
 
-        val alignment = algorithm.run(video1Images, video2Images)
+        alignment = algorithm.run(video1Images, video2Images)
 
         val video1It = video1Images.iterator()
         val video2It = video2Images.iterator()
