@@ -37,7 +37,7 @@ class VideoGeneratorImpl(
                 val bImage = BufferedImage(
                     loadedImage.width,
                     loadedImage.height,
-                    BufferedImage.TYPE_3BYTE_BGR
+                    BufferedImage.TYPE_3BYTE_BGR,
                 )
                 bImage.createGraphics().run {
                     drawImage(loadedImage, 0, 0, null)
@@ -57,14 +57,23 @@ class VideoGeneratorImpl(
     }
 
     /**
+     * Finalizes the recording by stopping and releasing the recorder.
+     */
+    protected fun finalize() {
+        recorder.stop()
+        recorder.release()
+    }
+
+    /**
      * Initializes the recorder with the specified video path, image width, and image height.
      *
      * @return an instance of FFmpegFrameRecorder initialized with the specified parameters.
      */
-    private fun initializeRecorder() = FFmpegFrameRecorder(videoPath, imageWidth, imageHeight).apply {
-        videoCodec = avcodec.AV_CODEC_ID_FFV1
-        format = "matroska"
-        frameRate = 25.0
+    private fun initializeRecorder() =
+        FFmpegFrameRecorder(videoPath, imageWidth, imageHeight).apply {
+            videoCodec = avcodec.AV_CODEC_ID_FFV1
+            format = "matroska"
+            frameRate = 25.0
     }
 
     /**
