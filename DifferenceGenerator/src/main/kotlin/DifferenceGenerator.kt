@@ -119,7 +119,7 @@ class DifferenceGenerator(
         image1: BufferedImage,
         image2: BufferedImage,
     ): Frame {
-        val differences = getBufferedImage(Color.BLACK)
+        val differences = getColoredBufferedImage(Color.BLACK)
 
         // using a BufferedImage.raster.dataBuffer or just .raster might be faster
         for (x in 0 until width) {
@@ -134,21 +134,6 @@ class DifferenceGenerator(
 
         val converterOutput = Java2DFrameConverter()
         return converterOutput.getFrame(differences, 1.0)
-    }
-
-    /**
-     * Creates a Buffered Image with a given color.
-     *
-     * @param color the color
-     * @return a Buffered Imnage colored in the given color
-     */
-    private fun getBufferedImage(color: Color): BufferedImage {
-        val result = BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR)
-        val g2d: Graphics2D = result.createGraphics()
-        g2d.paint = color
-        g2d.fillRect(0, 0, width, height)
-        g2d.dispose()
-        return result
     }
 
     /**
@@ -176,6 +161,21 @@ class DifferenceGenerator(
      */
     private fun getColoredFrame(color: Color): Frame {
         val converterOutput = Java2DFrameConverter()
-        return converterOutput.getFrame(getBufferedImage(color), 1.0)
+        return converterOutput.getFrame(getColoredBufferedImage(color), 1.0)
+    }
+
+    /**
+     * Creates a Buffered Image with a given color.
+     *
+     * @param color the color
+     * @return a Buffered Imnage colored in the given color
+     */
+    private fun getColoredBufferedImage(color: Color): BufferedImage {
+        val result = BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR)
+        val g2d: Graphics2D = result.createGraphics()
+        g2d.paint = color
+        g2d.fillRect(0, 0, width, height)
+        g2d.dispose()
+        return result
     }
 }
