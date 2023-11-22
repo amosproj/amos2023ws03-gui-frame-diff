@@ -1,18 +1,168 @@
+import algorithms.AlignmentElement
+import algorithms.Gotoh
+import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.awt.image.BufferedImage
 import java.io.File
 
 internal class DifferenceGeneratorTest {
-    private val losslessVideo = "src/test/resources/uncompressedWater.mov"
-    private val losslessModifiedVideo = "src/test/resources/uncompressedModifiedWater.mov"
-    private val compressedVideo = "src/test/resources/compressedVideo.mov"
-    private val outputPath = "src/test/resources/output.mov"
+    private val resourcesPathPrefix = "src/test/resources/"
+
+    private val compressedVideo = resourcesPathPrefix + "compressedVideo.mov"
+
+    // Video with 9 frames
+    private val video9Frames = resourcesPathPrefix + "9Screenshots.mov"
+
+    // Modified video with 9 frames
+    private val modifiedVideo9Frames = resourcesPathPrefix + "9ScreenshotsModified.mov"
+
+    // Video with 10 frames, the second frame is added compared to the vide9Frames
+    private val video10Frames = resourcesPathPrefix + "10Screenshots.mov"
+
+    // Modified video with 10 frames
+    private val modifiedVideo10Frames = resourcesPathPrefix + "10ScreenshotsModified.mov"
+
+    // Video with 11 frames, the second frame is like in video9Frames and two frames are added
+    // at the end
+    private val video11Frames = resourcesPathPrefix + "11Screenshots.mov"
+
+    // Modified video with 11 frames
+    private val modifiedVideo11Frames = resourcesPathPrefix + "11ScreenshotsModified.mov"
+
+    private val metric = PixelCountMetric(normalize = true)
 
     @Test
-    fun `test constructor with lossless codec`() {
-        DifferenceGenerator(losslessVideo, losslessModifiedVideo, outputPath)
+    fun `test if DifferenceGenerator finds deletion`() {
+        val outputPath = resourcesPathPrefix + "outputDeletion.mov"
+
+        // Delete output file if it exists
         val outputFile = File(outputPath)
+        if (outputFile.exists()) {
+            outputFile.delete()
+        }
+
+        val algorithm =
+            Gotoh<BufferedImage>(
+                metric,
+                gapOpenPenalty = -0.5,
+                gapExtensionPenalty = -0.0,
+            )
+        val g =
+            DifferenceGenerator(
+                modifiedVideo10Frames,
+                video9Frames,
+                outputPath,
+                algorithm,
+            )
+        val expectedAlignment =
+            arrayOf(
+                AlignmentElement.MATCH,
+                AlignmentElement.DELETION,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+            )
+        assertArrayEquals(
+            expectedAlignment,
+            g.alignment,
+        )
+
+        assertTrue(outputFile.exists())
+        assertTrue(outputFile.isFile)
+        assertTrue(outputFile.length() > 0)
+    }
+
+    @Test
+    fun `test if DifferenceGenerator finds insertion`() {
+        val outputPath = resourcesPathPrefix + "outputInsertion.mov"
+
+        // Delete output file if it exists
+        val outputFile = File(outputPath)
+        if (outputFile.exists()) {
+            outputFile.delete()
+        }
+
+        val algorithm =
+            Gotoh<BufferedImage>(
+                metric,
+                gapOpenPenalty = -0.5,
+                gapExtensionPenalty = -0.0,
+            )
+        val g =
+            DifferenceGenerator(
+                video9Frames,
+                modifiedVideo10Frames,
+                outputPath,
+                algorithm,
+            )
+        println(g.alignment.joinToString())
+        val expectedAlignment =
+            arrayOf(
+                AlignmentElement.MATCH,
+                AlignmentElement.INSERTION,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+            )
+        assertArrayEquals(
+            expectedAlignment,
+            g.alignment,
+        )
+
+        assertTrue(outputFile.exists())
+        assertTrue(outputFile.isFile)
+        assertTrue(outputFile.length() > 0)
+    }
+
+    @Test
+    fun `test if DifferenceGenerator finds insertion and deletion`() {
+        val outputPath = resourcesPathPrefix + "outputInsertionDeletion.mov"
+
+        // Delete output file if it exists
+        val outputFile = File(outputPath)
+        if (outputFile.exists()) {
+            outputFile.delete()
+        }
+
+        val algorithm =
+            Gotoh<BufferedImage>(
+                metric,
+                gapOpenPenalty = -0.5,
+                gapExtensionPenalty = -0.0,
+            )
+        val g = DifferenceGenerator(video11Frames, video10Frames, outputPath, algorithm)
+        println(g.alignment.joinToString())
+        val expectedAlignment =
+            arrayOf(
+                AlignmentElement.MATCH,
+                AlignmentElement.INSERTION,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.DELETION,
+                AlignmentElement.DELETION,
+            )
+        assertArrayEquals(
+            expectedAlignment,
+            g.alignment,
+        )
 
         assertTrue(outputFile.exists())
         assertTrue(outputFile.isFile)
@@ -21,8 +171,15 @@ internal class DifferenceGeneratorTest {
 
     @Test
     fun `test constructor with non-lossless codec`() {
+        val outputPath = resourcesPathPrefix + "output.mov"
+        val algorithm =
+            Gotoh<BufferedImage>(
+                metric,
+                gapOpenPenalty = -0.5,
+                gapExtensionPenalty = -0.0,
+            )
         assertThrows(Exception::class.java) {
-            DifferenceGenerator(losslessVideo, compressedVideo, outputPath)
+            DifferenceGenerator(video9Frames, compressedVideo, outputPath, algorithm)
         }
     }
 }
