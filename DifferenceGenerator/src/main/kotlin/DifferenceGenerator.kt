@@ -4,7 +4,6 @@ import org.bytedeco.ffmpeg.global.avcodec.AV_CODEC_ID_FFV1
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.FFmpegFrameRecorder
 import org.bytedeco.javacv.Frame
-import org.bytedeco.javacv.Java2DFrameConverter
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
@@ -22,6 +21,8 @@ class DifferenceGenerator(
 
     private val video1Grabber = FFmpegFrameGrabber(video1File)
     private val video2Grabber = FFmpegFrameGrabber(video2File)
+
+    private val converter = Resettable2DFrameConverter()
 
     private var width = 0
     private var height = 0
@@ -137,8 +138,7 @@ class DifferenceGenerator(
             }
         }
 
-        val converterOutput = Java2DFrameConverter()
-        return converterOutput.getFrame(differences, 1.0)
+        return converter.getFrame(differences)
     }
 
     /**
@@ -151,8 +151,7 @@ class DifferenceGenerator(
         val images = ArrayList<BufferedImage>()
         var frame = grabber.grabImage()
         while (frame != null) {
-            val converter = Java2DFrameConverter()
-            images.add(converter.convert(frame))
+            images.add(converter.getImage(frame))
             frame = grabber.grabImage()
         }
         return images.toTypedArray()
@@ -165,8 +164,7 @@ class DifferenceGenerator(
      * @return a frame colored in the given color
      */
     private fun getColoredFrame(color: Color): Frame {
-        val converterOutput = Java2DFrameConverter()
-        return converterOutput.getFrame(getColoredBufferedImage(color), 1.0)
+        return converter.getFrame(getColoredBufferedImage(color))
     }
 
     /**
