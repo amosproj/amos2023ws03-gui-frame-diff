@@ -9,6 +9,7 @@ abstract class AbstractDifferenceGenerator(
     video1Path: String,
     video2Path: String,
     outputPath: String,
+    maskPath: String?,
 ) {
     private val video1Path: String = video1Path
     private val video2Path: String = video2Path
