@@ -82,6 +82,7 @@ class DifferenceGenerator(
     override fun generateDifference() {
         val encoder = FFmpegFrameRecorder(this.outputFile, video1Grabber.imageWidth, video1Grabber.imageHeight)
         encoder.videoCodec = AV_CODEC_ID_FFV1
+        encoder.frameRate = 1.0
         encoder.start()
 
         val video1Images = grabBufferedImages(this.video1Grabber)
@@ -132,6 +133,8 @@ class DifferenceGenerator(
     ): Frame {
         val differences = getColoredBufferedImage(Color.BLACK)
 
+
+
         // using a BufferedImage.raster.dataBuffer or just .raster might be faster
         for (x in 0 until width) {
             for (y in 0 until height) {
@@ -157,7 +160,6 @@ class DifferenceGenerator(
         var frame = grabber.grabImage()
 
         while (frame != null) {
-
             val image = converter.getImage(frame)
             images.add(applyMasking(image))
             frame = grabber.grabImage()
@@ -181,7 +183,10 @@ class DifferenceGenerator(
      * @param color the color
      * @return a Buffered Imnage colored in the given color
      */
-    private fun getColoredBufferedImage(color: Color, type: Int = BufferedImage.TYPE_3BYTE_BGR): BufferedImage {
+    private fun getColoredBufferedImage(
+        color: Color,
+        type: Int = BufferedImage.TYPE_3BYTE_BGR,
+    ): BufferedImage {
         val result = BufferedImage(width, height, type)
         val g2d: Graphics2D = result.createGraphics()
         g2d.paint = color
@@ -190,10 +195,9 @@ class DifferenceGenerator(
         return result
     }
 
-
-    private fun generateMasking(){
+    private fun generateMasking() {
         if (maskFile == null) {
-            mask =  getColoredBufferedImage(Color(255, 255, 255, 0), BufferedImage.TYPE_4BYTE_ABGR)
+            mask = getColoredBufferedImage(Color(255, 255, 255, 0), BufferedImage.TYPE_4BYTE_ABGR)
             return
         }
         val maskGrabber = ImageIO.read(maskFile)
@@ -212,7 +216,7 @@ class DifferenceGenerator(
         }
     }
 
-    private fun applyMasking(img: BufferedImage): BufferedImage{
+    private fun applyMasking(img: BufferedImage): BufferedImage {
         val g2d: Graphics2D = img.createGraphics()
         g2d.drawImage(mask, 0, 0, null)
         g2d.dispose()
