@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private val random = Random()
     private lateinit var randomTextView: TextView
-    private val videoGenerator = VideoGeneratorImpl("test.gif", 1920, 720)
+    private val videoGenerator = VideoGeneratorImpl("test.gif")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
