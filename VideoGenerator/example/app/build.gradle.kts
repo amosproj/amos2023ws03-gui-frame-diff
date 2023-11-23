@@ -57,22 +57,7 @@ android {
     }
 }
 
-configurations {
-    create("javacpp")
-}
-
-tasks.register<Copy>("javacppExtract") {
-    dependsOn(configurations["javacpp"])
-    from(configurations["javacpp"].map { zipTree(it) })
-    include("lib/**")
-    into(buildDir.resolve("javacpp/"))
-    // android.sourceSets.main.jniLibs.srcDirs(buildDir.resolve("javacpp/lib/"))
-
-    tasks.getByName("preBuild").dependsOn(this)
-}
-
 dependencies {
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation("androidx.appcompat:appcompat:1.3.0")
 
     implementation("androidx.core:core-ktx:1.12.0")
