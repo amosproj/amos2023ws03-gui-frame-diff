@@ -133,8 +133,6 @@ class DifferenceGenerator(
     ): Frame {
         val differences = getColoredBufferedImage(Color.BLACK)
 
-
-
         // using a BufferedImage.raster.dataBuffer or just .raster might be faster
         for (x in 0 until width) {
             for (y in 0 until height) {
@@ -201,18 +199,9 @@ class DifferenceGenerator(
             return
         }
         val maskGrabber = ImageIO.read(maskFile)
+        mask = maskGrabber
         if (maskGrabber.width != width || maskGrabber.height != height) {
             throw Exception("Mask must have the same dimensions as the videos")
-        }
-        mask = BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR)
-        for (x in 0 until width) {
-            for (y in 0 until height) {
-                var maskPixel = maskGrabber.getRGB(x, y)
-                if (maskPixel == Color.WHITE.rgb) {
-                    maskPixel = Color(255, 255, 255, 0).rgb
-                }
-                mask.setRGB(x, y, maskPixel)
-            }
         }
     }
 
