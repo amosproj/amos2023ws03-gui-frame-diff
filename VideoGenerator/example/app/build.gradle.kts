@@ -44,12 +44,14 @@ android {
     }
     packaging {
         resources {
+            // prevent native implementation from being packaged
             excludes += "META-INF/native-image/ios*/**"
             excludes += "META-INF/native-image/macos*/**"
             excludes += "META-INF/native-image/linux*/**"
             excludes += "META-INF/native-image/windows*/**"
             excludes += "META-INF/native-image/android-arm*/**"
             excludes += "META-INF/native-image/android-x86*/**"
+
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
             excludes += "META-INF/LICENSE.md"
             excludes += "META-INF/LICENSE-notice.md"
@@ -60,6 +62,7 @@ android {
 dependencies {
     implementation("androidx.appcompat:appcompat:1.3.0")
 
+    // only use android-specific implementations
     implementation("org.bytedeco:ffmpeg:6.0-1.5.9:android-arm64")
     implementation("org.bytedeco:ffmpeg:6.0-1.5.9:android-x86_64")
     implementation("org.bytedeco:javacpp:1.5.9:android-arm64")

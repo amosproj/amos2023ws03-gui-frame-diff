@@ -12,9 +12,11 @@ repositories {
 dependencies {
     implementation("org.junit.jupiter:junit-jupiter:5.10.0")
 
-    implementation("org.bytedeco:javacv:1.5.9")
     implementation("org.bytedeco:javacpp:1.5.9")
-    implementation("org.bytedeco:ffmpeg:6.0-1.5.9")
+    implementation("org.bytedeco:javacv:1.5.9")
+
+    // loads native implementations for all platforms
+    implementation("org.bytedeco:ffmpeg-platform:6.0-1.5.9")
 
     testImplementation(kotlin("test"))
 }
