@@ -9,28 +9,27 @@ import javax.imageio.ImageIO
  * A class that implements the AbstractVideoGenerator interface to generate video files.
  *
  * @param videoPath The path to the output video file.
- * @param imageWidth The width of each frame in the video.
- * @param imageHeight The height of each frame in the video.
  */
 class VideoGeneratorImpl(
     private val videoPath: String,
-    private val imageWidth: Int,
-    private val imageHeight: Int,
-) : AbstractVideoGenerator(videoPath, imageWidth, imageHeight) {
-    private val recorder: FFmpegFrameRecorder = initializeRecorder()
-
-    init {
-        recorder.start()
-    }
+) : AbstractVideoGenerator(videoPath) {
+    private lateinit var recorder: FFmpegFrameRecorder
 
     /**
      * Loads a frame from the given byte array.
+     * Initializes recorder if not yet initialized.
      *
      * @param frameBytes the byte array containing the frame data
      */
     override fun loadFrame(frameBytes: ByteArray) {
         ByteArrayInputStream(frameBytes).use { stream ->
             val bufferedImage = ImageIO.read(stream)
+
+            // initialize and start Recorder
+            if (!::recorder.isInitialized) {
+                recorder = initializeRecorder(bufferedImage.width, bufferedImage.height)
+                recorder.start()
+            }
 
             // Getting pixel data
             val width = bufferedImage.width
@@ -72,10 +71,12 @@ class VideoGeneratorImpl(
      *
      * @return an instance of FFmpegFrameRecorder initialized with the specified parameters.
      */
-    private fun initializeRecorder() =
-        FFmpegFrameRecorder(videoPath, imageWidth, imageHeight).apply {
-            videoCodec = avcodec.AV_CODEC_ID_FFV1
-            format = "matroska"
-            frameRate = 25.0
-        }
+    private fun initializeRecorder(
+        imageWidth: Int,
+        imageHeight: Int,
+    ) = FFmpegFrameRecorder(videoPath, imageWidth, imageHeight).apply {
+        videoCodec = avcodec.AV_CODEC_ID_FFV1
+        format = "matroska"
+        frameRate = 25.0
+    }
 }
