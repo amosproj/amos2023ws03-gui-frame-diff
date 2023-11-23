@@ -187,7 +187,7 @@ internal class DifferenceGeneratorTest {
 
     @Test
     fun `test masking`() {
-        val outputPath = resourcesPathPrefix + "outputDeletion.mov"
+        val outputPath = resourcesPathPrefix + "maskingChanges.mov"
 
         // Delete output file if it exists
         val outputFile = File(outputPath)
