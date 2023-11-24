@@ -198,9 +198,8 @@ class DifferenceGenerator(
             mask = getColoredBufferedImage(Color(255, 255, 255, 0), BufferedImage.TYPE_4BYTE_ABGR)
             return
         }
-        val maskGrabber = ImageIO.read(maskFile)
-        mask = maskGrabber
-        if (maskGrabber.width != width || maskGrabber.height != height) {
+        mask = ImageIO.read(maskFile)
+        if (mask.width != width || mask.height != height) {
             throw Exception("Mask must have the same dimensions as the videos")
         }
     }
