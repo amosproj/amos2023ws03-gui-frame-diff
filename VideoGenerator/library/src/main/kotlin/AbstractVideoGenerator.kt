@@ -3,11 +3,9 @@
  * Extend this class to create your own video generator.
  *
  * @param videoPath Output filesystem path for the resulting video.
- * @param imageWidth Horizontal number of pixels to be expected in images.
- * @param imageHeight Vertical number of pixels to be expected in images.
  */
 
-abstract class AbstractVideoGenerator(videoPath: String, imageWidth: Int, imageHeight: Int) {
+abstract class AbstractVideoGenerator(videoPath: String) {
     /**
      * Endpoint to load images into the generator.
      *

@@ -21,7 +21,7 @@ class VideoGeneratorImplTests {
 
     @BeforeEach
     fun setUp() {
-        videoGenerator = VideoGeneratorImpl(videoPath, 640, 480)
+        videoGenerator = VideoGeneratorImpl(videoPath)
         exampleImageData1 = Files.readAllBytes(Paths.get("src/resources/Screenshot_50.png"))
         exampleImageData2 = Files.readAllBytes(Paths.get("src/resources/Screenshot_51.png"))
         exampleImageData3 = Files.readAllBytes(Paths.get("src/resources/Screenshot_52.png"))
