@@ -31,6 +31,8 @@ internal class DifferenceGeneratorTest {
     // Modified video with 11 frames
     private val modifiedVideo11Frames = resourcesPathPrefix + "11ScreenshotsModified.mov"
 
+    private val mask = resourcesPathPrefix + "mask.png"
+
     private val metric = PixelCountMetric(normalize = true)
 
     @Test
@@ -181,5 +183,52 @@ internal class DifferenceGeneratorTest {
         assertThrows(Exception::class.java) {
             DifferenceGenerator(video9Frames, compressedVideo, outputPath, algorithm)
         }
+    }
+
+    @Test
+    fun `test masking`() {
+        val outputPath = resourcesPathPrefix + "maskingChanges.mov"
+
+        // Delete output file if it exists
+        val outputFile = File(outputPath)
+        if (outputFile.exists()) {
+            outputFile.delete()
+        }
+
+        val algorithm =
+            Gotoh<BufferedImage>(
+                metric,
+                gapOpenPenalty = -0.5,
+                gapExtensionPenalty = -0.0,
+            )
+        val g =
+            DifferenceGenerator(
+                modifiedVideo10Frames,
+                video9Frames,
+                outputPath,
+                algorithm,
+                mask,
+            )
+        val expectedAlignment =
+            arrayOf(
+                AlignmentElement.MATCH,
+                AlignmentElement.DELETION,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+                AlignmentElement.MATCH,
+            )
+        assertArrayEquals(
+            expectedAlignment,
+            g.alignment,
+        )
+
+        assertTrue(outputFile.exists())
+        assertTrue(outputFile.isFile)
+        assertTrue(outputFile.length() > 0)
     }
 }

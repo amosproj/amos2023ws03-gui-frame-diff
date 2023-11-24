@@ -8,16 +8,19 @@ import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import java.io.File
+import javax.imageio.ImageIO
 
 class DifferenceGenerator(
     video1Path: String,
     video2Path: String,
     outputPath: String,
     private val algorithm: AlignmentAlgorithm<BufferedImage>,
-) : AbstractDifferenceGenerator(video1Path, video2Path, outputPath) {
+    maskPath: String? = null,
+) : AbstractDifferenceGenerator(video1Path, video2Path, outputPath, maskPath) {
     private val outputFile = File(outputPath)
     private val video1File = File(video1Path)
     private val video2File = File(video2Path)
+    private val maskFile = if (maskPath != null) File(maskPath) else null
 
     private val video1Grabber = FFmpegFrameGrabber(video1File)
     private val video2Grabber = FFmpegFrameGrabber(video2File)
@@ -28,6 +31,7 @@ class DifferenceGenerator(
     private var height = 0
 
     lateinit var alignment: Array<AlignmentElement>
+    private lateinit var mask: BufferedImage
 
     /**
      * Initializes a new instance of the [DifferenceGenerator] class.
@@ -47,6 +51,7 @@ class DifferenceGenerator(
 
         this.width = this.video1Grabber.imageWidth
         this.height = this.video1Grabber.imageHeight
+        generateMasking()
         generateDifference()
     }
 
@@ -77,6 +82,7 @@ class DifferenceGenerator(
     override fun generateDifference() {
         val encoder = FFmpegFrameRecorder(this.outputFile, video1Grabber.imageWidth, video1Grabber.imageHeight)
         encoder.videoCodec = AV_CODEC_ID_FFV1
+        encoder.frameRate = 1.0
         encoder.start()
 
         val video1Images = grabBufferedImages(this.video1Grabber)
@@ -150,8 +156,10 @@ class DifferenceGenerator(
     private fun grabBufferedImages(grabber: FFmpegFrameGrabber): Array<BufferedImage> {
         val images = ArrayList<BufferedImage>()
         var frame = grabber.grabImage()
+
         while (frame != null) {
-            images.add(converter.getImage(frame))
+            val image = converter.getImage(frame)
+            images.add(applyMasking(image))
             frame = grabber.grabImage()
         }
         return images.toTypedArray()
@@ -173,12 +181,33 @@ class DifferenceGenerator(
      * @param color the color
      * @return a Buffered Imnage colored in the given color
      */
-    private fun getColoredBufferedImage(color: Color): BufferedImage {
-        val result = BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR)
+    private fun getColoredBufferedImage(
+        color: Color,
+        type: Int = BufferedImage.TYPE_3BYTE_BGR,
+    ): BufferedImage {
+        val result = BufferedImage(width, height, type)
         val g2d: Graphics2D = result.createGraphics()
         g2d.paint = color
         g2d.fillRect(0, 0, width, height)
         g2d.dispose()
         return result
+    }
+
+    private fun generateMasking() {
+        if (maskFile == null) {
+            mask = getColoredBufferedImage(Color(255, 255, 255, 0), BufferedImage.TYPE_4BYTE_ABGR)
+            return
+        }
+        mask = ImageIO.read(maskFile)
+        if (mask.width != width || mask.height != height) {
+            throw Exception("Mask must have the same dimensions as the videos")
+        }
+    }
+
+    private fun applyMasking(img: BufferedImage): BufferedImage {
+        val g2d: Graphics2D = img.createGraphics()
+        g2d.drawImage(mask, 0, 0, null)
+        g2d.dispose()
+        return img
     }
 }
