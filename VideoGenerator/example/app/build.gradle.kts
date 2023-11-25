@@ -86,3 +86,21 @@ dependencies {
 
     implementation(project(path = ":videogenerator"))
 }
+
+tasks.register("downloadTestAssets"){
+    val path = "src/androidTest/res/screens.zip"
+    val assetPath = "src/androidTest/res/"
+    val sourceUrl = "ftp://seitzfabian.de/pub/screen.zip"
+    download(sourceUrl,path)
+    unzip(path,assetPath)
+}
+
+fun download(url : String, path : String){
+    val destFile = File(path)
+    ant.invokeMethod("get", mapOf("src" to url, "dest" to destFile))
+}
+
+fun unzip(source : String, dest : String){
+    val destFile = File(source)
+    ant.invokeMethod("unzip", mapOf("src" to source, "dest" to dest))
+}
