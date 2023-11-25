@@ -1,4 +1,4 @@
-rootProject.name = "GUILib3"
+rootProject.name = "GUI"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
