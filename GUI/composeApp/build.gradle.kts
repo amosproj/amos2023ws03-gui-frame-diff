@@ -1,4 +1,3 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.ExperimentalComposeLibrary
 
 plugins {
@@ -15,9 +14,9 @@ kotlin {
             }
         }
     }
-    
+
     sourceSets {
-        
+
         androidMain.dependencies {
             implementation(libs.compose.ui)
             implementation(libs.compose.ui.tooling.preview)
@@ -75,11 +74,9 @@ android {
         implementation(compose.material)
         @OptIn(ExperimentalComposeLibrary::class)
         implementation(compose.components.resources)
-//importing local daytime
+// importing local daytime
         implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
-//importin icons form following website https://v4.mui.com/components/material-icons/
+// importin icons form following website https://v4.mui.com/components/material-icons/
         implementation("androidx.compose.material:material-icons-extended-android:1.5.4")
-
     }
 }
-

@@ -42,7 +42,7 @@ fun App() {
             AnimatedVisibility(showImage) {
                 Image(
                     painterResource("compose-multiplatform.xml"),
-                    null
+                    null,
                 )
             }
             val skipPrev = Icons.Filled.SkipPrevious
@@ -51,12 +51,12 @@ fun App() {
             val skipNext = Icons.Filled.SkipNext
             var isTextVisible by remember { mutableStateOf(false) }
             var isTextVisible1 by remember { mutableStateOf(false) }
-            Box() {
-                Column (horizontalAlignment = Alignment.CenterHorizontally){
+            Box {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Button(onClick = { isTextVisible = !isTextVisible }) {
                         Icon(imageVector = skipPrev, contentDescription = "skip previus")
                     }
-                    Button(onClick = { isTextVisible1 = !isTextVisible1}) {
+                    Button(onClick = { isTextVisible1 = !isTextVisible1 }) {
                         Icon(imageVector = playArrow, contentDescription = "skip previus")
                     }
                     Button(onClick = { /*TODO*/ }) {
@@ -68,12 +68,13 @@ fun App() {
 
                     Column(
                         Modifier.background(color = Color.Red),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         if (isTextVisible) {
                             Text(
-                                text = "text from this class", fontSize = 30.sp,
-                                textAlign = TextAlign.Center
+                                text = "text from this class",
+                                fontSize = 30.sp,
+                                textAlign = TextAlign.Center,
                             )
                         }
                     }
@@ -83,12 +84,12 @@ fun App() {
                     ) {
                         if (isTextVisible1) {
                             Text(
-                                text = Greeting().textFromAnotherClass, fontSize = 30.sp,
-                                textAlign = TextAlign.Center
+                                text = Greeting().textFromAnotherClass,
+                                fontSize = 30.sp,
+                                textAlign = TextAlign.Center,
                             )
                         }
                     }
-
                 }
             }
         }
