@@ -87,7 +87,7 @@ dependencies {
     implementation(project(path = ":videogenerator"))
 }
 
-tasks.register("downloadTestAssets"){
+tasks.register("downloadAndUnzipTestAssets"){
     val path = "src/androidTest/res/screens.zip"
     val assetPath = "src/androidTest/res/"
     val sourceUrl = "ftp://seitzfabian.de/pub/screen.zip"
