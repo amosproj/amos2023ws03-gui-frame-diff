@@ -1,6 +1,7 @@
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.Frame
 import org.junit.jupiter.api.Test
+import java.awt.image.DataBufferByte
 import java.awt.image.WritableRaster
 import java.io.File
 import kotlin.experimental.and
