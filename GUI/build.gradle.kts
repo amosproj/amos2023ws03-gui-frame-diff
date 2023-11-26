@@ -1,5 +1,6 @@
 import org.jetbrains.compose.compose
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
@@ -35,4 +36,17 @@ compose.desktop {
             includeAllModules = true
         }
     }
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+tasks.register<Jar>("createRunnableJar") {
+    from(sourceSets.main.get().output)
+    manifest {
+        attributes["Main-Class"] = "MainKt"
+    }
+    archiveFileName.set("GUI-Runnable.jar")
+    destinationDirectory.set(file("$buildDir/libs"))
 }
