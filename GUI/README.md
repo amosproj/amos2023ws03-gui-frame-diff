@@ -5,6 +5,7 @@
 
 1. **Prerequisites:**
     - Ensure that the following prerequisites are met:
+    - install IntelliJ plugin: `Compose Multiplatform IDE Support`
     - Java Development Kit (JDK) installed. JDK 17 is preferred.
       . Gradle Build-Tool installed.
 2. **Performing the Build:**
