@@ -22,11 +22,11 @@ internal class RuntimeTests {
     private val modifiedVideo9Frames = resourcesPathPrefix + "9ScreenshotsModified.mov"
 
 
-    val video1File = File(video9Frames)
-    val video2File = File(modifiedVideo9Frames)
-    private val runAmount = 10
+    private val video1File = File(video9Frames)
+    private val video2File = File(modifiedVideo9Frames)
+    private val runAmount = 1
 
-    fun averageRunTime(runs: Int = runAmount,  method: (File, File) -> Int): Pair<Long, Int> {
+    private fun averageRunTime(runs: Int = runAmount, method: (File, File) -> Int): Pair<Long, Int> {
         var totalTime = 0L
         var difs = 0
         for (i in 0 until runs) {
@@ -63,15 +63,15 @@ internal class RuntimeTests {
         var counter = 0;
 
         while (frame1 != null && frame2 != null) {
-            val frame1Data = converter.convert(frame1)
-            val frame2Data = converter.convert(frame2)
+            val frame1Data = converter.getImage(frame1)
+            val frame2Data = converter.getImage(frame2)
             for (x in 0 until width) {
                 for (y in 0 until height) {
                     val pixel1 = frame1Data.getRGB(x, y)
                     val pixel2 = frame2Data.getRGB(x, y)
 
                     if (pixel1 - pixel2 != 0) {
-                        counter= counter+1
+                        counter += 1
                     }
                 }
             }
@@ -83,7 +83,7 @@ internal class RuntimeTests {
         return counter
     }
 
-    fun method2(vid1: File, vid2: File): Int {
+    private fun method2(vid1: File, vid2: File): Int {
         val video1Grabber = FFmpegFrameGrabber(vid1)
         val video2Grabber = FFmpegFrameGrabber(vid2)
 
@@ -109,7 +109,7 @@ internal class RuntimeTests {
                     val pixel1 = frame1Raster.getPixel(x, y, IntArray(3))
                     val pixel2 = frame2Raster.getPixel(x, y, IntArray(3))
 
-                    if (pixel1.contentEquals(pixel2)) {
+                    if (!pixel1.contentEquals(pixel2)) {
                         counter++
                     }
 
@@ -125,7 +125,7 @@ internal class RuntimeTests {
     }
 
 
-    fun method3(vid1: File, vid2: File): Int {
+    private fun method3(vid1: File, vid2: File): Int {
         val video1Grabber = FFmpegFrameGrabber(vid1)
         val video2Grabber = FFmpegFrameGrabber(vid2)
 
@@ -151,7 +151,7 @@ internal class RuntimeTests {
                     val pixel1 = frame1Raster.getElem(x)
                     val pixel2 = frame2Raster.getElem(x)
 
-                    if (pixel1 == pixel2) {
+                    if (pixel1 != pixel2) {
                         counter++
                     }
 
