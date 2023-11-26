@@ -1,43 +1,37 @@
-
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.Frame
 import org.junit.jupiter.api.Test
-
-import java.awt.image.*
+import java.awt.image.WritableRaster
 import java.io.File
 import kotlin.experimental.and
 import kotlin.experimental.xor
 import kotlin.system.measureTimeMillis
 
-
-//maybe an interface for the methods?
+// maybe an interface for the methods?
 
 internal class ReadRuntimeTests {
     private val resourcesPathPrefix = "src/test/resources/"
-
-    // Video with 10 frames, the second frame is added compared to the vide9Frames
-    // Video with 9 frames
     private val video9Frames = resourcesPathPrefix + "9Screenshots.mov"
-
-    // Modified video with 9 frames
     private val modifiedVideo9Frames = resourcesPathPrefix + "9ScreenshotsModified.mov"
-
-
     private val video1File = File(video9Frames)
     private val video2File = File(modifiedVideo9Frames)
     private val runAmount = 50
 
-    private val methodMap: Map<String, (Resettable2DFrameConverter, Frame, Frame, Int, Int) -> Int> = mapOf(
-        "method1" to ::method1,
-        "method2" to ::method2,
-        "method3" to ::method3,
-        "method4" to ::method4,
-        "method5" to ::method5,
-        "method6" to ::method6,
-        "method7" to ::method7,
-    )
+    private val methodMap: Map<String, (Resettable2DFrameConverter, Frame, Frame, Int, Int) -> Int> =
+        mapOf(
+            "BufferedImage" to ::method1,
+            "Raster" to ::method2,
+            "ByteArray with 'xor'" to ::method3,
+            "ByteArray with 'and'" to ::method4,
+            "ByteArray with 'and' + extra var" to ::method5,
+            "ByteArray with 'and' + less vars" to ::method6,
+            "ByteArray with indexedMap" to ::method7,
+        )
 
-    private fun averageRunTime(runs: Int = runAmount, methodName: String) {
+    private fun averageRunTime(
+        runs: Int = runAmount,
+        methodName: String,
+    ) {
         var totalTime = 0L
         var difs = 0
         val method = methodMap[methodName] ?: throw Exception("Method not found")
@@ -49,7 +43,6 @@ internal class ReadRuntimeTests {
         println("Average for $methodName: ${totalTime / runs} ms, $difs differences")
     }
 
-
     @Test
     fun `test pixel comparison`() {
         for (method in methodMap.keys) {
@@ -57,7 +50,11 @@ internal class ReadRuntimeTests {
         }
     }
 
-    private fun wrapper(vid1: File, vid2: File, method: (Resettable2DFrameConverter, Frame, Frame, Int, Int) -> Int): Pair<Int, Long> {
+    private fun wrapper(
+        vid1: File,
+        vid2: File,
+        method: (Resettable2DFrameConverter, Frame, Frame, Int, Int) -> Int,
+    ): Pair<Int, Long> {
         val video1Grabber = FFmpegFrameGrabber(vid1)
         val video2Grabber = FFmpegFrameGrabber(vid2)
 
@@ -76,7 +73,6 @@ internal class ReadRuntimeTests {
 
         while (frame1 != null && frame2 != null) {
             time += measureTimeMillis { counter += method(converter, frame1, frame2, width, height) }
-
 
             frame1 = video1Grabber.grabImage()
             frame2 = video2Grabber.grabImage()
@@ -109,7 +105,6 @@ internal class ReadRuntimeTests {
         return counter
     }
 
-
     private fun method2(
         converter: Resettable2DFrameConverter,
         frame1: Frame,
@@ -130,12 +125,10 @@ internal class ReadRuntimeTests {
                 if (!pixel1.contentEquals(pixel2)) {
                     counter++
                 }
-
             }
         }
         return counter
     }
-
 
     private fun method3(
         converter: Resettable2DFrameConverter,
@@ -154,7 +147,6 @@ internal class ReadRuntimeTests {
         val data1 = dataBuffer1.data
         val data2 = dataBuffer2.data
 
-
         for (x in 0 until width) {
             for (y in 0 until height) {
                 val index = (y * width + x) * 3 // 3 bytes per pixel in TYPE_3BYTE_BGR
@@ -169,7 +161,6 @@ internal class ReadRuntimeTests {
         }
         return counter
     }
-
 
     private fun method4(
         converter: Resettable2DFrameConverter,
@@ -202,12 +193,10 @@ internal class ReadRuntimeTests {
                 if (blue1 != blue2 || green1 != green2 || red1 != red2) {
                     counter++
                 }
-
             }
         }
         return counter
     }
-
 
     private fun method5(
         converter: Resettable2DFrameConverter,
@@ -226,8 +215,6 @@ internal class ReadRuntimeTests {
         val data1 = dataBuffer1.data
         val data2 = dataBuffer2.data
 
-
-
         for (x in 0 until width) {
             for (y in 0 until height) {
                 val index = (y * width + x) * 3 // 3 bytes per pixel in TYPE_3BYTE_BGR
@@ -243,12 +230,10 @@ internal class ReadRuntimeTests {
                 if (blue1 != blue2 || green1 != green2 || red1 != red2) {
                     counter++
                 }
-
             }
         }
         return counter
     }
-
 
     private fun method6(
         converter: Resettable2DFrameConverter,
@@ -274,13 +259,10 @@ internal class ReadRuntimeTests {
                 if (blue1 != blue2 || green1 != green2 || red1 != red2) {
                     counter++
                 }
-
             }
         }
         return counter
     }
-
-
 
     private fun method7(
         converter: Resettable2DFrameConverter,
@@ -299,11 +281,12 @@ internal class ReadRuntimeTests {
         val data1 = dataBuffer1.data
         val data2 = dataBuffer2.data
 
-        counter = (data1.mapIndexed() { index, byte ->
-            byte == data2[index]
-        }.filter { !it }).size
+        counter =
+            (
+                data1.mapIndexed { index, byte ->
+                    byte == data2[index]
+                }.filter { !it }
+            ).size
         return counter
     }
-
-
 }
