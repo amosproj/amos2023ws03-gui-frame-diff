@@ -8,6 +8,6 @@ ktlint_standard = disabled
 
 # android code style is not correctly interpreted by ktlint
 # so we have to manually turn of certain flags for the example app
-[VideoGenerator/example/app/**/*.{kt,kts}]
+[{VideoGenerator/example/app/**/*.{kt,kts},GUI/src/main/**/*.{kt,kts}}]
 ktlint_function_naming_ignore_when_annotated_with=Composable
 ktlint_standard_no-wildcard-imports = disabled
