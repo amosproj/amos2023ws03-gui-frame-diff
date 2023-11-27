@@ -12,7 +12,7 @@
     - `./gradlew build` 
     - Create an application for your OS
        - `./gradlew createDistributable`
-       - Executable at `build/binaries/main/app/GUI/`
+       - Executable at `build/compose/binaries/main/app/GUI/`
     - Create an installer for the current operating system
        - `./gradlew packageDistributionForCurrentOS`
-       - Installer at `build/binaries/main/{msi|deb|dmg}/`
+       - Installer at `build/compose/binaries/main/{msi|deb|dmg}/`
