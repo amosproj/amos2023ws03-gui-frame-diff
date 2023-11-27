@@ -34,3 +34,22 @@ We have a pre-commit hook that runs ktlint. Please activate it as follows:
 
 It makes sense to run `ktlint` more often to prevent a lot of formatting errors from piling up.
 It is also encouraged to use an on-save formatter as provided by IDEs like IntelliJ, Android Studio and VS Code.
+
+### License Checking
+
+The project uses a [gradle plugin](https://github.com/jk1/Gradle-License-Report) to generate
+dependency license reports. The reports are all saved in the `./licenses/reports/` directory.
+Currently, we are allowing the licenses `MIT` and `Apache 2.0`. This information can be changed
+in `./licenses/allowed-licenses.json`
+
+For `lib1`:
+- *to be implemented*
+
+For `lib2` (analogous for the `gui`):
+- Run a task that fails if dependencies with non-allowed licenses are found.
+- `cd ./DifferenceGenerator/ && ./gradlew checkLicense`
+- Generate a license report in html
+- `cd ./DifferenceGenerator/ && ./gradlew generateLicenseReport`
+- The report will be available at `./licenses/reports/DifferenceGenerator/`
+
+
