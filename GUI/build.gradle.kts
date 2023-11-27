@@ -1,10 +1,16 @@
+import com.github.jk1.license.filter.DependencyFilter
+import com.github.jk1.license.filter.LicenseBundleNormalizer
+import com.github.jk1.license.render.InventoryHtmlReportRenderer
+import com.github.jk1.license.render.ReportRenderer
 import org.jetbrains.compose.compose
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+
 plugins {
     kotlin("jvm")
     id("org.jetbrains.compose")
+    id("com.github.jk1.dependency-license-report") version "2.5"
 }
 
 group = "com.example"
@@ -48,4 +54,11 @@ tasks.register<Jar>("createRunnableJar") {
     }
     archiveFileName.set("GUI-Runnable.jar")
     destinationDirectory.set(file("$buildDir/libs"))
+}
+
+licenseReport {
+    outputDir = "../licenses/reports/GUI"
+    renderers = arrayOf<ReportRenderer>(InventoryHtmlReportRenderer("report.html", "GUI"))
+    filters = arrayOf<DependencyFilter>(LicenseBundleNormalizer())
+    allowedLicensesFile = File("../licenses/allowed-licenses.json")
 }
