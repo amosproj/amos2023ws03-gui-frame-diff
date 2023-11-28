@@ -16,12 +16,27 @@ sealed class Screen {
     object SelectVideoScreen : Screen()
     object DisplayVideoScreen : Screen()
 }
+
+/**
+ * The main entry point of the application.
+ *
+ * Starts the application by creating a window and initializing the App scene.
+ *
+ * @return [Unit]
+ */
 fun main(): Unit = application {
     Window(onCloseRequest = ::exitApplication) {
         App()
     }
 }
 
+/**
+ * This function is a composable function that defines the UI structure and behavior of the application.
+ * It sets up a `screen` mutable state using the `remember` function and sets its initial value to `Screen.SelectVideoScreen`.
+ * It then uses a `when` statement to determine the current value of the `screen` state and renders the corresponding screen.
+ *
+ * @return Unit
+ */
 @Composable
 fun App() {
     var screen by remember { mutableStateOf<Screen>(Screen.SelectVideoScreen) }
@@ -31,6 +46,11 @@ fun App() {
     }
 }
 
+/**
+ * Composable method to display the select video screen.
+ *
+ * @param onNavigate Callback function to be called when user clicks on the "Compute differences and navigate" button.
+ */
 @Composable
 fun SelectVideoScreen(onNavigate: () -> Unit) {
     // Variables to store paths of the selected videos
@@ -58,6 +78,12 @@ fun SelectVideoScreen(onNavigate: () -> Unit) {
     }
 }
 
+/**
+ * Displays a screen for video playback.
+ *
+ * @param onNavigate A function to be called when the user wants to navigate back from the video screen.
+ *
+ */
 @Composable
 fun DisplayVideoScreen(onNavigate: () -> Unit) {
     Column(Modifier.padding(16.dp)) {
