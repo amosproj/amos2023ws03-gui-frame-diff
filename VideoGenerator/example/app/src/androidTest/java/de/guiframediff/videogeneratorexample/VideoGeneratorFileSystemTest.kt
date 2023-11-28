@@ -2,6 +2,8 @@ package de.guiframediff.videogeneratorexample
 
 import VideoGeneratorImpl
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Environment
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -71,11 +73,20 @@ class VideoGeneratorFileSystemTest {
     @Test
     fun useAppContext() {
         val videoGenerator = VideoGeneratorImpl(testOutputDir.path + "/output.mkv")
-        if (testInputDir.exists()) {
-            val files = testInputDir.listFiles()
-            for (file in files!!) {
-                videoGenerator.loadFrame(file.readBytes())
-            }
+
+        assert(testInputDir.exists())
+
+        val files = testInputDir.listFiles()
+
+        assertEquals(169, files.size)
+
+        for (file in files!!) {
+            val b: Bitmap = BitmapFactory.decodeFile(file.path)
+            val width = b.width
+            val height = b.height
+            val pixels = IntArray(width * height)
+            b.getPixels(pixels, 0, width, 0, 0, width, height)
+            videoGenerator.loadFrame(pixels, width, height)
         }
         videoGenerator.save()
     }
