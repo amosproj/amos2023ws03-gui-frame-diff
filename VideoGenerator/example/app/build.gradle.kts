@@ -89,12 +89,16 @@ dependencies {
 }
 
 tasks.register("downloadAndUnzipTestAssets") {
-    val assetPath = "src/androidTest/res/"
+    val assetPath = "src/androidTest/assets/"
     val zipDestinationPath = assetPath + "screens.zip"
     val sourceUrl = "ftp://seitzfabian.de/pub/screen.zip"
     createDir(assetPath)
     download(sourceUrl, zipDestinationPath)
     unzip(zipDestinationPath, assetPath)
+
+    doLast {
+        file(zipDestinationPath).delete()
+    }
 }
 
 fun download(
