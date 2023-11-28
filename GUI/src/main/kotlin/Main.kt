@@ -1,11 +1,16 @@
+
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -14,6 +19,7 @@ import javax.swing.JFileChooser
 
 sealed class Screen {
     object SelectVideoScreen : Screen()
+
     object DisplayVideoScreen : Screen()
 }
 
@@ -24,11 +30,12 @@ sealed class Screen {
  *
  * @return [Unit]
  */
-fun main(): Unit = application {
-    Window(onCloseRequest = ::exitApplication) {
-        App()
+fun main(): Unit =
+    application {
+        Window(onCloseRequest = ::exitApplication) {
+            App()
+        }
     }
-}
 
 /**
  * This function is a composable function that defines the UI structure and behavior of the application.
@@ -86,54 +93,182 @@ fun SelectVideoScreen(onNavigate: () -> Unit) {
  */
 @Composable
 fun DisplayVideoScreen(onNavigate: () -> Unit) {
-    Column(Modifier.padding(16.dp)) {
-        Row {
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight(.66f)
-                    .weight(1f)
-                    .background(Color.Gray),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text("Display Video 1", textAlign = TextAlign.Center)
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight(.66f)
-                    .weight(1f)
-                    .background(Color.Gray),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text("Display Diff Video", textAlign = TextAlign.Center)
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight(.66f)
-                    .weight(1f)
-                    .background(Color.Gray),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text("Display Video 2", textAlign = TextAlign.Center)
-            }
+    var checkRun by remember { mutableStateOf(true) }
+    val buttonRun =
+        if (checkRun) {
+            "play.svg"
+        } else {
+            "pause.svg"
         }
+    MaterialTheme {
+//        ###########   Text   ###########
         Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(top = 50.dp, start = 50.dp),
         ) {
-            Button(onClick = {}) {
-                Text("Play")
+            Text(
+                text = "Video 1",
+                modifier =
+                    Modifier
+                        .background(Color.Gray)
+                        .height(30.dp)
+                        .width(300.dp)
+                        .padding(top = 5.dp),
+                textAlign = TextAlign.Center,
+            )
+            Spacer(modifier = Modifier.width(30.dp))
+
+            Text(
+                text = "Diff",
+                modifier =
+                    Modifier
+                        .background(Color.Gray)
+                        .height(30.dp)
+                        .width(300.dp)
+                        .padding(top = 5.dp),
+                textAlign = TextAlign.Center,
+            )
+            Spacer(modifier = Modifier.width(30.dp))
+
+            Text(
+                text = "Video 2",
+                modifier =
+                    Modifier
+                        .background(Color.Gray)
+                        .height(30.dp)
+                        .width(300.dp)
+                        .padding(top = 5.dp),
+                textAlign = TextAlign.Center,
+            )
+        }
+//        ###########   Box   ###########
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(top = 100.dp, start = 50.dp),
+            verticalAlignment = Alignment.Top,
+        ) {
+            Box(
+                modifier =
+                    Modifier
+                        .size(300.dp)
+                        .background(Color.Gray),
+            )
+            Spacer(modifier = Modifier.width(30.dp))
+            Box(
+                modifier =
+                    Modifier
+                        .size(300.dp)
+                        .background(Color(1.0f, 0.647f, 0.0f)),
+                // Orange
+            )
+            Spacer(modifier = Modifier.width(30.dp))
+            Box(
+                modifier =
+                    Modifier
+                        .size(300.dp)
+                        .background(Color.Gray),
+            )
+        }
+//        ###########   Buttons   ###########
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(top = 420.dp, start = 50.dp),
+            verticalAlignment = Alignment.Top,
+        ) {
+            Button(
+                onClick = {},
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
+                modifier =
+                    Modifier
+                        .height(60.dp)
+                        .width(80.dp),
+            ) {
+                Image(
+                    painter = painterResource("skipStart.svg"),
+                    contentDescription = null,
+                    modifier =
+                        Modifier
+                            .size(50.dp),
+                )
             }
-            Spacer(Modifier.width(8.dp))
-            Button(onClick = {}) {
-                Text("Stop")
+            Spacer(modifier = Modifier.width(250.dp))
+            Button(
+                onClick = {},
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
+                modifier =
+                    Modifier
+                        .height(60.dp)
+                        .width(80.dp),
+            ) {
+                Image(
+                    painter = painterResource("skipPrev.svg"),
+                    contentDescription = null,
+                    modifier =
+                        Modifier
+                            .size(50.dp),
+                )
+            }
+            Spacer(modifier = Modifier.width(30.dp))
+
+            Button(
+                onClick = { checkRun = !checkRun },
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
+                modifier =
+                    Modifier
+                        .height(60.dp)
+                        .width(80.dp),
+            ) {
+                Image(
+                    painter = painterResource(buttonRun),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+
+            Spacer(modifier = Modifier.width(30.dp))
+
+            Button(
+                onClick = {},
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
+                modifier =
+                    Modifier
+                        .height(60.dp)
+                        .width(80.dp),
+            ) {
+                Image(
+                    painter = painterResource("skipNext.svg"),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+            Spacer(modifier = Modifier.width(250.dp))
+            Button(
+                onClick = {},
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
+                modifier =
+                    Modifier
+                        .height(60.dp)
+                        .width(80.dp),
+            ) {
+                Image(
+                    painter = painterResource("skipEnd.svg"),
+                    contentDescription = null,
+                    modifier =
+                        Modifier
+                            .size(50.dp),
+                )
             }
         }
-        Button(onClick = onNavigate) {
-            Text("Back")
-        }
+    }
+
+    Button(onClick = onNavigate) {
+        Text("Back")
     }
 }
 
