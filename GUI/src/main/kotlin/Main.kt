@@ -1,129 +1,113 @@
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.awt.SwingPanel
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.*
-import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent
-import java.awt.BorderLayout
-import javax.swing.*
+import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.application
 import javax.swing.JFileChooser
 
-/**
- * The main method that starts the application.
- */
+sealed class Screen {
+    object SelectVideoScreen : Screen()
+    object DisplayVideoScreen : Screen()
+}
 fun main(): Unit = application {
     Window(onCloseRequest = ::exitApplication) {
         App()
     }
 }
 
-/**
- * Composable function that represents the main application screen.
- */
 @Composable
 fun App() {
-    var videoPath1 by remember { mutableStateOf<String?>(null) }
-    var videoPath2 by remember { mutableStateOf<String?>(null) }
-    val mediaPlayerComponent1 = remember { mutableStateOf<EmbeddedMediaPlayerComponent?>(null) }
-    val mediaPlayerComponent2 = remember { mutableStateOf<EmbeddedMediaPlayerComponent?>(null) }
-
-    Column(Modifier.fillMaxSize()) {
-        Row(Modifier.weight(1f).fillMaxWidth()) {
-            Column(Modifier.weight(1f)) {
-                videoPanel(videoPath1) { path ->
-                    videoPath1 = path
-                    mediaPlayerComponent1.value?.mediaPlayer()?.media()?.prepare(path)
-                }
-            }
-            Column(Modifier.weight(1f)) {
-                videoPanel(videoPath2) { path ->
-                    videoPath2 = path
-                    mediaPlayerComponent2.value?.mediaPlayer()?.media()?.prepare(path)
-                }
-            }
-        }
-
-        Row(
-            Modifier.fillMaxWidth().padding(8.dp),
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Button(onClick = {
-                try {
-                    mediaPlayerComponent1.value?.mediaPlayer()?.controls()?.play()
-                    mediaPlayerComponent2.value?.mediaPlayer()?.controls()?.play()
-                } catch (e: Exception) {
-                    println("Error playing videos: ${e.localizedMessage}")
-                }
-            }) {
-                Text("Play Videos")
-            }
-            Spacer(Modifier.width(4.dp))
-            Button(onClick = {
-                try {
-                    mediaPlayerComponent1.value?.mediaPlayer()?.controls()?.stop()
-                    mediaPlayerComponent2.value?.mediaPlayer()?.controls()?.stop()
-                } catch (e: Exception) {
-                    println("Error stopping videos: ${e.localizedMessage}")
-                }
-            }) {
-                Text("Stop Videos")
-            }
-        }
+    var screen by remember { mutableStateOf<Screen>(Screen.SelectVideoScreen) }
+    when (screen) {
+        is Screen.SelectVideoScreen -> SelectVideoScreen { screen = Screen.DisplayVideoScreen }
+        is Screen.DisplayVideoScreen -> DisplayVideoScreen { screen = Screen.SelectVideoScreen }
     }
 }
 
-/**
- * Composable function to display a video panel.
- *
- * @param videoPath The path to the video file.
- * @param onFileSelected Callback function to handle file selection.
- */
 @Composable
-fun videoPanel(
-    videoPath: String?,
-    onFileSelected: (String) -> Unit,
-) {
-    val mediaPlayerComponent = remember { mutableStateOf<EmbeddedMediaPlayerComponent?>(null) }
+fun SelectVideoScreen(onNavigate: () -> Unit) {
+    // Variables to store paths of the selected videos
+    var video1Path by remember { mutableStateOf<String?>("") }
+    var video2Path by remember { mutableStateOf<String?>("") }
 
-    Column(Modifier.fillMaxWidth().padding(8.dp)) {
-        SwingPanel(
-            modifier = Modifier.weight(1f).fillMaxWidth(),
-            factory = {
-                when (videoPath) {
-                    null -> JPanel()
-                    else -> JPanel().apply {
-                        layout = BorderLayout()
-                        val mediaPlayer = EmbeddedMediaPlayerComponent()
-                        try {
-                            add(mediaPlayer, BorderLayout.CENTER)
-                            // Initialize the media player with the video
-                            mediaPlayer.mediaPlayer()?.media()?.prepare(videoPath)
-                            mediaPlayerComponent.value = mediaPlayer
-                        } catch (e: Exception) {
-                            println("Error preparing media: ${e.localizedMessage}")
-                        }
-                    }
-                }
-            },
-            update = { panel ->
-                // Update code to update the media player component
-                try {
-                    mediaPlayerComponent.value?.let {
-                        panel.removeAll()
-                        panel.add(it, BorderLayout.CENTER)
-                        panel.revalidate()
-                    }
-                } catch (e: Exception) {
-                    println("Error updating media component: ${e.localizedMessage}")
-                }
-            },
-        )
-        Spacer(Modifier.height(8.dp))
-        FileSelectorButton("Select Video", onFileSelected)
+    Column(modifier = Modifier.padding(16.dp)) {
+        Row {
+            FileSelectorButton(buttonText = "Select Video 1") { selectedFilePath ->
+                // Update video1Path after file being selected
+                video1Path = selectedFilePath
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            FileSelectorButton(buttonText = "Select Video 2") { selectedFilePath ->
+                // Update video2Path after file being selected
+                video2Path = selectedFilePath
+            }
+        }
+        // Perform your video difference computation here
+        Button(onClick = onNavigate, enabled = video1Path?.isNotEmpty() == true && video2Path?.isNotEmpty() == true) {
+            Text("Compute differences and navigate")
+        }
+        Text("Selected Video 1 Path: $video1Path")
+        Text("Selected Video 2 Path: $video2Path")
+    }
+}
+
+@Composable
+fun DisplayVideoScreen(onNavigate: () -> Unit) {
+    Column(Modifier.padding(16.dp)) {
+        Row {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight(.66f)
+                    .weight(1f)
+                    .background(Color.Gray),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text("Display Video 1", textAlign = TextAlign.Center)
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight(.66f)
+                    .weight(1f)
+                    .background(Color.Gray),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text("Display Diff Video", textAlign = TextAlign.Center)
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight(.66f)
+                    .weight(1f)
+                    .background(Color.Gray),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text("Display Video 2", textAlign = TextAlign.Center)
+            }
+        }
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Button(onClick = {}) {
+                Text("Play")
+            }
+            Spacer(Modifier.width(8.dp))
+            Button(onClick = {}) {
+                Text("Stop")
+            }
+        }
+        Button(onClick = onNavigate) {
+            Text("Back")
+        }
     }
 }
 
@@ -132,13 +116,11 @@ fun videoPanel(
  *
  * @param buttonText The text to be displayed on the button.
  * @param onUpdateResult A function that will be called with the selected file path as a parameter.
- * @param modifier Optional modifier for the button.
  */
 @Composable
 fun FileSelectorButton(
     buttonText: String,
     onUpdateResult: (String) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     Button(onClick = {
         try {
@@ -149,7 +131,7 @@ fun FileSelectorButton(
         } catch (e: Exception) {
             println("Error updating result: ${e.localizedMessage}")
         }
-    }, modifier) {
+    }) {
         Text(buttonText)
     }
 }
