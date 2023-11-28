@@ -44,9 +44,9 @@ class VideoGeneratorFileSystemTest {
         instrumentationContext = InstrumentationRegistry.getInstrumentation().context
 
         // This will copy all files in the androidTest's assets directory onto the device
-        val data = Environment.getExternalStorageDirectory()
-        val testInputDir = File(data, "testInput")
-        val testOutputDir = File(data, "testOutput")
+        val data = File(Environment.getExternalStorageDirectory(), "Documents/")
+        testInputDir = File(data, "testInput")
+        testOutputDir = File(data, "testOutput")
         if ((!testInputDir.mkdir() && !testInputDir.exists()) ||
             (!testOutputDir.mkdir() && !testOutputDir.exists())
         ) {
