@@ -23,6 +23,9 @@ import java.io.OutputStream
 /**
  * Instrumented test, which will execute on an Android device.
  *
+ * Run `./gradlew downloadAndUnzipTestAssets` in the example project root
+ * before executing this test to have the files loaded!
+ *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
