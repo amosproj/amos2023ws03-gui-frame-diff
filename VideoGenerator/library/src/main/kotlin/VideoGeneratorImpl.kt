@@ -79,6 +79,10 @@ class VideoGeneratorImpl(
      * This method stops the ongoing recording and releases the resources used by the recorder.
      */
     override fun save() {
+        if (!::recorder.isInitialized) {
+            throw RuntimeException("Recorder was never initialized - no video created!")
+        }
+
         recorder.stop()
         recorder.release()
     }
