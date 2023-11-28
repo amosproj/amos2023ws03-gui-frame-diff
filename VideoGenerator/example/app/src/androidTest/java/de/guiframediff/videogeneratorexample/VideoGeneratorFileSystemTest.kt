@@ -42,6 +42,9 @@ class VideoGeneratorFileSystemTest {
     fun setup() {
         // gets the android context in this case instrumented test context
         instrumentationContext = InstrumentationRegistry.getInstrumentation().context
+        val assetSubDir = "screen/"
+        val assetsFiles =
+            instrumentationContext.resources.assets.list(assetSubDir) ?: throw RuntimeException("")
 
         // This will copy all files in the androidTest's assets directory onto the device
         val data = File(Environment.getExternalStorageDirectory(), "Documents/")
@@ -52,12 +55,11 @@ class VideoGeneratorFileSystemTest {
         ) {
             throw RuntimeException("Problem with creating the Input/Output dirs")
         }
-        val assetsFiles =
-            instrumentationContext.resources.assets.list("screen") ?: throw RuntimeException("")
-        for (assetFile in assetsFiles) {
-            val destFile = File(testInputDir, assetFile)
+
+        for (assetFileName in assetsFiles) {
+            val destFile = File(testInputDir, assetFileName)
             if (!destFile.exists()) {
-                val srcStream = instrumentationContext.assets.open(assetFile)
+                val srcStream = instrumentationContext.assets.open(assetSubDir + assetFileName)
                 val destStream = FileOutputStream(destFile)
                 copyStream(srcStream, destStream)
             } else {

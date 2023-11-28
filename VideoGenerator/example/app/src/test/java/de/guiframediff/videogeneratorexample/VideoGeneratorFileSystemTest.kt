@@ -8,7 +8,7 @@ class VideoGeneratorFileSystemTest {
     @Test
     fun generateVideoFromSystemFiles() {
         val videoGenerator = VideoGeneratorImpl("output.mkv")
-        val dir = File("src/androidTest/res/screen")
+        val dir = File("src/androidTest/assets/screen")
         if (dir.exists()) {
             val files = dir.listFiles()
             for (file in files!!) {
