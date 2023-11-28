@@ -17,9 +17,27 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import javax.swing.JFileChooser
 
+/**
+ * Represents the different screens of a video application.
+ */
 sealed class Screen {
+    /**
+     * Represents the screen for selecting a video.
+     *
+     * This class extends the abstract class `Screen` to handle the specific functionalities
+     * required for selecting a video.
+     */
     object SelectVideoScreen : Screen()
 
+    /**
+     * The DisplayVideoScreen class represents the screen that displays a video.
+     * It is a subclass of the Screen class.
+     *
+     * @constructor Creates a new DisplayVideoScreen object.
+     * @extends Screen
+     * @property {string} videoUrl - The URL of the video to be displayed.
+     * @property {boolean} isPlaying - Indicates whether the video is currently playing or not.
+     */
     object DisplayVideoScreen : Screen()
 }
 
@@ -104,18 +122,18 @@ fun DisplayVideoScreen(onNavigate: () -> Unit) {
 //        ###########   Text   ###########
         Row(
             modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(top = 50.dp, start = 50.dp),
+            Modifier
+                .fillMaxSize()
+                .padding(top = 50.dp, start = 50.dp),
         ) {
             Text(
                 text = "Video 1",
                 modifier =
-                    Modifier
-                        .background(Color.Gray)
-                        .height(30.dp)
-                        .width(300.dp)
-                        .padding(top = 5.dp),
+                Modifier
+                    .background(Color.Gray)
+                    .height(30.dp)
+                    .width(300.dp)
+                    .padding(top = 5.dp),
                 textAlign = TextAlign.Center,
             )
             Spacer(modifier = Modifier.width(30.dp))
@@ -123,11 +141,11 @@ fun DisplayVideoScreen(onNavigate: () -> Unit) {
             Text(
                 text = "Diff",
                 modifier =
-                    Modifier
-                        .background(Color.Gray)
-                        .height(30.dp)
-                        .width(300.dp)
-                        .padding(top = 5.dp),
+                Modifier
+                    .background(Color.Gray)
+                    .height(30.dp)
+                    .width(300.dp)
+                    .padding(top = 5.dp),
                 textAlign = TextAlign.Center,
             )
             Spacer(modifier = Modifier.width(30.dp))
@@ -135,66 +153,66 @@ fun DisplayVideoScreen(onNavigate: () -> Unit) {
             Text(
                 text = "Video 2",
                 modifier =
-                    Modifier
-                        .background(Color.Gray)
-                        .height(30.dp)
-                        .width(300.dp)
-                        .padding(top = 5.dp),
+                Modifier
+                    .background(Color.Gray)
+                    .height(30.dp)
+                    .width(300.dp)
+                    .padding(top = 5.dp),
                 textAlign = TextAlign.Center,
             )
         }
 //        ###########   Box   ###########
         Row(
             modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(top = 100.dp, start = 50.dp),
+            Modifier
+                .fillMaxSize()
+                .padding(top = 100.dp, start = 50.dp),
             verticalAlignment = Alignment.Top,
         ) {
             Box(
                 modifier =
-                    Modifier
-                        .size(300.dp)
-                        .background(Color.Gray),
+                Modifier
+                    .size(300.dp)
+                    .background(Color.Gray),
             )
             Spacer(modifier = Modifier.width(30.dp))
             Box(
                 modifier =
-                    Modifier
-                        .size(300.dp)
-                        .background(Color(1.0f, 0.647f, 0.0f)),
+                Modifier
+                    .size(300.dp)
+                    .background(Color(1.0f, 0.647f, 0.0f)),
                 // Orange
             )
             Spacer(modifier = Modifier.width(30.dp))
             Box(
                 modifier =
-                    Modifier
-                        .size(300.dp)
-                        .background(Color.Gray),
+                Modifier
+                    .size(300.dp)
+                    .background(Color.Gray),
             )
         }
 //        ###########   Buttons   ###########
         Row(
             modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(top = 420.dp, start = 50.dp),
+            Modifier
+                .fillMaxSize()
+                .padding(top = 420.dp, start = 50.dp),
             verticalAlignment = Alignment.Top,
         ) {
             Button(
                 onClick = {},
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
                 modifier =
-                    Modifier
-                        .height(60.dp)
-                        .width(80.dp),
+                Modifier
+                    .height(60.dp)
+                    .width(80.dp),
             ) {
                 Image(
                     painter = painterResource("skipStart.svg"),
                     contentDescription = null,
                     modifier =
-                        Modifier
-                            .size(50.dp),
+                    Modifier
+                        .size(50.dp),
                 )
             }
             Spacer(modifier = Modifier.width(250.dp))
@@ -202,16 +220,16 @@ fun DisplayVideoScreen(onNavigate: () -> Unit) {
                 onClick = {},
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
                 modifier =
-                    Modifier
-                        .height(60.dp)
-                        .width(80.dp),
+                Modifier
+                    .height(60.dp)
+                    .width(80.dp),
             ) {
                 Image(
                     painter = painterResource("skipPrev.svg"),
                     contentDescription = null,
                     modifier =
-                        Modifier
-                            .size(50.dp),
+                    Modifier
+                        .size(50.dp),
                 )
             }
             Spacer(modifier = Modifier.width(30.dp))
@@ -220,9 +238,9 @@ fun DisplayVideoScreen(onNavigate: () -> Unit) {
                 onClick = { checkRun = !checkRun },
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
                 modifier =
-                    Modifier
-                        .height(60.dp)
-                        .width(80.dp),
+                Modifier
+                    .height(60.dp)
+                    .width(80.dp),
             ) {
                 Image(
                     painter = painterResource(buttonRun),
@@ -237,9 +255,9 @@ fun DisplayVideoScreen(onNavigate: () -> Unit) {
                 onClick = {},
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
                 modifier =
-                    Modifier
-                        .height(60.dp)
-                        .width(80.dp),
+                Modifier
+                    .height(60.dp)
+                    .width(80.dp),
             ) {
                 Image(
                     painter = painterResource("skipNext.svg"),
@@ -252,16 +270,16 @@ fun DisplayVideoScreen(onNavigate: () -> Unit) {
                 onClick = {},
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
                 modifier =
-                    Modifier
-                        .height(60.dp)
-                        .width(80.dp),
+                Modifier
+                    .height(60.dp)
+                    .width(80.dp),
             ) {
                 Image(
                     painter = painterResource("skipEnd.svg"),
                     contentDescription = null,
                     modifier =
-                        Modifier
-                            .size(50.dp),
+                    Modifier
+                        .size(50.dp),
                 )
             }
         }
