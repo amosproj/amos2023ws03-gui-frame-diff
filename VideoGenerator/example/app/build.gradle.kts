@@ -81,6 +81,7 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestImplementation("androidx.test:rules:1.4.0")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
@@ -88,12 +89,16 @@ dependencies {
 }
 
 tasks.register("downloadAndUnzipTestAssets") {
-    val assetPath = "src/androidTest/res/"
+    val assetPath = "src/androidTest/assets/"
     val zipDestinationPath = assetPath + "screens.zip"
     val sourceUrl = "ftp://seitzfabian.de/pub/screen.zip"
     createDir(assetPath)
     download(sourceUrl, zipDestinationPath)
     unzip(zipDestinationPath, assetPath)
+
+    doLast {
+        file(zipDestinationPath).delete()
+    }
 }
 
 fun download(
