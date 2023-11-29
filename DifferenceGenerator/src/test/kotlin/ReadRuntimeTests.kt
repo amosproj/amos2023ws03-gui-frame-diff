@@ -16,7 +16,7 @@ internal class ReadRuntimeTests {
     private val modifiedVideo9Frames = resourcesPathPrefix + "9ScreenshotsModified.mov"
     private val video1File = File(video9Frames)
     private val video2File = File(modifiedVideo9Frames)
-    private val runAmount = 50
+    private val runAmount = 20
 
     private val methodMap: Map<String, (Resettable2DFrameConverter, Frame, Frame, Int, Int) -> Int> =
         mapOf(
@@ -27,6 +27,7 @@ internal class ReadRuntimeTests {
             "ByteArray with 'and' + extra var" to ::method5,
             "ByteArray with 'and' + less vars" to ::method6,
             "ByteArray with indexedMap" to ::method7,
+            "ByteArray with whole color" to ::method8,
         )
 
     private fun averageRunTime(
@@ -288,6 +289,32 @@ internal class ReadRuntimeTests {
                     byte == data2[index]
                 }.filter { !it }
             ).size
+        return counter
+    }
+
+    private fun method8(
+        converter: Resettable2DFrameConverter,
+        frame1: Frame,
+        frame2: Frame,
+        width: Int,
+        height: Int,
+    ): Int {
+        var counter = 0
+        val data1 = (converter.getImage(frame1).raster.dataBuffer as DataBufferByte).data
+        val data2 = (converter.getImage(frame2).raster.dataBuffer as DataBufferByte).data
+        for (index in 0 until height * width * 3 step 3) {
+            val blue1 = data1[index] and 0xFF.toByte()
+            val green1 = data1[index + 1] and 0xFF.toByte()
+            val red1 = data1[index + 2] and 0xFF.toByte()
+
+            val blue2 = data2[index] and 0xFF.toByte()
+            val green2 = data2[index + 1] and 0xFF.toByte()
+            val red2 = data2[index + 2] and 0xFF.toByte()
+
+            if (blue1 != blue2 || green1 != green2 || red1 != red2) {
+                counter++
+            }
+        }
         return counter
     }
 }
