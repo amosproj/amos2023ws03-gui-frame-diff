@@ -38,4 +38,37 @@ licenseReport {
     renderers = arrayOf<ReportRenderer>(InventoryHtmlReportRenderer("report.html", "DifferenceGenerator"))
     filters = arrayOf<DependencyFilter>(LicenseBundleNormalizer())
     allowedLicensesFile = File("../licenses/allowed-licenses.json")
+
+tasks.register("downloadAndUnzipTestAssets") {
+    val assetPath = "src/test/resources/"
+    val zipDestinationPath = assetPath + "lib2Assets.zip"
+    val sourceUrl = "ftp://seitzfabian.de/pub/lib2Assets.zip"
+    createDir(assetPath)
+    download(sourceUrl, zipDestinationPath)
+    unzip(zipDestinationPath, assetPath)
+}
+
+fun download(
+    url: String,
+    path: String,
+) {
+    val destFile = File(path)
+    ant.invokeMethod("get", mapOf("src" to url, "dest" to destFile))
+}
+
+fun unzip(
+    source: String,
+    dest: String,
+) {
+    ant.invokeMethod("unzip", mapOf("src" to source, "dest" to dest))
+}
+
+fun createDir(directoryPath: String) {
+    val directory = file(directoryPath)
+    if (!directory.exists()) {
+        directory.mkdirs()
+        println("Directory created at: $directoryPath")
+    } else {
+        println("Directory already exists at: $directoryPath")
+    }
 }
