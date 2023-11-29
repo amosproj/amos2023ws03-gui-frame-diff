@@ -38,6 +38,7 @@ licenseReport {
     renderers = arrayOf<ReportRenderer>(InventoryHtmlReportRenderer("report.html", "DifferenceGenerator"))
     filters = arrayOf<DependencyFilter>(LicenseBundleNormalizer())
     allowedLicensesFile = File("../licenses/allowed-licenses.json")
+}
 
 tasks.register("downloadAndUnzipTestAssets") {
     val assetPath = "src/test/resources/"
