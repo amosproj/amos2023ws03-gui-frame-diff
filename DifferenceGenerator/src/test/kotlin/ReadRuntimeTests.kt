@@ -27,7 +27,7 @@ internal class ReadRuntimeTests {
             "ByteArray with 'and' + extra var" to ::method5,
             "ByteArray with 'and' + less vars" to ::method6,
             "ByteArray with indexedMap" to ::method7,
-            "ByteArray with whole color" to ::method8,
+            "ByteArray with single loop" to ::method8,
         )
 
     private fun averageRunTime(
