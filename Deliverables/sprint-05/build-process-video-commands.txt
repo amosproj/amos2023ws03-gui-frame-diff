@@ -1,0 +1,38 @@
+git@github.com:amosproj/amos2023ws03-gui-frame-diff.git
+
+lib1:
+- # build in VideoGenerator/example
+- ./gradlew assemble
+- # download test assets
+- ./gradlew downloadAndUnzipTestAssets
+- # to run unit tests
+- ./gradlew test
+- # For the next steps we assume, that `emulator` and `adb` are installed (usually at $ANDROID_HOME/{emulator,platform-tools}) and in the PATH
+- emulator -list-avds
+- # start the emulator without loading a previous snapshot
+- emulator -avd Pixel_3a_API_34_extension_level_7_x86_64 -no-snapshot-load
+- # if the emulator says that it cant connect to adb, we need to restart the adb server
+- adb kill-server && adb start-server
+- # to run android tests
+- ./gradlew connectedAndroidTest
+- # installing the debug apk into the emulator
+- adb install app/build/outputs/apk/debug/app-debug.apk
+- # To run the app, one needs to click the appropriate icon in the emulator
+- # or by running this adb shell command
+- adb shell am start -n de.guiframediff.videogeneratorexample/de.guiframediff.videogeneratorexample.MainActivity -a android.intent.action.MAIN -c android.intent.category.LAUNCHER --splashscreen-show-icon
+
+lib2:
+- # build a jar file
+- ./gradlew assemble
+- # download test assets
+- ./gradlew downloadAndUnzipTestAssets
+- # to run tests
+- ./gradlew test
+
+gui:
+- # build a jar file
+- ./gradlew build
+- # to run tests
+- # TBD no tests yet
+- # to build a native application for the current OS, files at build/compose/binaries/main/app/GUI/
+- ./gradlew createDistributable
