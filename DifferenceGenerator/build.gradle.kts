@@ -19,6 +19,7 @@ repositories {
 dependencies {
     testImplementation(kotlin("test"))
     implementation("org.bytedeco:javacv-platform:1.5.7")
+    testImplementation(project(mapOf("path" to ":VideoGenerator")))
 }
 
 tasks.test {
