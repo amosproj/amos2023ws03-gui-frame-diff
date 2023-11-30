@@ -16,6 +16,7 @@ internal class WriteRuntimeTests {
             "Raster" to ::method2,
             "DataBuffer" to ::method3,
             "DataBuffer single loop" to ::method4,
+            "DataBuffer while loop" to ::method5,
         )
 
     private fun averageRunTime(
@@ -91,6 +92,17 @@ internal class WriteRuntimeTests {
         val dataBuffer = bufferedImage.raster.dataBuffer
         for (index in 0 until size * size) {
             dataBuffer.setElem(index, 0xFFFFFF)
+        }
+        return converter.getFrame(bufferedImage)
+    }
+
+    private fun method5(converter: Resettable2DFrameConverter): Frame {
+        val bufferedImage = BufferedImage(size, size, BufferedImage.TYPE_3BYTE_BGR)
+        val dataBuffer = bufferedImage.raster.dataBuffer
+        var index = 0
+        while (index < size * size) {
+            dataBuffer.setElem(index, 0xFFFFFF)
+            index++
         }
         return converter.getFrame(bufferedImage)
     }

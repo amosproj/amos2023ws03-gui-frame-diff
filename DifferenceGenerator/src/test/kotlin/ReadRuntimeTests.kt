@@ -20,14 +20,15 @@ internal class ReadRuntimeTests {
 
     private val methodMap: Map<String, (Resettable2DFrameConverter, Frame, Frame, Int, Int) -> Int> =
         mapOf(
-            "BufferedImage" to ::method1,
+//            "BufferedImage" to ::method1,
             "Raster" to ::method2,
             "ByteArray with 'xor'" to ::method3,
             "ByteArray with 'and'" to ::method4,
             "ByteArray with 'and' + extra var" to ::method5,
             "ByteArray with 'and' + less vars" to ::method6,
-            "ByteArray with indexedMap" to ::method7,
+//            "ByteArray with indexedMap" to ::method7,
             "ByteArray with single loop" to ::method8,
+            "ByteArray with single while loop" to ::method9,
         )
 
     private fun averageRunTime(
@@ -314,6 +315,35 @@ internal class ReadRuntimeTests {
             if (blue1 != blue2 || green1 != green2 || red1 != red2) {
                 counter++
             }
+        }
+        return counter
+    }
+
+    private fun method9(
+        converter: Resettable2DFrameConverter,
+        frame1: Frame,
+        frame2: Frame,
+        width: Int,
+        height: Int,
+    ): Int {
+        var counter = 0
+        val data1 = (converter.getImage(frame1).raster.dataBuffer as DataBufferByte).data
+        val data2 = (converter.getImage(frame2).raster.dataBuffer as DataBufferByte).data
+        var index = 0
+        while (index < height * width * 3) {
+
+            val blue1 = data1[index] and 0xFF.toByte()
+            val green1 = data1[index + 1] and 0xFF.toByte()
+            val red1 = data1[index + 2] and 0xFF.toByte()
+
+            val blue2 = data2[index] and 0xFF.toByte()
+            val green2 = data2[index + 1] and 0xFF.toByte()
+            val red2 = data2[index + 2] and 0xFF.toByte()
+
+            if (blue1 != blue2 || green1 != green2 || red1 != red2) {
+                counter++
+            }
+            index += 3
         }
         return counter
     }
