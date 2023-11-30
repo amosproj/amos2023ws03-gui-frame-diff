@@ -20,13 +20,13 @@ internal class ReadRuntimeTests {
 
     private val methodMap: Map<String, (Resettable2DFrameConverter, Frame, Frame, Int, Int) -> Int> =
         mapOf(
-//            "BufferedImage" to ::method1,
+            "BufferedImage" to ::method1,
             "Raster" to ::method2,
             "ByteArray with 'xor'" to ::method3,
             "ByteArray with 'and'" to ::method4,
             "ByteArray with 'and' + extra var" to ::method5,
             "ByteArray with 'and' + less vars" to ::method6,
-//            "ByteArray with indexedMap" to ::method7,
+            "ByteArray with indexedMap" to ::method7,
             "ByteArray with single loop" to ::method8,
             "ByteArray with single while loop" to ::method9,
         )
