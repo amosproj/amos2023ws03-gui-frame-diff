@@ -65,7 +65,7 @@ class DifferenceGenerator(
      */
     private fun isLosslessCodec(grabber: FFmpegFrameGrabber): Boolean {
         grabber.start()
-        val codecName = grabber.videoMetadata["encoder"]
+        val codecName = grabber.videoMetadata["encoder"] ?: grabber.videoCodecName
         return codecName in AcceptedCodecs.ACCEPTED_CODECS
     }
 
