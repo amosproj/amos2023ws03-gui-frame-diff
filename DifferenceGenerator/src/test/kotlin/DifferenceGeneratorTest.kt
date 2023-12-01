@@ -55,6 +55,9 @@ internal class DifferenceGeneratorTest {
         println("Calculated Alignment: " + actualAlignment.joinToString())
         println("Expected Alignment: " + expectedAlignment.joinToString())
 
+        val levenshteinDistance = LevenshteinDistance(expectedAlignment, actualAlignment)
+        println("Levenshtein Distance: " + levenshteinDistance.distance)
+
         // fails often because algorithm gets the alignment wrong
         // Failing tests are annoying so this one does not assert for now
         // It still prints the alignments so you can see if it is correct
