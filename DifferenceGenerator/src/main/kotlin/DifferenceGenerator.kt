@@ -265,15 +265,10 @@ class DifferenceGenerator(
         val equals = ArrayList<Pair<Int, Int>>()
         // find all equal frames
         for (i in video1Hashes.indices) {
-            val v1equals = ArrayList<Int>()
             for (j in video2Hashes.indices) {
                 if (video1Hashes[i].contentEquals(video2Hashes[j])) {
-                    v1equals.add(j)
+                    equals.add(Pair(i, j))
                 }
-            }
-            // only save if there is exactly one equal frame
-            if (v1equals.isNotEmpty() && v1equals.size == 1) {
-                equals.add(Pair(i, v1equals[0]))
             }
         }
         return equals
