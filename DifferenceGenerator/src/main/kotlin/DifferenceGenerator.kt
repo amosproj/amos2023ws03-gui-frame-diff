@@ -9,6 +9,7 @@ import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import java.awt.image.DataBufferByte
 import java.io.File
+import java.security.MessageDigest
 import javax.imageio.ImageIO
 import kotlin.experimental.and
 
@@ -89,6 +90,10 @@ class DifferenceGenerator(
 
         val video1Images = grabBufferedImages(this.video1Grabber)
         val video2Images = grabBufferedImages(this.video2Grabber)
+        val video1Hashes = getHashedVideo(video1File)
+        val video2Hashes = getHashedVideo(video2File)
+
+
 
         // execute the alignment algorithm with the images of both videos
         alignment = algorithm.run(video1Images, video2Images)
@@ -222,4 +227,56 @@ class DifferenceGenerator(
         g2d.dispose()
         return img
     }
+
+    private fun hashFrame(frame: Frame): ByteArray {
+        val image = (converter.getImage(frame).raster.dataBuffer as DataBufferByte).data
+        val md5 = MessageDigest.getInstance("MD5")
+        md5.update(image)
+        return md5.digest()
+    }
+
+    private fun getHashedVideo(video: File): ArrayList<ByteArray> {
+        val grabber = FFmpegFrameGrabber(video)
+        grabber.start()
+        var hashArray = ArrayList<ByteArray>()
+        var frame = grabber.grabImage()
+        while (frame != null) {
+            hashArray.add(hashFrame(frame))
+        }
+        grabber.stop()
+
+        // find duplicates
+        val duplicates: Set<Int> = setOf()
+        for (i in hashArray.indices) {
+            for (j in i+1  until hashArray.size) {
+                if (hashArray[i].contentEquals(hashArray[j])) {
+                    duplicates.plus(j)
+                    duplicates.plus(i)
+                }
+            }
+        }
+
+        // remove duplicates
+        hashArray = hashArray.filterIndexed { index, _ -> !duplicates.contains(index) } as ArrayList<ByteArray>
+        return hashArray
+    }
+
+    private fun findEquals(video1Hashes: ArrayList<ByteArray>, video2Hashes: ArrayList<ByteArray>): ArrayList<Pair<Int, Int>> {
+        val equals = ArrayList<Pair<Int, Int>>()
+        // find all equal frames
+        for (i in video1Hashes.indices) {
+            val v1equals = ArrayList<Int>()
+            for (j in video2Hashes.indices) {
+                if (video1Hashes[i].contentEquals(video2Hashes[j])) {
+                    v1equals.add(j)
+                }
+            }
+            // only save if there is exactly one equal frame
+            if (v1equals.isNotEmpty() && v1equals.size == 1) {
+                equals.add(Pair(i, v1equals[0]))
+            }
+        }
+        return equals
+    }
+
 }
