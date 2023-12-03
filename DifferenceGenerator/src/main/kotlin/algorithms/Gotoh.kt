@@ -41,10 +41,10 @@ class Gotoh<T>(
         // gapA: if the last pair was a gap in the first sequence
         // gapB: if the last pair was a gap in the second sequence
         // similarityM: the similarity matrix for the two sequences (used for caching)
-        val score = Array(n + 1) { DoubleArray(m + 1) }
-        val gapA = Array(n + 1) { DoubleArray(m + 1) }
-        val gapB = Array(n + 1) { DoubleArray(m + 1) }
-        val similarityM = Array(n + 1) { DoubleArray(m + 1) }
+        val score = Array(n + 1) { DoubleArray(m + 1) {0.0} }
+        val gapA = Array(n + 1) { DoubleArray(m + 1) {0.0} }
+        val gapB = Array(n + 1) { DoubleArray(m + 1) {0.0} }
+        val similarityM = Array(n + 1) { DoubleArray(m + 1) {0.0} }
 
         // initialize the matrices
         score[0][0] = 0.0
@@ -174,6 +174,9 @@ class Gotoh<T>(
                         }
                     j--
                 }
+                else -> {
+                    throw Exception("Invalid alignment element")
+                }
             }
         }
 
@@ -181,4 +184,6 @@ class Gotoh<T>(
         traceback.reverse()
         return traceback.toTypedArray()
     }
+
+
 }

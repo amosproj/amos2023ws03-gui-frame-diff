@@ -33,7 +33,7 @@ class DifferenceGenerator(
     private var width = 0
     private var height = 0
 
-    lateinit var alignment: Array<AlignmentElement>
+    var alignment: Array<AlignmentElement> = arrayOf() //remove later
     private lateinit var mask: BufferedImage
 
     /**
@@ -88,43 +88,108 @@ class DifferenceGenerator(
         encoder.frameRate = 1.0
         encoder.start()
 
-        val video1Images = grabBufferedImages(this.video1Grabber)
-        val video2Images = grabBufferedImages(this.video2Grabber)
         val video1Hashes = getHashedVideo(video1File)
         val video2Hashes = getHashedVideo(video2File)
+        val equals = findEquals(video1Hashes, video2Hashes)
+        println("Equals: $equals")
 
-
-
-        // execute the alignment algorithm with the images of both videos
-        alignment = algorithm.run(video1Images, video2Images)
-
-        val video1It = video1Images.iterator()
-        val video2It = video2Images.iterator()
-
-        // iterate through the alignment sequence to build the image sequence
-        for (a in alignment) {
-            when (a) {
-                AlignmentElement.MATCH -> {
-                    val differences = getDifferences(video1It.next(), video2It.next())
-                    encoder.record(differences)
-                }
-                AlignmentElement.INSERTION -> {
-                    encoder.record(getColoredFrame(Color.GREEN))
-                    // skipping the second video's frame (insertion)
-                    video2It.next()
-                }
-                AlignmentElement.DELETION -> {
-                    encoder.record(getColoredFrame(Color.BLUE))
-                    // skipping the first video's frame (deletion)
-                    video1It.next()
-                }
-            }
-        }
+        processAlignment(equals, encoder)
 
         encoder.stop()
         encoder.release()
         this.video1Grabber.stop()
         this.video2Grabber.stop()
+    }
+
+    private fun processAlignment(equals: ArrayList<Pair<Int, Int>>, encoder:  FFmpegFrameRecorder) {
+        val video1Length = video1Grabber.lengthInFrames
+        val video2Length = video2Grabber.lengthInFrames
+
+        var nextGrabbedFrame1 = 0
+        var nextGrabbedFrame2 = 0
+
+
+        // process frames from (0,0) until last match in equals
+        for (i in equals){
+            val video1Frames = i.first - nextGrabbedFrame1
+            val video2Frames = i.second - nextGrabbedFrame2
+            processFrames(video1Frames, video2Frames, encoder)
+            encoder.record(getColoredFrame(Color.BLACK))
+            alignment += AlignmentElement.MATCH
+            nextGrabbedFrame1 = i.first + 1
+            nextGrabbedFrame2 = i.second + 1
+
+        }
+
+        // process frames from last match in equals until end of video
+        val video1Frames = video1Length - nextGrabbedFrame1
+        val video2Frames = video2Length - nextGrabbedFrame2
+        processFrames(video1Frames, video2Frames, encoder)
+
+    }
+
+    private fun getFrames(amount: Int, grabber: FFmpegFrameGrabber): ArrayList<BufferedImage>   {
+        val images = ArrayList<BufferedImage>()
+        var i = 0
+        while ( i < amount) {
+            var frame: Frame? = grabber.grabImage() ?: throw Exception("Video Grabbing calculation is wrong")
+            val image = converter.getImage(frame!!)
+            images.add(applyMasking(image))
+            i++
+        }
+        return images
+    }
+
+    private fun processFrames(amountVideo1: Int, amountVideo2:Int, encoder:  FFmpegFrameRecorder) {
+        if (amountVideo1 == 0 && amountVideo2 == 0) {
+            return
+        }
+
+        if (amountVideo1 == 0) {
+            for (i in 0 until amountVideo2) {
+                encoder.record(getColoredFrame(Color.GREEN))
+                alignment += AlignmentElement.INSERTION
+            }
+            return
+        }
+
+        if (amountVideo2 == 0) {
+            for (i in 0 until amountVideo1) {
+                encoder.record(getColoredFrame(Color.BLUE))
+                alignment += AlignmentElement.DELETION
+            }
+            return
+        }
+
+
+
+        val video1Images = getFrames(amountVideo1, this.video1Grabber)
+        val video2Images = getFrames(amountVideo2, this.video2Grabber)
+
+
+        // execute the alignment algorithm with the images of both videos
+        val result = algorithm.run(video1Images.toTypedArray(), video2Images.toTypedArray())
+        for (a in result) {
+            when (a) {
+                AlignmentElement.MATCH -> {
+                    val differences = getDifferences(video1Images[0], video2Images[0])
+                    encoder.record(differences)
+                    alignment += AlignmentElement.MATCH
+                }
+                AlignmentElement.INSERTION -> {
+                    encoder.record(getColoredFrame(Color.GREEN))
+                    // skipping the second video's frame (insertion)
+                    video2Images.removeAt(0)
+                    alignment += AlignmentElement.INSERTION
+                }
+                AlignmentElement.DELETION -> {
+                    encoder.record(getColoredFrame(Color.BLUE))
+                    // skipping the first video's frame (deletion)
+                    video1Images.removeAt(0)
+                    alignment += AlignmentElement.DELETION
+                }
+            }
+        }
     }
 
     /**
@@ -242,6 +307,7 @@ class DifferenceGenerator(
         var frame = grabber.grabImage()
         while (frame != null) {
             hashArray.add(hashFrame(frame))
+            frame = grabber.grabImage()
         }
         grabber.stop()
 
@@ -267,7 +333,8 @@ class DifferenceGenerator(
         for (i in video1Hashes.indices) {
             for (j in video2Hashes.indices) {
                 if (video1Hashes[i].contentEquals(video2Hashes[j])) {
-                    equals.add(Pair(i, j))
+                    equals.add(Pair(i, j)) // only one pair is possible
+                    break
                 }
             }
         }

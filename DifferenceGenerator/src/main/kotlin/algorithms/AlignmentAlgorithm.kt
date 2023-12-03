@@ -13,7 +13,7 @@ import MetricInterface
 enum class AlignmentElement {
     MATCH,
     INSERTION,
-    DELETION,
+    DELETION
 }
 
 /**
