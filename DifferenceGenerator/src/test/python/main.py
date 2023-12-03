@@ -1,42 +1,48 @@
-import sys
+import os
 import optuna
 import subprocess
 
 TRIALS = 100
-THREADS = 4
+# THREADS = 3 #: not supported from gradle, hence not used
 
 class optimizer():
-    def __init__(self, jarPath) -> None:
-        self.study =  optuna.create_study(storage="sqlite:///db.sqlite3",
+    def __init__(self) -> None:
+        filePath = os.path.dirname(os.path.abspath(__file__))
+        filePath = os.path.join(filePath, "db.sqlite3")
+        self.study =  optuna.create_study(storage="sqlite:///" + filePath,
                                          study_name="Gotoh",
                                          load_if_exists=True,
-                                         direction="maximize")
-        self.jarPath = jarPath
+                                         direction="minimize")
         self.run()
 
     def run(self) -> None:
-        self.study.optimize(self.blackBox, n_trials=TRIALS, n_jobs=THREADS)
+        self.study.optimize(self.blackBox, n_trials=TRIALS)
         
-        
-    def prepareCommand(self, trial) -> str:
-        gapOpen = trial.suggest_float("gapOpen", -10.0, 0.0)
-        gapExtend = trial.suggest_float("gapExtend", -10.0, 0.0)
-        command = "java -jar " + self.jarPath + " " + str(gapOpen) + " " + str(gapExtend)  
-        return command
+    
     
     def blackBox(self, trial) -> float:
-        command = self.prepareCommand(trial, command)
-        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        return float(result.stdout.decode("utf-8").split("\n")[0])
+        script_directory = os.path.dirname(os.path.abspath(__file__)) # /python
+        script_directory = os.path.dirname(script_directory)# /test
+        script_directory = os.path.dirname(script_directory)# /src
+        script_directory = os.path.dirname(script_directory)# /DifferenceGenerator
+
+        gapOpen = trial.suggest_float("gapOpen", -1.0, 0.0)
+        gapExtend = trial.suggest_float("gapExtend", -1.0, 0.0 )
+
+        command = 'gradlew test --tests "DifferenceGeneratorTest.Test a generated case using TestCaseGenerator" --info '
+        command = command + "-DgapOpenPenalty=" +'"' +str(gapOpen)+'"'
+        command = command + " -DgapExtensionPenalty=" + '"' +str(gapExtend) + '"'
+
+        result = subprocess.run(command, cwd=script_directory, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         
-        
-        
+        out = result.stdout.decode("utf-8").split("\n")
+        out = [i for i in out if "Levenshtein" in i]
+        out = float(out[0].strip().split(" ")[-1])
+
+        return out
         
         
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python main.py <jarPath>")
-        sys.exit(1)
-    optimizer(sys.argv[1])
+    optimizer()

@@ -4,7 +4,6 @@ import algorithms.Gotoh
 import org.junit.jupiter.api.Test
 
 class DNAseqExample {
-
     @Test
     fun `DNAseq example`() {
         val metric = DnaMetric()
@@ -49,5 +48,4 @@ class DNAseqExample {
         println(lDifference.joinToString())
         println(l2.joinToString())
     }
-
 }
