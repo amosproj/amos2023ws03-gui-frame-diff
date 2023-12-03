@@ -37,31 +37,42 @@ internal class DifferenceGeneratorTest {
 
     @Test
     fun `Test a generated case using TestCaseGenerator`() {
+        var gapOpen = -0.5
+        var gapExtension = -0.0
+        val iterations = 20
+        System.getProperty("gapOpenPenalty")?.let {
+            gapOpen = it.toDouble()
+        }
+        System.getProperty("gapExtensionPenalty")?.let {
+            gapExtension = it.toDouble()
+        }
+        print("Gap Open Penalty: $gapOpen, Gap Extension Penalty: $gapExtension, Iterations: $iterations")
         val pathVideo1 = resourcesPathPrefix + "generatedVideo1.mkv"
         val pathVideo2 = resourcesPathPrefix + "generatedVideo2.mkv"
         val outputPath = resourcesPathPrefix + "generatedOutput.mkv"
 
-        val testCaseGenerator = TestCaseGenerator(pathVideo1, pathVideo2, 12)
-        val expectedAlignment = testCaseGenerator.generateRandomTestCase()
-
         val algorithm =
             Gotoh<BufferedImage>(
                 metric,
-                gapOpenPenalty = -0.5,
-                gapExtensionPenalty = -0.0,
+                gapOpenPenalty = gapOpen,
+                gapExtensionPenalty = gapExtension,
             )
-        val differenceGenerator = DifferenceGenerator(pathVideo1, pathVideo2, outputPath, algorithm)
-        val actualAlignment = differenceGenerator.alignment
-        println("Calculated Alignment: " + actualAlignment.joinToString())
-        println("Expected Alignment: " + expectedAlignment.joinToString())
+        var allDistances = Array(iterations) { 0 }
+        for (i in 0 until iterations) {
+            val testCaseGenerator = TestCaseGenerator(pathVideo1, pathVideo2, 12)
+            val expectedAlignment = testCaseGenerator.generateRandomTestCase()
+            val differenceGenerator = DifferenceGenerator(pathVideo1, pathVideo2, outputPath, algorithm)
+            val actualAlignment = differenceGenerator.alignment
+            println("Calculated Alignment: " + actualAlignment.joinToString())
+            println("Expected Alignment: " + expectedAlignment.joinToString())
 
-        val levenshteinDistance = LevenshteinDistance(expectedAlignment, actualAlignment)
-        println("Levenshtein Distance: " + levenshteinDistance.distance)
-
-        // fails often because algorithm gets the alignment wrong
-        // Failing tests are annoying so this one does not assert for now
-        // It still prints the alignments so you can see if it is correct
-        // assertArrayEquals(expectedAlignment, actualAlignment)
+            val levenshteinDistance = LevenshteinDistance(expectedAlignment, actualAlignment)
+//            println("Levenshtein Distance: " + levenshteinDistance.distance)
+            allDistances[i] = levenshteinDistance.distance
+            println(levenshteinDistance.distance)
+        }
+        println(allDistances.joinToString())
+        println("Average Levenshtein Distance: " + allDistances.average())
     }
 
     @Test

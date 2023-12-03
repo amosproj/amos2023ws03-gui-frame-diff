@@ -331,7 +331,6 @@ internal class ReadRuntimeTests {
         val data2 = (converter.getImage(frame2).raster.dataBuffer as DataBufferByte).data
         var index = 0
         while (index < height * width * 3) {
-
             val blue1 = data1[index] and 0xFF.toByte()
             val green1 = data1[index + 1] and 0xFF.toByte()
             val red1 = data1[index + 2] and 0xFF.toByte()

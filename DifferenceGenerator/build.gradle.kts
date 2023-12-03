@@ -20,6 +20,8 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    systemProperty("gapOpenPenalty", System.getProperty("gapOpenPenalty") ?: "-0.5")
+    systemProperty("gapExtensionPenalty", System.getProperty("gapExtensionPenalty") ?: "-0.5")
 }
 
 kotlin {
