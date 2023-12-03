@@ -43,6 +43,7 @@ class Gotoh<T>(
         val score = Array(n + 1) { DoubleArray(m + 1) }
         val gapA = Array(n + 1) { DoubleArray(m + 1) }
         val gapB = Array(n + 1) { DoubleArray(m + 1) }
+        val similarityM = Array(n + 1) { DoubleArray(m + 1) }
 
         // initialize the matrices
         score[0][0] = 0.0
@@ -89,7 +90,8 @@ class Gotoh<T>(
                     )
 
                 // calculate the score for having choosing matching alignment instead of gaps
-                val similarity = 1 - metric.measureDistance(a[i - 1], b[j - 1])
+                similarityM[i - 1][j - 1] = 1 - metric.measureDistance(a[i - 1], b[j - 1])
+                val similarity = similarityM[i - 1][j - 1]
                 val matchScore =
                     score[i - 1][j - 1] + similarity // last pair was match and this one too
                 val gapAScore = gapA[i - 1][j - 1] + similarity // gap in A and then a match
@@ -129,7 +131,7 @@ class Gotoh<T>(
 
             when (origin) {
                 AlignmentElement.MATCH -> {
-                    val similarity = 1 - metric.measureDistance(a[i - 1], b[j - 1])
+                    val similarity = similarityM[i - 1][j - 1]
 
                     // determine, where the current score came from
                     origin =
