@@ -33,7 +33,7 @@ class DifferenceGenerator(
     private var width = 0
     private var height = 0
 
-    var alignment: Array<AlignmentElement> = arrayOf() //remove later
+    var alignment: Array<AlignmentElement> = arrayOf() // remove later
     private lateinit var mask: BufferedImage
 
     /**
@@ -101,16 +101,18 @@ class DifferenceGenerator(
         this.video2Grabber.stop()
     }
 
-    private fun processAlignment(equals: ArrayList<Pair<Int, Int>>, encoder:  FFmpegFrameRecorder) {
+    private fun processAlignment(
+        equals: ArrayList<Pair<Int, Int>>,
+        encoder: FFmpegFrameRecorder,
+    ) {
         val video1Length = video1Grabber.lengthInFrames
         val video2Length = video2Grabber.lengthInFrames
 
         var nextGrabbedFrame1 = 0
         var nextGrabbedFrame2 = 0
 
-
         // process frames from (0,0) until last match in equals
-        for (i in equals){
+        for (i in equals) {
             val video1Frames = i.first - nextGrabbedFrame1
             val video2Frames = i.second - nextGrabbedFrame2
             processFrames(video1Frames, video2Frames, encoder)
@@ -118,20 +120,21 @@ class DifferenceGenerator(
             alignment += AlignmentElement.MATCH
             nextGrabbedFrame1 = i.first + 1
             nextGrabbedFrame2 = i.second + 1
-
         }
 
         // process frames from last match in equals until end of video
         val video1Frames = video1Length - nextGrabbedFrame1
         val video2Frames = video2Length - nextGrabbedFrame2
         processFrames(video1Frames, video2Frames, encoder)
-
     }
 
-    private fun getFrames(amount: Int, grabber: FFmpegFrameGrabber): ArrayList<BufferedImage>   {
+    private fun getFrames(
+        amount: Int,
+        grabber: FFmpegFrameGrabber,
+    ): ArrayList<BufferedImage> {
         val images = ArrayList<BufferedImage>()
         var i = 0
-        while ( i < amount) {
+        while (i < amount) {
             var frame: Frame? = grabber.grabImage() ?: throw Exception("Video Grabbing calculation is wrong")
             val image = converter.getImage(frame!!)
             images.add(applyMasking(image))
@@ -140,7 +143,11 @@ class DifferenceGenerator(
         return images
     }
 
-    private fun processFrames(amountVideo1: Int, amountVideo2:Int, encoder:  FFmpegFrameRecorder) {
+    private fun processFrames(
+        amountVideo1: Int,
+        amountVideo2: Int,
+        encoder: FFmpegFrameRecorder,
+    ) {
         if (amountVideo1 == 0 && amountVideo2 == 0) {
             return
         }
@@ -161,11 +168,8 @@ class DifferenceGenerator(
             return
         }
 
-
-
         val video1Images = getFrames(amountVideo1, this.video1Grabber)
         val video2Images = getFrames(amountVideo2, this.video2Grabber)
-
 
         // execute the alignment algorithm with the images of both videos
         val result = algorithm.run(video1Images.toTypedArray(), video2Images.toTypedArray())
@@ -314,7 +318,7 @@ class DifferenceGenerator(
         // find duplicates
         val duplicates: Set<Int> = setOf()
         for (i in hashArray.indices) {
-            for (j in i+1  until hashArray.size) {
+            for (j in i + 1 until hashArray.size) {
                 if (hashArray[i].contentEquals(hashArray[j])) {
                     duplicates.plus(j)
                     duplicates.plus(i)
@@ -327,7 +331,10 @@ class DifferenceGenerator(
         return hashArray
     }
 
-    private fun findEquals(video1Hashes: ArrayList<ByteArray>, video2Hashes: ArrayList<ByteArray>): ArrayList<Pair<Int, Int>> {
+    private fun findEquals(
+        video1Hashes: ArrayList<ByteArray>,
+        video2Hashes: ArrayList<ByteArray>,
+    ): ArrayList<Pair<Int, Int>> {
         val equals = ArrayList<Pair<Int, Int>>()
         // find all equal frames
         for (i in video1Hashes.indices) {
@@ -340,5 +347,4 @@ class DifferenceGenerator(
         }
         return equals
     }
-
 }
