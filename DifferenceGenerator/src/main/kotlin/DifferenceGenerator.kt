@@ -136,7 +136,6 @@ class DifferenceGenerator(
         val differences = getColoredBufferedImage(Color.BLACK)
         val differencesData = (differences.raster.dataBuffer as DataBufferByte)
 
-
         val data1 = (image1.raster.dataBuffer as DataBufferByte).data
         val data2 = (image2.raster.dataBuffer as DataBufferByte).data
         var index = 0
@@ -157,8 +156,6 @@ class DifferenceGenerator(
             }
             index += 3
         }
-
-//        println(differences.getRGB(0, 0)))
         return converter.getFrame(differences)
     }
 

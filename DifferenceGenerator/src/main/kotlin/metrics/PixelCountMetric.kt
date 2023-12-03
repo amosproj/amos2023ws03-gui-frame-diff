@@ -1,4 +1,6 @@
 import java.awt.image.BufferedImage
+import java.awt.image.DataBufferByte
+import kotlin.experimental.and
 
 /**
  * Implementation of the PixelCountMetric that counts the number of different pixels between two
@@ -22,15 +24,23 @@ class PixelCountMetric(private val normalize: Boolean = true) : MetricInterface<
         val width = a.width
         val height = a.height
 
-        for (y in 0 until height) {
-            for (x in 0 until width) {
-                val color1 = a.getRGB(x, y)
-                val color2 = b.getRGB(x, y)
+        val data1 = (a.raster.dataBuffer as DataBufferByte).data
+        val data2 = (b.raster.dataBuffer as DataBufferByte).data
+        var index = 0
 
-                if (color1 != color2) {
-                    count++
-                }
+        while (index < height * width * 3) {
+            val blue1 = data1[index] and 0xFF.toByte()
+            val green1 = data1[index + 1] and 0xFF.toByte()
+            val red1 = data1[index + 2] and 0xFF.toByte()
+
+            val blue2 = data2[index] and 0xFF.toByte()
+            val green2 = data2[index + 1] and 0xFF.toByte()
+            val red2 = data2[index + 2] and 0xFF.toByte()
+
+            if (blue1 != blue2 || green1 != green2 || red1 != red2) {
+                count++
             }
+            index += 3
         }
 
         if (!normalize) {

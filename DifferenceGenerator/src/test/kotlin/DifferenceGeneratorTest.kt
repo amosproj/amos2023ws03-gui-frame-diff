@@ -279,10 +279,10 @@ internal class DifferenceGeneratorTest {
             )
 
         DifferenceGenerator(
-                video9Frames,
-                modifiedVideo9Frames,
-                outputPath,
-                algorithm,
-            )
+            video9Frames,
+            modifiedVideo9Frames,
+            outputPath,
+            algorithm,
+        )
     }
 }
