@@ -1,6 +1,7 @@
 package algorithms
 
 import MetricInterface
+import wrappers.ResettableIterable
 
 /**
  * An implementation of the Gotoh algorithm for sequence alignment.
@@ -19,7 +20,7 @@ class Gotoh<T>(
     private val metric: MetricInterface<T>,
     private val gapOpenPenalty: Double,
     private val gapExtensionPenalty: Double,
-) : AlignmentAlgorithm<T>(metric) {
+) : AlignmentAlgorithm<T>() {
     lateinit var score: Array<DoubleArray>
     lateinit var gapA: Array<DoubleArray>
     lateinit var gapB: Array<DoubleArray>
@@ -37,8 +38,8 @@ class Gotoh<T>(
      * sequences.
      */
     override fun run(
-        a: Array<T>,
-        b: Array<T>,
+        a: ArrayList<T>,
+        b: ArrayList<T>,
     ): Array<AlignmentElement> {
         m = a.size
         n = b.size
@@ -50,9 +51,14 @@ class Gotoh<T>(
         execute(a, b)
 
         // traceback through the matrices to obtain the alignment sequence
-        val alignment = traceback()
+        return traceback()
+    }
 
-        return alignment
+    override fun run(
+        a: ResettableIterable<T>,
+        b: ResettableIterable<T>,
+    ): Array<AlignmentElement> {
+        return run(a.toList() as ArrayList<T>, b.toList() as ArrayList<T>)
     }
 
     private fun initialize() {
@@ -88,8 +94,8 @@ class Gotoh<T>(
     }
 
     private fun execute(
-        a: Array<T>,
-        b: Array<T>,
+        a: ArrayList<T>,
+        b: ArrayList<T>,
     ) {
         // main calculation loop, iterating over all rows and columns of the matrices
         for (i in 1..m) {
