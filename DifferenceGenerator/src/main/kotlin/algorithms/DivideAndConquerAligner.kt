@@ -23,13 +23,13 @@ class DivideAndConquerAligner<T>(private val algorithm: AlignmentAlgorithm<T>, p
     ): Array<AlignmentElement> {
         alignment.clear() // clear in case the instance is reused
 
-        hashes1 = removeDuplicates(hasher.getHashes(a))
-        hashes2 = removeDuplicates(hasher.getHashes(b))
+        hashes1 = markDuplicates(hasher.getHashes(a))
+        hashes2 = markDuplicates(hasher.getHashes(b))
 
         a.reset()
         b.reset()
 
-        val equals = findMatches(hashes1, hashes2)
+        val equals = findMatches()
 
         var nextGrabbedFrame1 = 0
         var nextGrabbedFrame2 = 0
@@ -62,7 +62,9 @@ class DivideAndConquerAligner<T>(private val algorithm: AlignmentAlgorithm<T>, p
         slice1: List<T>,
         slice2: List<T>,
     ): Array<AlignmentElement> {
-        return if (slice1.isEmpty()) {
+        return if (slice1.isEmpty() && slice2.isEmpty()) {
+            arrayOf()
+        } else if (slice1.isEmpty()) {
             Array(slice2.size) { AlignmentElement.INSERTION }
         } else if (slice2.isEmpty()) {
             Array(slice1.size) { AlignmentElement.DELETION }
@@ -73,7 +75,7 @@ class DivideAndConquerAligner<T>(private val algorithm: AlignmentAlgorithm<T>, p
         }
     }
 
-    private fun removeDuplicates(hashArray: Array<ByteArray>): Array<ByteArray> {
+    private fun markDuplicates(hashArray: Array<ByteArray>): Array<ByteArray> {
         // find duplicates
         val duplicates: Set<Int> = setOf()
         for (i in hashArray.indices) {
@@ -85,24 +87,23 @@ class DivideAndConquerAligner<T>(private val algorithm: AlignmentAlgorithm<T>, p
             }
         }
 
-        // remove duplicates
-        return hashArray.filterIndexed { index, _ -> !duplicates.contains(index) }.toTypedArray()
+        // mark duplicates with a zero-length byte-array
+        return hashArray.mapIndexed { index, x -> if (duplicates.contains(index)) ByteArray(0) else x }.toTypedArray()
     }
 
-    private fun findMatches(
-        hashes1: Array<ByteArray>,
-        hashes2: Array<ByteArray>,
-    ): Array<Pair<Int, Int>> {
+    private fun findMatches(): Array<Pair<Int, Int>> {
         val equals = ArrayList<Pair<Int, Int>>()
-        // find all equal frames
-        for (i in this.hashes1.indices) {
-            for (j in this.hashes2.indices) {
-                if (this.hashes1[i].contentEquals(this.hashes2[j])) {
+        // find all equal frames that are not marked as duplicates
+        for (i in hashes1.indices) {
+            if (hashes1[i].isEmpty()) continue
+            for (j in hashes2.indices) {
+                if (hashes1[i].contentEquals(hashes2[j])) {
                     equals.add(Pair(i, j)) // only one pair is possible
                     break
                 }
             }
         }
+
         return equals.toTypedArray()
     }
 }
