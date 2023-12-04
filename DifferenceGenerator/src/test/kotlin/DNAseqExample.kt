@@ -3,6 +3,15 @@ import algorithms.AlignmentElement
 import algorithms.Gotoh
 import org.junit.jupiter.api.Test
 
+class DnaMetric : MetricInterface<Char> {
+    override fun measureDistance(
+        a: Char,
+        b: Char,
+    ): Double {
+        return if (a == b) 0.0 else 1.0
+    }
+}
+
 class DNAseqExample {
     @Test
     fun `DNAseq example`() {
@@ -14,9 +23,9 @@ class DNAseqExample {
 
         val alignment: Array<AlignmentElement> = algorithm.run(a, b)
 
-        var l1 = ArrayList<Char>()
-        var l2 = ArrayList<Char>()
-        var lDifference = ArrayList<Char>()
+        val l1 = ArrayList<Char>()
+        val l2 = ArrayList<Char>()
+        val lDifference = ArrayList<Char>()
 
         var i = 0
         var j = 0
