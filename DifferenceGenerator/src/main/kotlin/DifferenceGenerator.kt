@@ -153,10 +153,13 @@ class DifferenceGenerator(
             val green2 = data2[index + 1] and 0xFF.toByte()
             val red2 = data2[index + 2] and 0xFF.toByte()
 
+            differencesData.data[index] = 0x00.toByte() // blue
+            differencesData.data[index + 1] = 0x00.toByte() // green
+
             if (blue1 != blue2 || green1 != green2 || red1 != red2) {
-                differencesData.data[index] = 0x00.toByte() // blue
-                differencesData.data[index + 1] = 0x00.toByte() // green
                 differencesData.data[index + 2] = 0xFF.toByte() // red
+            } else {
+                differencesData.data[index + 2] = 0x00.toByte() // red
             }
             index += 3
         }
