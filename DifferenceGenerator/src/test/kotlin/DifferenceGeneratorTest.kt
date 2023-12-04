@@ -271,4 +271,29 @@ internal class DifferenceGeneratorTest {
         assertTrue(outputFile.isFile)
         assertTrue(outputFile.length() > 0)
     }
+
+    @Test
+    fun `test differences`() {
+        val outputPath = resourcesPathPrefix + "differences.mov"
+
+        // Delete output file if it exists
+        val outputFile = File(outputPath)
+        if (outputFile.exists()) {
+            outputFile.delete()
+        }
+
+        val algorithm =
+            Gotoh<BufferedImage>(
+                metric,
+                gapOpenPenalty = -0.5,
+                gapExtensionPenalty = -0.0,
+            )
+
+        DifferenceGenerator(
+            video9Frames,
+            modifiedVideo9Frames,
+            outputPath,
+            algorithm,
+        )
+    }
 }

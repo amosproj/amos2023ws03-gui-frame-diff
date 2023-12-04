@@ -40,9 +40,11 @@ class Gotoh<T>(
         // score: if the last pair was a match
         // gapA: if the last pair was a gap in the first sequence
         // gapB: if the last pair was a gap in the second sequence
+        // similarityM: the similarity matrix for the two sequences (used for caching)
         val score = Array(n + 1) { DoubleArray(m + 1) }
         val gapA = Array(n + 1) { DoubleArray(m + 1) }
         val gapB = Array(n + 1) { DoubleArray(m + 1) }
+        val similarityM = Array(n + 1) { DoubleArray(m + 1) }
 
         // initialize the matrices
         score[0][0] = 0.0
@@ -89,7 +91,8 @@ class Gotoh<T>(
                     )
 
                 // calculate the score for having choosing matching alignment instead of gaps
-                val similarity = 1 - metric.measureDistance(a[i - 1], b[j - 1])
+                similarityM[i - 1][j - 1] = 1 - metric.measureDistance(a[i - 1], b[j - 1])
+                val similarity = similarityM[i - 1][j - 1]
                 val matchScore =
                     score[i - 1][j - 1] + similarity // last pair was match and this one too
                 val gapAScore = gapA[i - 1][j - 1] + similarity // gap in A and then a match
@@ -104,10 +107,10 @@ class Gotoh<T>(
 
         // now, we need to trace back through the matrices to retrieve the optimal alignment
         // for that, we start at the end of the alignment, store the alignment elements and reverse
-        // them afterwards
+        // them afterward
         // to get the final alignment sequence
 
-        val traceback: ArrayList<AlignmentElement> = ArrayList<AlignmentElement>()
+        val traceback: ArrayList<AlignmentElement> = ArrayList()
 
         var i: Int = n
         var j: Int = m
@@ -115,13 +118,17 @@ class Gotoh<T>(
         // variable to store the last alignment "action"
         var origin =
             (
-                if (finalScore == score[n][m]) {
-                    AlignmentElement.MATCH
-                } else if (finalScore == gapA[n][m]) {
-                    AlignmentElement.DELETION
-                } else {
-                    AlignmentElement.INSERTION
-                }
+                    when (finalScore) {
+                        score[n][m] -> {
+                            AlignmentElement.MATCH
+                        }
+                        gapA[n][m] -> {
+                            AlignmentElement.DELETION
+                        }
+                        else -> {
+                            AlignmentElement.INSERTION
+                        }
+                    }
             )
 
         while (i > 0 || j > 0) {
@@ -129,7 +136,7 @@ class Gotoh<T>(
 
             when (origin) {
                 AlignmentElement.MATCH -> {
-                    val similarity = 1 - metric.measureDistance(a[i - 1], b[j - 1])
+                    val similarity = similarityM[i - 1][j - 1]
 
                     // determine, where the current score came from
                     origin =

@@ -7,8 +7,10 @@ import org.bytedeco.javacv.Frame
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
+import java.awt.image.DataBufferByte
 import java.io.File
 import javax.imageio.ImageIO
+import kotlin.experimental.and
 
 class DifferenceGenerator(
     video1Path: String,
@@ -132,18 +134,28 @@ class DifferenceGenerator(
         image2: BufferedImage,
     ): Frame {
         val differences = getColoredBufferedImage(Color.BLACK)
+        val differencesData = (differences.raster.dataBuffer as DataBufferByte)
 
-        // using a BufferedImage.raster.dataBuffer or just .raster might be faster
-        for (x in 0 until width) {
-            for (y in 0 until height) {
-                val frame1Pixel = image1.getRGB(x, y)
-                val frame2Pixel = image2.getRGB(x, y)
-                if (frame1Pixel - frame2Pixel != 0) {
-                    differences.setRGB(x, y, Color.RED.rgb)
-                }
+        val data1 = (image1.raster.dataBuffer as DataBufferByte).data
+        val data2 = (image2.raster.dataBuffer as DataBufferByte).data
+        var index = 0
+
+        while (index < this.height * this.width * 3) {
+            val blue1 = data1[index] and 0xFF.toByte()
+            val green1 = data1[index + 1] and 0xFF.toByte()
+            val red1 = data1[index + 2] and 0xFF.toByte()
+
+            val blue2 = data2[index] and 0xFF.toByte()
+            val green2 = data2[index + 1] and 0xFF.toByte()
+            val red2 = data2[index + 2] and 0xFF.toByte()
+
+            if (blue1 != blue2 || green1 != green2 || red1 != red2) {
+                differencesData.data[index] = 0x00.toByte() // blue
+                differencesData.data[index + 1] = 0x00.toByte() // green
+                differencesData.data[index + 2] = 0xFF.toByte() // red
             }
+            index += 3
         }
-
         return converter.getFrame(differences)
     }
 
