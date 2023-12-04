@@ -120,6 +120,8 @@ class DifferenceGenerator(
             alignment += AlignmentElement.MATCH
             nextGrabbedFrame1 = i.first + 1
             nextGrabbedFrame2 = i.second + 1
+            video1Grabber.grabImage()
+            video2Grabber.grabImage()
         }
 
         // process frames from last match in equals until end of video
