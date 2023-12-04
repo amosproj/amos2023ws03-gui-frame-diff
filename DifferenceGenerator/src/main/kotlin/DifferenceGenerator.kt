@@ -1,9 +1,12 @@
 import algorithms.AlignmentAlgorithm
 import algorithms.AlignmentElement
+import mask.CompositeMask
+import mask.Mask
 import org.bytedeco.ffmpeg.global.avcodec.AV_CODEC_ID_FFV1
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.FFmpegFrameRecorder
 import org.bytedeco.javacv.Frame
+import wrappers.MaskedImageGrabber
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
@@ -25,8 +28,8 @@ class DifferenceGenerator(
     private val video2File = File(video2Path)
     private val maskFile = if (maskPath != null) File(maskPath) else null
 
-    private val video1Grabber = FFmpegFrameGrabber(video1File)
-    private val video2Grabber = FFmpegFrameGrabber(video2File)
+    private var video1Grabber: MaskedImageGrabber = MaskedImageGrabber(video1File, null)
+    private var video2Grabber: MaskedImageGrabber = MaskedImageGrabber(video2File, null)
 
     private val converter = Resettable2DFrameConverter()
 
@@ -34,7 +37,7 @@ class DifferenceGenerator(
     private var height = 0
 
     var alignment: Array<AlignmentElement> = arrayOf() // remove later
-    private lateinit var mask: BufferedImage
+    private var mask: Mask
 
     /**
      * Initializes a new instance of the [DifferenceGenerator] class.
@@ -54,7 +57,15 @@ class DifferenceGenerator(
 
         this.width = this.video1Grabber.imageWidth
         this.height = this.video1Grabber.imageHeight
-        generateMasking()
+        mask = if (maskFile == null) {
+            CompositeMask(getColoredBufferedImage(Color(255, 255, 255, 0), BufferedImage.TYPE_4BYTE_ABGR))
+        } else {
+            CompositeMask(maskFile, this.width, this.height)
+        }
+
+        video1Grabber.setMask(mask)
+        video2Grabber.setMask(mask)
+
         generateDifference()
     }
 
@@ -62,11 +73,11 @@ class DifferenceGenerator(
      * Determines whether the given video file is encoded using one of the
      * [AcceptedCodecs.ACCEPTED_CODECS].
      *
-     * @param [FFmpegFrameGrabber] of the video to check
+     * @param grabber [MaskedImageGrabber] of the video to check
      * @return true if the video file is encoded using one of the [AcceptedCodecs.ACCEPTED_CODECS],
      * false otherwise
      */
-    private fun isLosslessCodec(grabber: FFmpegFrameGrabber): Boolean {
+    private fun isLosslessCodec(grabber: MaskedImageGrabber): Boolean {
         grabber.start()
         val codecName = grabber.videoMetadata["encoder"] ?: grabber.videoCodecName
         return codecName in AcceptedCodecs.ACCEPTED_CODECS
@@ -139,7 +150,7 @@ class DifferenceGenerator(
         while (i < amount) {
             var frame: Frame? = grabber.grabImage() ?: throw Exception("Video Grabbing calculation is wrong")
             val image = converter.getImage(frame!!)
-            images.add(applyMasking(image))
+            images.add(mask.apply(image))
             i++
         }
         return images
@@ -247,7 +258,7 @@ class DifferenceGenerator(
 
         while (frame != null) {
             val image = converter.getImage(frame)
-            images.add(applyMasking(image))
+            images.add(mask.apply(image))
             frame = grabber.grabImage()
         }
         return images.toTypedArray()
@@ -279,24 +290,6 @@ class DifferenceGenerator(
         g2d.fillRect(0, 0, width, height)
         g2d.dispose()
         return result
-    }
-
-    private fun generateMasking() {
-        if (maskFile == null) {
-            mask = getColoredBufferedImage(Color(255, 255, 255, 0), BufferedImage.TYPE_4BYTE_ABGR)
-            return
-        }
-        mask = ImageIO.read(maskFile)
-        if (mask.width != width || mask.height != height) {
-            throw Exception("Mask must have the same dimensions as the videos")
-        }
-    }
-
-    private fun applyMasking(img: BufferedImage): BufferedImage {
-        val g2d: Graphics2D = img.createGraphics()
-        g2d.drawImage(mask, 0, 0, null)
-        g2d.dispose()
-        return img
     }
 
     private fun hashFrame(frame: Frame): ByteArray {
