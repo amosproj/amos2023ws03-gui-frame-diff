@@ -7,15 +7,15 @@ import java.io.File
 
 open class IterableFrameGrabber(videoFile: File) : ResettableIterable<BufferedImage>, FFmpegFrameGrabber(videoFile) {
     var image: BufferedImage? = null
-    val converter = Resettable2DFrameConverter()
+    private val converter = Resettable2DFrameConverter()
 
     init {
         super.start()
-        image = converter.getImage(super.grabImage())
+        getNextImage()
     }
 
     override fun start() {
-        // No-op, as we already start the grabber on construct
+        // No-op, as we already start the grabber in constructor
     }
 
     override fun hasNext(): Boolean {
@@ -25,7 +25,7 @@ open class IterableFrameGrabber(videoFile: File) : ResettableIterable<BufferedIm
     override fun next(): BufferedImage {
         // assume that next() is only called when hasNext is true
         val tempImage = image!!
-        image = converter.getImage(super.grabImage())
+        getNextImage()
         return tempImage
     }
 
@@ -36,7 +36,12 @@ open class IterableFrameGrabber(videoFile: File) : ResettableIterable<BufferedIm
     override fun reset() {
         super.stop()
         super.start()
-        image = converter.getImage(super.grabImage())
+        getNextImage()
+    }
+
+    private fun getNextImage() {
+        val frame = super.grabImage()
+        image = if (frame == null) null else converter.getImage(frame)
     }
 
     override fun size(): Int {
