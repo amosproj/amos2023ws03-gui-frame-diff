@@ -1,6 +1,7 @@
 package algorithms
 
 import MetricInterface
+import kotlin.properties.Delegates
 
 /**
  * An implementation of the Gotoh algorithm for sequence alignment.
@@ -29,42 +30,19 @@ class Gotoh<T>(
      * Returns an array of [AlignmentElement]s that represent the alignment between the two
      * sequences.
      */
+
+    private var n by Delegates.notNull<Int>()
+    private var m by Delegates.notNull<Int>()
+    private lateinit var score: Array<DoubleArray>
+    private lateinit var gapA: Array<DoubleArray>
+    private lateinit var gapB: Array<DoubleArray>
+    private lateinit var similarityM: Array<DoubleArray>
+
     override fun run(
         a: Array<T>,
         b: Array<T>,
     ): Array<AlignmentElement> {
-        val n: Int = a.size
-        val m: Int = b.size
-
-        // three matrices of the size (n + 1) x (m + 1) each
-        // score: if the last pair was a match
-        // gapA: if the last pair was a gap in the first sequence
-        // gapB: if the last pair was a gap in the second sequence
-        // similarityM: the similarity matrix for the two sequences (used for caching)
-        val score = Array(n + 1) { DoubleArray(m + 1) { 0.0 } }
-        val gapA = Array(n + 1) { DoubleArray(m + 1) { 0.0 } }
-        val gapB = Array(n + 1) { DoubleArray(m + 1) { 0.0 } }
-        val similarityM = Array(n + 1) { DoubleArray(m + 1) { 0.0 } }
-
-        // initialize the matrices
-        score[0][0] = 0.0
-        gapA[0][0] = 0.0
-        gapB[0][0] = 0.0
-
-        // initialize the first row and column, for gapA with an accumulated gap penalty
-        // we use negative infinity to account for impossible alignments in the first row/column
-        for (i in 1..n) {
-            score[i][0] = Double.NEGATIVE_INFINITY
-            gapA[i][0] = gapOpenPenalty + (i - 1) * gapExtensionPenalty
-            gapB[i][0] = Double.NEGATIVE_INFINITY
-        }
-
-        // initialize the first row and column, for gapB with an accumulated gap penalty
-        for (j in 1..m) {
-            score[0][j] = Double.NEGATIVE_INFINITY
-            gapA[0][j] = Double.NEGATIVE_INFINITY
-            gapB[0][j] = gapOpenPenalty + (j - 1) * gapExtensionPenalty
-        }
+        initalizeMatrices(a, b)
 
         // main calculation loop, iterating over all rows and columns of the matrices
         for (i in 1..n) {
@@ -183,5 +161,43 @@ class Gotoh<T>(
         // reverse the alignment sequence as it is currently from back to front
         traceback.reverse()
         return traceback.toTypedArray()
+    }
+
+    private fun initalizeMatrices(
+        a: Array<T>,
+        b: Array<T>,
+    ) {
+        n = a.size
+        m = b.size
+
+        // three matrices of the size (n + 1) x (m + 1) each
+        // score: if the last pair was a match
+        // gapA: if the last pair was a gap in the first sequence
+        // gapB: if the last pair was a gap in the second sequence
+        // similarityM: the similarity matrix for the two sequences (used for caching)
+        score = Array(n + 1) { DoubleArray(m + 1) { 0.0 } }
+        gapA = Array(n + 1) { DoubleArray(m + 1) { 0.0 } }
+        gapB = Array(n + 1) { DoubleArray(m + 1) { 0.0 } }
+        similarityM = Array(n + 1) { DoubleArray(m + 1) { 0.0 } }
+
+        // initialize the matrices
+        score[0][0] = 0.0
+        gapA[0][0] = 0.0
+        gapB[0][0] = 0.0
+
+        // initialize the first row and column, for gapA with an accumulated gap penalty
+        // we use negative infinity to account for impossible alignments in the first row/column
+        for (i in 1..n) {
+            score[i][0] = Double.NEGATIVE_INFINITY
+            gapA[i][0] = gapOpenPenalty + (i - 1) * gapExtensionPenalty
+            gapB[i][0] = Double.NEGATIVE_INFINITY
+        }
+
+        // initialize the first row and column, for gapB with an accumulated gap penalty
+        for (j in 1..m) {
+            score[0][j] = Double.NEGATIVE_INFINITY
+            gapA[0][j] = Double.NEGATIVE_INFINITY
+            gapB[0][j] = gapOpenPenalty + (j - 1) * gapExtensionPenalty
+        }
     }
 }
