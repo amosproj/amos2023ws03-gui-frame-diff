@@ -2,6 +2,7 @@ import algorithms.AlignmentAlgorithm
 import algorithms.AlignmentElement
 import algorithms.Gotoh
 import org.junit.jupiter.api.Test
+import kotlin.test.assertContentEquals
 
 class DnaMetric : MetricInterface<Char> {
     override fun measureDistance(
@@ -22,6 +23,16 @@ class DNAseqExample {
         val b: Array<Char> = arrayOf('A', 'A', 'A', 'A', 'G', 'G', 'T', 'A', 'C', 'G', 'T')
 
         val alignment: Array<AlignmentElement> = algorithm.run(a, b)
+        assertContentEquals(
+            alignment,
+            arrayOf(
+                AlignmentElement.INSERTION, AlignmentElement.INSERTION,
+                AlignmentElement.MATCH, AlignmentElement.MATCH, AlignmentElement.MATCH,
+                AlignmentElement.MATCH, AlignmentElement.MATCH,
+                AlignmentElement.DELETION, AlignmentElement.DELETION, AlignmentElement.DELETION,
+                AlignmentElement.MATCH, AlignmentElement.MATCH, AlignmentElement.MATCH, AlignmentElement.MATCH,
+            ),
+        )
 
         val l1 = ArrayList<Char>()
         val l2 = ArrayList<Char>()
