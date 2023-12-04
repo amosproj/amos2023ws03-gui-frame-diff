@@ -1,5 +1,8 @@
+import algorithms.AlignmentAlgorithm
 import algorithms.AlignmentElement
+import algorithms.DivideAndConquerAligner
 import algorithms.Gotoh
+import hashing.VideoFrameHasher
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -35,6 +38,14 @@ internal class DifferenceGeneratorTest {
 
     private val metric = PixelCountMetric(normalize = true)
 
+    private var algorithm: AlignmentAlgorithm<BufferedImage> =
+        Gotoh<BufferedImage>(metric, gapOpenPenalty = -0.5, gapExtensionPenalty = -0.0)
+
+    init {
+        // comment out if simple Gotoh preferred
+        algorithm = DivideAndConquerAligner(algorithm, VideoFrameHasher())
+    }
+
     @Test
     fun `Test a generated case using TestCaseGenerator`() {
         var gapOpen = -0.5
@@ -50,13 +61,11 @@ internal class DifferenceGeneratorTest {
         val pathVideo1 = resourcesPathPrefix + "generatedVideo1.mkv"
         val pathVideo2 = resourcesPathPrefix + "generatedVideo2.mkv"
         val outputPath = resourcesPathPrefix + "generatedOutput.mkv"
+        var algorithm: AlignmentAlgorithm<BufferedImage> = Gotoh<BufferedImage>(metric, gapOpenPenalty = -0.5, gapExtensionPenalty = -0.0)
 
-        val algorithm =
-            Gotoh<BufferedImage>(
-                metric,
-                gapOpenPenalty = gapOpen,
-                gapExtensionPenalty = gapExtension,
-            )
+        // Comment out if simple Gotoh wanted
+        algorithm = DivideAndConquerAligner(algorithm, VideoFrameHasher())
+
         var allDistances = Array(iterations) { 0 }
         for (i in 0 until iterations) {
             val testCaseGenerator = TestCaseGenerator(pathVideo1, pathVideo2, 12)
@@ -85,12 +94,6 @@ internal class DifferenceGeneratorTest {
             outputFile.delete()
         }
 
-        val algorithm =
-            Gotoh<BufferedImage>(
-                metric,
-                gapOpenPenalty = -0.5,
-                gapExtensionPenalty = -0.0,
-            )
         val g =
             DifferenceGenerator(
                 modifiedVideo10Frames,
@@ -131,12 +134,6 @@ internal class DifferenceGeneratorTest {
             outputFile.delete()
         }
 
-        val algorithm =
-            Gotoh<BufferedImage>(
-                metric,
-                gapOpenPenalty = -0.5,
-                gapExtensionPenalty = -0.0,
-            )
         val g =
             DifferenceGenerator(
                 video9Frames,
@@ -178,12 +175,6 @@ internal class DifferenceGeneratorTest {
             outputFile.delete()
         }
 
-        val algorithm =
-            Gotoh<BufferedImage>(
-                metric,
-                gapOpenPenalty = -0.5,
-                gapExtensionPenalty = -0.0,
-            )
         val g = DifferenceGenerator(video11Frames, video10Frames, outputPath, algorithm)
         println(g.alignment.joinToString())
         val expectedAlignment =
@@ -235,12 +226,6 @@ internal class DifferenceGeneratorTest {
             outputFile.delete()
         }
 
-        val algorithm =
-            Gotoh<BufferedImage>(
-                metric,
-                gapOpenPenalty = -0.5,
-                gapExtensionPenalty = -0.0,
-            )
         val g =
             DifferenceGenerator(
                 modifiedVideo10Frames,
@@ -281,13 +266,6 @@ internal class DifferenceGeneratorTest {
         if (outputFile.exists()) {
             outputFile.delete()
         }
-
-        val algorithm =
-            Gotoh<BufferedImage>(
-                metric,
-                gapOpenPenalty = -0.5,
-                gapExtensionPenalty = -0.0,
-            )
 
         DifferenceGenerator(
             video9Frames,
