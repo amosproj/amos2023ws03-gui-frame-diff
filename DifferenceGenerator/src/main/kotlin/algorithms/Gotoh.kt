@@ -33,18 +33,67 @@ class Gotoh<T>(
 
     private var n by Delegates.notNull<Int>()
     private var m by Delegates.notNull<Int>()
+
+    private lateinit var a: Array<T>
+    private lateinit var b: Array<T>
+
     private lateinit var score: Array<DoubleArray>
     private lateinit var gapA: Array<DoubleArray>
     private lateinit var gapB: Array<DoubleArray>
     private lateinit var similarityM: Array<DoubleArray>
 
     override fun run(
+        arr1: Array<T>,
+        arr2: Array<T>,
+    ): Array<AlignmentElement> {
+        a = arr1
+        b = arr2
+
+        initializeMatrices()
+        calculateBestRoute(a, b)
+        val traceback: ArrayList<AlignmentElement> = tracebackBestRoute()
+        return traceback.toTypedArray()
+    }
+
+    private fun initializeMatrices() {
+        n = a.size
+        m = b.size
+
+        // three matrices of the size (n + 1) x (m + 1) each
+        // score: if the last pair was a match
+        // gapA: if the last pair was a gap in the first sequence
+        // gapB: if the last pair was a gap in the second sequence
+        // similarityM: the similarity matrix for the two sequences (used for caching)
+        score = Array(n + 1) { DoubleArray(m + 1) { 0.0 } }
+        gapA = Array(n + 1) { DoubleArray(m + 1) { 0.0 } }
+        gapB = Array(n + 1) { DoubleArray(m + 1) { 0.0 } }
+        similarityM = Array(n + 1) { DoubleArray(m + 1) { 0.0 } }
+
+        // initialize the matrices
+        score[0][0] = 0.0
+        gapA[0][0] = 0.0
+        gapB[0][0] = 0.0
+
+        // initialize the first row and column, for gapA with an accumulated gap penalty
+        // we use negative infinity to account for impossible alignments in the first row/column
+        for (i in 1..n) {
+            score[i][0] = Double.NEGATIVE_INFINITY
+            gapA[i][0] = gapOpenPenalty + (i - 1) * gapExtensionPenalty
+            gapB[i][0] = Double.NEGATIVE_INFINITY
+        }
+
+        // initialize the first row and column, for gapB with an accumulated gap penalty
+        for (j in 1..m) {
+            score[0][j] = Double.NEGATIVE_INFINITY
+            gapA[0][j] = Double.NEGATIVE_INFINITY
+            gapB[0][j] = gapOpenPenalty + (j - 1) * gapExtensionPenalty
+        }
+    }
+
+    private fun calculateBestRoute(
         a: Array<T>,
         b: Array<T>,
-    ): Array<AlignmentElement> {
-        initalizeMatrices(a, b)
-
-        // main calculation loop, iterating over all rows and columns of the matrices
+    ) {
         for (i in 1..n) {
             for (j in 1..m) {
                 // calculate the three possible scores for the current position
@@ -79,7 +128,9 @@ class Gotoh<T>(
                 score[i][j] = maxOf(matchScore, gapAScore, gapBScore)
             }
         }
+    }
 
+    private fun tracebackBestRoute(): ArrayList<AlignmentElement> {
         // the final score of the alignment
         val finalScore: Double = maxOf(score[n][m], gapA[n][m], gapB[n][m])
 
@@ -94,110 +145,97 @@ class Gotoh<T>(
         var j: Int = m
 
         // variable to store the last alignment "action"
-        var origin =
-            (
-                when (finalScore) {
-                    score[n][m] -> {
-                        AlignmentElement.MATCH
-                    }
-                    gapA[n][m] -> {
-                        AlignmentElement.DELETION
-                    }
-                    else -> {
-                        AlignmentElement.INSERTION
-                    }
-                }
-            )
+        var origin = getLastAlignment(finalScore)
 
         while (i > 0 || j > 0) {
             traceback.add(origin)
 
             when (origin) {
                 AlignmentElement.MATCH -> {
-                    val similarity = similarityM[i - 1][j - 1]
-
-                    // determine, where the current score came from
-                    origin =
-                        if (score[i][j] == score[i - 1][j - 1] + similarity) {
-                            AlignmentElement.MATCH
-                        } else if (score[i][j] == gapA[i - 1][j - 1] + similarity) {
-                            AlignmentElement.DELETION
-                        } else {
-                            AlignmentElement.INSERTION
-                        }
+                    origin = handleAlignmentMatch(i, j)
                     i--
                     j--
                 }
+
                 AlignmentElement.DELETION -> {
                     // determine, where the current score came from
-                    origin =
-                        if (gapA[i][j] == gapA[i - 1][j] + gapExtensionPenalty) {
-                            AlignmentElement.DELETION
-                        } else if (gapA[i][j] == gapB[i - 1][j] + gapExtensionPenalty) {
-                            AlignmentElement.INSERTION
-                        } else {
-                            AlignmentElement.MATCH
-                        }
+                    origin = handleAlignmentDeletion(i, j)
                     i--
                 }
+
                 AlignmentElement.INSERTION -> {
                     // determine, where the current score came from
-                    origin =
-                        if (gapB[i][j] == gapA[i][j - 1] + gapExtensionPenalty) {
-                            AlignmentElement.DELETION
-                        } else if (gapB[i][j] == gapB[i][j - 1] + gapExtensionPenalty) {
-                            AlignmentElement.INSERTION
-                        } else {
-                            AlignmentElement.MATCH
-                        }
+                    origin = handleAlignmentInsertion(i, j)
                     j--
-                }
-                else -> {
-                    throw Exception("Invalid alignment element")
                 }
             }
         }
 
         // reverse the alignment sequence as it is currently from back to front
         traceback.reverse()
-        return traceback.toTypedArray()
+        return traceback
     }
 
-    private fun initalizeMatrices(
-        a: Array<T>,
-        b: Array<T>,
-    ) {
-        n = a.size
-        m = b.size
-
-        // three matrices of the size (n + 1) x (m + 1) each
-        // score: if the last pair was a match
-        // gapA: if the last pair was a gap in the first sequence
-        // gapB: if the last pair was a gap in the second sequence
-        // similarityM: the similarity matrix for the two sequences (used for caching)
-        score = Array(n + 1) { DoubleArray(m + 1) { 0.0 } }
-        gapA = Array(n + 1) { DoubleArray(m + 1) { 0.0 } }
-        gapB = Array(n + 1) { DoubleArray(m + 1) { 0.0 } }
-        similarityM = Array(n + 1) { DoubleArray(m + 1) { 0.0 } }
-
-        // initialize the matrices
-        score[0][0] = 0.0
-        gapA[0][0] = 0.0
-        gapB[0][0] = 0.0
-
-        // initialize the first row and column, for gapA with an accumulated gap penalty
-        // we use negative infinity to account for impossible alignments in the first row/column
-        for (i in 1..n) {
-            score[i][0] = Double.NEGATIVE_INFINITY
-            gapA[i][0] = gapOpenPenalty + (i - 1) * gapExtensionPenalty
-            gapB[i][0] = Double.NEGATIVE_INFINITY
+    private fun handleAlignmentInsertion(
+        i: Int,
+        j: Int,
+    ): AlignmentElement {
+        if (gapB[i][j] == gapA[i][j - 1] + gapExtensionPenalty) {
+            return AlignmentElement.DELETION
         }
 
-        // initialize the first row and column, for gapB with an accumulated gap penalty
-        for (j in 1..m) {
-            score[0][j] = Double.NEGATIVE_INFINITY
-            gapA[0][j] = Double.NEGATIVE_INFINITY
-            gapB[0][j] = gapOpenPenalty + (j - 1) * gapExtensionPenalty
+        if (gapB[i][j] == gapB[i][j - 1] + gapExtensionPenalty) {
+            return AlignmentElement.INSERTION
+        }
+
+        return AlignmentElement.MATCH
+    }
+
+    private fun handleAlignmentDeletion(
+        i: Int,
+        j: Int,
+    ): AlignmentElement {
+        if (gapA[i][j] == gapA[i - 1][j] + gapExtensionPenalty) {
+            return AlignmentElement.DELETION
+        }
+
+        if (gapA[i][j] == gapB[i - 1][j] + gapExtensionPenalty) {
+            return AlignmentElement.INSERTION
+        }
+
+        return AlignmentElement.MATCH
+    }
+
+    private fun handleAlignmentMatch(
+        i: Int,
+        j: Int,
+    ): AlignmentElement {
+        val similarity = similarityM[i - 1][j - 1]
+
+        if (score[i][j] == score[i - 1][j - 1] + similarity) {
+            return AlignmentElement.MATCH
+        }
+
+        if (score[i][j] == gapA[i - 1][j - 1] + similarity) {
+            return AlignmentElement.DELETION
+        }
+
+        return AlignmentElement.INSERTION
+    }
+
+    private fun getLastAlignment(finalScore: Double): AlignmentElement {
+        when (finalScore) {
+            score[n][m] -> {
+                return AlignmentElement.MATCH
+            }
+
+            gapA[n][m] -> {
+                return AlignmentElement.DELETION
+            }
+
+            else -> {
+                return AlignmentElement.INSERTION
+            }
         }
     }
 }
