@@ -292,40 +292,6 @@ class DifferenceGenerator(
         return result
     }
 
-    private fun hashFrame(frame: Frame): ByteArray {
-        val image = (converter.getImage(frame).raster.dataBuffer as DataBufferByte).data
-        val md5 = MessageDigest.getInstance("MD5")
-        md5.update(image)
-        return md5.digest()
-    }
-
-    private fun getHashedVideo(video: File): ArrayList<ByteArray> {
-        val grabber = FFmpegFrameGrabber(video)
-        grabber.start()
-        var hashArray = ArrayList<ByteArray>()
-        var frame = grabber.grabImage()
-        while (frame != null) {
-            hashArray.add(hashFrame(frame))
-            frame = grabber.grabImage()
-        }
-        grabber.stop()
-
-        // find duplicates
-        val duplicates: Set<Int> = setOf()
-        for (i in hashArray.indices) {
-            for (j in i + 1 until hashArray.size) {
-                if (hashArray[i].contentEquals(hashArray[j])) {
-                    duplicates.plus(j)
-                    duplicates.plus(i)
-                }
-            }
-        }
-
-        // remove duplicates
-        hashArray = hashArray.filterIndexed { index, _ -> !duplicates.contains(index) } as ArrayList<ByteArray>
-        return hashArray
-    }
-
     private fun findEquals(
         video1Hashes: ArrayList<ByteArray>,
         video2Hashes: ArrayList<ByteArray>,
