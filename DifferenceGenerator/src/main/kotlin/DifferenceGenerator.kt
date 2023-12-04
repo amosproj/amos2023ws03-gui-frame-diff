@@ -167,24 +167,6 @@ class DifferenceGenerator(
     }
 
     /**
-     * Grabs all the frames from a video as BufferedImages.
-     *
-     * @param grabber the frame grabber of the video
-     * @return an array of BufferedImages
-     */
-    private fun grabBufferedImages(grabber: FFmpegFrameGrabber): Array<BufferedImage> {
-        val images = ArrayList<BufferedImage>()
-        var frame = grabber.grabImage()
-
-        while (frame != null) {
-            val image = converter.getImage(frame)
-            images.add(mask.apply(image))
-            frame = grabber.grabImage()
-        }
-        return images.toTypedArray()
-    }
-
-    /**
      * Creates a Frame with a given color.
      *
      * @param color the color
