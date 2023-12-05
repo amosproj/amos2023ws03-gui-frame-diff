@@ -9,20 +9,20 @@ class PixelCountMetricTest {
         val pixelCountMetric = PixelCountMetric(normalize = false)
 
         // Test case 1: Two images with the same content
-        val image1 = BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB)
-        val image2 = BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB)
+        val image1 = BufferedImage(10, 10, BufferedImage.TYPE_3BYTE_BGR)
+        val image2 = BufferedImage(10, 10, BufferedImage.TYPE_3BYTE_BGR)
         assertEquals(0.0, pixelCountMetric.measureDistance(image1, image2))
 
         // Test case 2: Two images with different content
-        val image3 = BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB)
-        val image4 = BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB)
+        val image3 = BufferedImage(10, 10, BufferedImage.TYPE_3BYTE_BGR)
+        val image4 = BufferedImage(10, 10, BufferedImage.TYPE_3BYTE_BGR)
         // Modify the pixels of image4 to make it different from image3
         image4.setRGB(5, 5, Color.red.rgb)
         assertEquals(1.0, pixelCountMetric.measureDistance(image3, image4))
 
         // Test case 3: Two images with different content
-        val image5 = BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB)
-        val image6 = BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB)
+        val image5 = BufferedImage(10, 10, BufferedImage.TYPE_3BYTE_BGR)
+        val image6 = BufferedImage(10, 10, BufferedImage.TYPE_3BYTE_BGR)
         // Modify the pixels of image6 to make it different from image5
         image6.setRGB(5, 5, Color.red.rgb)
         image6.setRGB(6, 6, Color.green.rgb)
@@ -36,21 +36,21 @@ class PixelCountMetricTest {
         val pixelCountMetric = PixelCountMetric(normalize = true)
 
         // Test case 1: Two images with the same content
-        val image1 = BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB)
-        val image2 = BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB)
+        val image1 = BufferedImage(10, 10, BufferedImage.TYPE_3BYTE_BGR)
+        val image2 = BufferedImage(10, 10, BufferedImage.TYPE_3BYTE_BGR)
         assertEquals(0.0, pixelCountMetric.measureDistance(image1, image2))
 
         // Test case 2: Two images with different content
-        val image3 = BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB)
-        val image4 = BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB)
+        val image3 = BufferedImage(10, 10, BufferedImage.TYPE_3BYTE_BGR)
+        val image4 = BufferedImage(10, 10, BufferedImage.TYPE_3BYTE_BGR)
         // Modify the pixels of image4 to make it different from image3
         image4.setRGB(5, 5, Color.red.rgb)
         val expectedNormalizedDistance1 = 1.0 / (10.0 * 10.0)
         assertEquals(expectedNormalizedDistance1, pixelCountMetric.measureDistance(image3, image4))
 
         // Test case 3: Two images with different content
-        val image5 = BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB)
-        val image6 = BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB)
+        val image5 = BufferedImage(10, 10, BufferedImage.TYPE_3BYTE_BGR)
+        val image6 = BufferedImage(10, 10, BufferedImage.TYPE_3BYTE_BGR)
         // Modify the pixels of image6 to make it different from image5
         image6.setRGB(5, 5, Color.red.rgb)
         image6.setRGB(6, 6, Color.green.rgb)

@@ -47,8 +47,7 @@ class PixelCountMetric(private val normalize: Boolean = true) : MetricInterface<
             return count.toDouble()
         }
 
-        var normalizedDist = normalizeDistance(count.toDouble(), (width * height).toDouble())
-        return normalizedDist
+        return normalizeDistance(count.toDouble(), (width * height).toDouble())
     }
 
     /**

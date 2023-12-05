@@ -1,6 +1,6 @@
 package algorithms
 
-import MetricInterface
+import wrappers.ResettableIterable
 
 /**
  * Represents a position in a sequence alignment.
@@ -20,9 +20,8 @@ enum class AlignmentElement {
  * An abstract class for alignment algorithms.
  *
  * @param T the type of the objects to align
- * @param metric the metric to use for calculating the distance between two objects
  */
-abstract class AlignmentAlgorithm<T>(metric: MetricInterface<T>) {
+abstract class AlignmentAlgorithm<T> {
     /**
      * The function to execute the algorithm on the given sequences of objects.
      *
@@ -31,8 +30,20 @@ abstract class AlignmentAlgorithm<T>(metric: MetricInterface<T>) {
      *
      * Returns an array of [AlignmentElement]s that represent the alignment between the two sequences.
      */
-    abstract fun run(
+    fun run(
         a: Array<T>,
         b: Array<T>,
+    ): Array<AlignmentElement> {
+        return run(a.toCollection(ArrayList()), b.toCollection(ArrayList()))
+    }
+
+    abstract fun run(
+        a: ArrayList<T>,
+        b: ArrayList<T>,
+    ): Array<AlignmentElement>
+
+    abstract fun run(
+        a: ResettableIterable<T>,
+        b: ResettableIterable<T>,
     ): Array<AlignmentElement>
 }

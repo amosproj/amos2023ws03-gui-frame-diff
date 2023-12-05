@@ -1,15 +1,17 @@
 import algorithms.AlignmentAlgorithm
 import algorithms.AlignmentElement
+import mask.CompositeMask
+import mask.Mask
 import org.bytedeco.ffmpeg.global.avcodec.AV_CODEC_ID_FFV1
-import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.FFmpegFrameRecorder
 import org.bytedeco.javacv.Frame
+import wrappers.MaskedImageGrabber
+import wrappers.Resettable2DFrameConverter
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import java.awt.image.DataBufferByte
 import java.io.File
-import javax.imageio.ImageIO
 import kotlin.experimental.and
 
 class DifferenceGenerator(
@@ -24,19 +26,19 @@ class DifferenceGenerator(
     private val video2File = File(video2Path)
     private val maskFile = if (maskPath != null) File(maskPath) else null
 
-    private val video1Grabber = FFmpegFrameGrabber(video1File)
-    private val video2Grabber = FFmpegFrameGrabber(video2File)
+    private var video1Grabber: MaskedImageGrabber = MaskedImageGrabber(video1File, null)
+    private var video2Grabber: MaskedImageGrabber = MaskedImageGrabber(video2File, null)
 
     private val converter = Resettable2DFrameConverter()
 
     private var width = 0
     private var height = 0
 
-    lateinit var alignment: Array<AlignmentElement>
-    private lateinit var mask: BufferedImage
+    var alignment: Array<AlignmentElement> = arrayOf() // remove later
+    private var mask: Mask
 
     /**
-     * Initializes a new instance of the [DifferenceGenerator] class.
+     * Initializes a new instance of the class.
      *
      * @throws Exception if the videos are not in an [AcceptedCodecs.ACCEPTED_CODECS].
      */
@@ -53,7 +55,16 @@ class DifferenceGenerator(
 
         this.width = this.video1Grabber.imageWidth
         this.height = this.video1Grabber.imageHeight
-        generateMasking()
+        mask =
+            if (maskFile == null) {
+                CompositeMask(getColoredBufferedImage(Color(255, 255, 255, 0), BufferedImage.TYPE_4BYTE_ABGR))
+            } else {
+                CompositeMask(maskFile, this.width, this.height)
+            }
+
+        video1Grabber.mask = mask
+        video2Grabber.mask = mask
+
         generateDifference()
     }
 
@@ -61,11 +72,11 @@ class DifferenceGenerator(
      * Determines whether the given video file is encoded using one of the
      * [AcceptedCodecs.ACCEPTED_CODECS].
      *
-     * @param [FFmpegFrameGrabber] of the video to check
+     * @param grabber [MaskedImageGrabber] of the video to check
      * @return true if the video file is encoded using one of the [AcceptedCodecs.ACCEPTED_CODECS],
      * false otherwise
      */
-    private fun isLosslessCodec(grabber: FFmpegFrameGrabber): Boolean {
+    private fun isLosslessCodec(grabber: MaskedImageGrabber): Boolean {
         grabber.start()
         val codecName = grabber.videoMetadata["encoder"] ?: grabber.videoCodecName
         return codecName in AcceptedCodecs.ACCEPTED_CODECS
@@ -82,44 +93,40 @@ class DifferenceGenerator(
      *  - red and black pixels: a frame was modified (both videos contain the frame)
      */
     override fun generateDifference() {
-        val encoder = FFmpegFrameRecorder(this.outputFile, video1Grabber.imageWidth, video1Grabber.imageHeight)
+        val encoder = FFmpegFrameRecorder(this.outputFile, this.width, this.height)
         encoder.videoCodec = AV_CODEC_ID_FFV1
         encoder.frameRate = 1.0
         encoder.start()
 
-        val video1Images = grabBufferedImages(this.video1Grabber)
-        val video2Images = grabBufferedImages(this.video2Grabber)
+        alignment = algorithm.run(video1Grabber, video2Grabber)
 
-        // execute the alignment algorithm with the images of both videos
-        alignment = algorithm.run(video1Images, video2Images)
+        // reset the grabbers to put the iterators to the videos' beginning
+        video1Grabber.reset()
+        video2Grabber.reset()
 
-        val video1It = video1Images.iterator()
-        val video2It = video2Images.iterator()
-
-        // iterate through the alignment sequence to build the image sequence
-        for (a in alignment) {
-            when (a) {
+        for (el in alignment) {
+            when (el) {
                 AlignmentElement.MATCH -> {
-                    val differences = getDifferences(video1It.next(), video2It.next())
-                    encoder.record(differences)
+                    encoder.record(getDifferencesBetweenBufferedImages(video1Grabber.next(), video2Grabber.next()))
                 }
                 AlignmentElement.INSERTION -> {
                     encoder.record(getColoredFrame(Color.GREEN))
-                    // skipping the second video's frame (insertion)
-                    video2It.next()
+                    video2Grabber.next()
                 }
                 AlignmentElement.DELETION -> {
                     encoder.record(getColoredFrame(Color.BLUE))
-                    // skipping the first video's frame (deletion)
-                    video1It.next()
+                    video1Grabber.next()
                 }
             }
         }
 
         encoder.stop()
         encoder.release()
-        this.video1Grabber.stop()
-        this.video2Grabber.stop()
+
+        video1Grabber.stop()
+        video2Grabber.stop()
+        video1Grabber.release()
+        video2Grabber.release()
     }
 
     /**
@@ -129,7 +136,7 @@ class DifferenceGenerator(
      * @param image2 the second image
      * @return a frame where different pixels are red and identical pixels are black
      */
-    private fun getDifferences(
+    private fun getDifferencesBetweenBufferedImages(
         image1: BufferedImage,
         image2: BufferedImage,
     ): Frame {
@@ -149,32 +156,18 @@ class DifferenceGenerator(
             val green2 = data2[index + 1] and 0xFF.toByte()
             val red2 = data2[index + 2] and 0xFF.toByte()
 
+            differencesData.data[index] = 0x00.toByte() // blue
+            differencesData.data[index + 1] = 0x00.toByte() // green
+
+            var differenceRed = 0x00.toByte()
             if (blue1 != blue2 || green1 != green2 || red1 != red2) {
-                differencesData.data[index] = 0x00.toByte() // blue
-                differencesData.data[index + 1] = 0x00.toByte() // green
-                differencesData.data[index + 2] = 0xFF.toByte() // red
+                differenceRed = 0xFF.toByte() // red
             }
+
+            differencesData.data[index + 2] = differenceRed
             index += 3
         }
         return converter.getFrame(differences)
-    }
-
-    /**
-     * Grabs all the frames from a video as BufferedImages.
-     *
-     * @param grabber the frame grabber of the video
-     * @return an array of BufferedImages
-     */
-    private fun grabBufferedImages(grabber: FFmpegFrameGrabber): Array<BufferedImage> {
-        val images = ArrayList<BufferedImage>()
-        var frame = grabber.grabImage()
-
-        while (frame != null) {
-            val image = converter.getImage(frame)
-            images.add(applyMasking(image))
-            frame = grabber.grabImage()
-        }
-        return images.toTypedArray()
     }
 
     /**
@@ -191,7 +184,7 @@ class DifferenceGenerator(
      * Creates a Buffered Image with a given color.
      *
      * @param color the color
-     * @return a Buffered Imnage colored in the given color
+     * @return a Buffered Image colored in the given color
      */
     private fun getColoredBufferedImage(
         color: Color,
@@ -203,23 +196,5 @@ class DifferenceGenerator(
         g2d.fillRect(0, 0, width, height)
         g2d.dispose()
         return result
-    }
-
-    private fun generateMasking() {
-        if (maskFile == null) {
-            mask = getColoredBufferedImage(Color(255, 255, 255, 0), BufferedImage.TYPE_4BYTE_ABGR)
-            return
-        }
-        mask = ImageIO.read(maskFile)
-        if (mask.width != width || mask.height != height) {
-            throw Exception("Mask must have the same dimensions as the videos")
-        }
-    }
-
-    private fun applyMasking(img: BufferedImage): BufferedImage {
-        val g2d: Graphics2D = img.createGraphics()
-        g2d.drawImage(mask, 0, 0, null)
-        g2d.dispose()
-        return img
     }
 }

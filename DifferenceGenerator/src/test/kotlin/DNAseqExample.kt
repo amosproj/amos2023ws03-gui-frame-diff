@@ -2,6 +2,16 @@ import algorithms.AlignmentAlgorithm
 import algorithms.AlignmentElement
 import algorithms.Gotoh
 import org.junit.jupiter.api.Test
+import kotlin.test.assertContentEquals
+
+class DnaMetric : MetricInterface<Char> {
+    override fun measureDistance(
+        a: Char,
+        b: Char,
+    ): Double {
+        return if (a == b) 0.0 else 1.0
+    }
+}
 
 class DNAseqExample {
     @Test
@@ -13,10 +23,20 @@ class DNAseqExample {
         val b: Array<Char> = arrayOf('A', 'A', 'A', 'A', 'G', 'G', 'T', 'A', 'C', 'G', 'T')
 
         val alignment: Array<AlignmentElement> = algorithm.run(a, b)
+        assertContentEquals(
+            alignment,
+            arrayOf(
+                AlignmentElement.INSERTION, AlignmentElement.INSERTION,
+                AlignmentElement.MATCH, AlignmentElement.MATCH, AlignmentElement.MATCH,
+                AlignmentElement.MATCH, AlignmentElement.MATCH,
+                AlignmentElement.DELETION, AlignmentElement.DELETION, AlignmentElement.DELETION,
+                AlignmentElement.MATCH, AlignmentElement.MATCH, AlignmentElement.MATCH, AlignmentElement.MATCH,
+            ),
+        )
 
-        var l1 = ArrayList<Char>()
-        var l2 = ArrayList<Char>()
-        var lDifference = ArrayList<Char>()
+        val l1 = ArrayList<Char>()
+        val l2 = ArrayList<Char>()
+        val lDifference = ArrayList<Char>()
 
         var i = 0
         var j = 0
