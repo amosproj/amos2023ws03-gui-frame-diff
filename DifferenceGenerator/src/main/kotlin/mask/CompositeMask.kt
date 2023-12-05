@@ -9,7 +9,7 @@ import javax.imageio.ImageIO
  * A composite mask possibly containing multiple masks to be applied to images.
  */
 class CompositeMask : Mask {
-    var maskImage: BufferedImage
+    private var maskImage: BufferedImage
 
     /**
      * Initializes a new instance of the [CompositeMask] class with an image as mask.

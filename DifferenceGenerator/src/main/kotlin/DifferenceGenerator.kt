@@ -184,7 +184,7 @@ class DifferenceGenerator(
      * Creates a Buffered Image with a given color.
      *
      * @param color the color
-     * @return a Buffered Imnage colored in the given color
+     * @return a Buffered Image colored in the given color
      */
     private fun getColoredBufferedImage(
         color: Color,

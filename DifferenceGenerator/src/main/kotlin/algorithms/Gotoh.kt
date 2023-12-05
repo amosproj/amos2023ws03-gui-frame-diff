@@ -21,12 +21,12 @@ class Gotoh<T>(
     private val gapOpenPenalty: Double,
     private val gapExtensionPenalty: Double,
 ) : AlignmentAlgorithm<T>() {
-    lateinit var score: Array<DoubleArray>
-    lateinit var gapA: Array<DoubleArray>
-    lateinit var gapB: Array<DoubleArray>
-    lateinit var similarityM: Array<DoubleArray>
-    var m: Int = -1
-    var n: Int = -1
+    private lateinit var score: Array<DoubleArray>
+    private lateinit var gapA: Array<DoubleArray>
+    private lateinit var gapB: Array<DoubleArray>
+    private lateinit var similarityM: Array<DoubleArray>
+    private var m: Int = -1
+    private var n: Int = -1
 
     /**
      * The function to execute the algorithm on the given sequences of objects.
@@ -150,19 +150,11 @@ class Gotoh<T>(
 
         // variable to store the last alignment "action"
         var origin =
-            (
-                when (finalScore) {
-                    score[m][n] -> {
-                        AlignmentElement.MATCH
-                    }
-                    gapA[m][n] -> {
-                        AlignmentElement.DELETION
-                    }
-                    else -> {
-                        AlignmentElement.INSERTION
-                    }
-                }
-            )
+            when (finalScore) {
+                score[m][n] -> AlignmentElement.MATCH
+                gapA[m][n] -> AlignmentElement.DELETION
+                else -> AlignmentElement.INSERTION
+            }
 
         while (i > 0 || j > 0) {
             traceback.add(origin)
@@ -173,12 +165,10 @@ class Gotoh<T>(
 
                     // determine, where the current score came from
                     origin =
-                        if (score[i][j] == score[i - 1][j - 1] + similarity) {
-                            AlignmentElement.MATCH
-                        } else if (score[i][j] == gapA[i - 1][j - 1] + similarity) {
-                            AlignmentElement.DELETION
-                        } else {
-                            AlignmentElement.INSERTION
+                        when (score[i][j]) {
+                            (score[i - 1][j - 1] + similarity) -> AlignmentElement.MATCH
+                            (gapA[i - 1][j - 1] + similarity) -> AlignmentElement.DELETION
+                            else -> AlignmentElement.INSERTION
                         }
                     i--
                     j--
@@ -186,25 +176,23 @@ class Gotoh<T>(
                 AlignmentElement.DELETION -> {
                     // determine, where the current score came from
                     origin =
-                        if (gapA[i][j] == gapA[i - 1][j] + gapExtensionPenalty) {
-                            AlignmentElement.DELETION
-                        } else if (gapA[i][j] == gapB[i - 1][j] + gapExtensionPenalty) {
-                            AlignmentElement.INSERTION
-                        } else {
-                            AlignmentElement.MATCH
+                        when (gapA[i][j]) {
+                            (gapA[i - 1][j] + gapExtensionPenalty) -> AlignmentElement.DELETION
+                            (gapB[i - 1][j] + gapExtensionPenalty) -> AlignmentElement.INSERTION
+                            else -> AlignmentElement.MATCH
                         }
+
                     i--
                 }
                 AlignmentElement.INSERTION -> {
                     // determine, where the current score came from
                     origin =
-                        if (gapB[i][j] == gapA[i][j - 1] + gapExtensionPenalty) {
-                            AlignmentElement.DELETION
-                        } else if (gapB[i][j] == gapB[i][j - 1] + gapExtensionPenalty) {
-                            AlignmentElement.INSERTION
-                        } else {
-                            AlignmentElement.MATCH
+                        when (gapB[i][j]) {
+                            (gapA[i][j - 1] + gapExtensionPenalty) -> AlignmentElement.DELETION
+                            (gapB[i][j - 1] + gapExtensionPenalty) -> AlignmentElement.INSERTION
+                            else -> AlignmentElement.MATCH
                         }
+
                     j--
                 }
             }
