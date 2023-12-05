@@ -6,6 +6,7 @@ import org.bytedeco.ffmpeg.global.avcodec.AV_CODEC_ID_FFV1
 import org.bytedeco.javacv.FFmpegFrameRecorder
 import org.bytedeco.javacv.Frame
 import wrappers.MaskedImageGrabber
+import wrappers.Resettable2DFrameConverter
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
