@@ -5,6 +5,10 @@ build/
 !**/src/test/**/build/
 local.properties
 VideoGenerator/
+# Ignore DifferenceGenerator test resources except for README.md
+src/test/resources/**
+!src/test/resources/README.md
+
 
 ### IntelliJ IDEA ###
 .idea/modules.xml

@@ -35,9 +35,5 @@ bin/
 # MacOS
 .DS_Store
 
-# DifferenceGenerator test resources
-# Videos are too large, please download from our drive
-DifferenceGenerator/src/test/resources/
-
 # License check reports
 licenses/reports/*
