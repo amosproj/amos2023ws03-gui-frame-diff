@@ -1,19 +1,13 @@
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import javax.swing.JFileChooser
 
@@ -50,7 +44,11 @@ sealed class Screen {
  */
 fun main(): Unit =
     application {
-        Window(onCloseRequest = ::exitApplication) {
+        Window(
+            title = "amos2023ws03-gui-frame-diff",
+            onCloseRequest = ::exitApplication,
+            state = WindowState(width = 1800.dp, height = 1000.dp),
+        ) {
             App()
         }
     }
@@ -69,6 +67,10 @@ fun App() {
         is Screen.SelectVideoScreen -> SelectVideoScreen { screen = Screen.DisplayVideoScreen }
         is Screen.DisplayVideoScreen -> DisplayVideoScreen { screen = Screen.SelectVideoScreen }
     }
+}
+
+@Composable
+fun testScreen(onNavigate: () -> Unit) {
 }
 
 /**
@@ -95,7 +97,10 @@ fun SelectVideoScreen(onNavigate: () -> Unit) {
             }
         }
         // Perform your video difference computation here
-        Button(onClick = onNavigate, enabled = video1Path?.isNotEmpty() == true && video2Path?.isNotEmpty() == true) {
+        Button(
+            onClick = onNavigate,
+            //            enabled = video1Path?.isNotEmpty() == true && video2Path?.isNotEmpty() == true
+        ) {
             Text("Compute differences and navigate")
         }
         Text("Selected Video 1 Path: $video1Path")
@@ -111,179 +116,7 @@ fun SelectVideoScreen(onNavigate: () -> Unit) {
  */
 @Composable
 fun DisplayVideoScreen(onNavigate: () -> Unit) {
-    var checkRun by remember { mutableStateOf(true) }
-    val buttonRun =
-        if (checkRun) {
-            "play.svg"
-        } else {
-            "pause.svg"
-        }
-    MaterialTheme {
-//        ###########   Text   ###########
-        Row(
-            modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(top = 50.dp, start = 50.dp),
-        ) {
-            Text(
-                text = "Video 1",
-                modifier =
-                Modifier
-                    .background(Color.Gray)
-                    .height(30.dp)
-                    .width(300.dp)
-                    .padding(top = 5.dp),
-                textAlign = TextAlign.Center,
-            )
-            Spacer(modifier = Modifier.width(30.dp))
-
-            Text(
-                text = "Diff",
-                modifier =
-                Modifier
-                    .background(Color.Gray)
-                    .height(30.dp)
-                    .width(300.dp)
-                    .padding(top = 5.dp),
-                textAlign = TextAlign.Center,
-            )
-            Spacer(modifier = Modifier.width(30.dp))
-
-            Text(
-                text = "Video 2",
-                modifier =
-                Modifier
-                    .background(Color.Gray)
-                    .height(30.dp)
-                    .width(300.dp)
-                    .padding(top = 5.dp),
-                textAlign = TextAlign.Center,
-            )
-        }
-//        ###########   Box   ###########
-        Row(
-            modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(top = 100.dp, start = 50.dp),
-            verticalAlignment = Alignment.Top,
-        ) {
-            Box(
-                modifier =
-                Modifier
-                    .size(300.dp)
-                    .background(Color.Gray),
-            )
-            Spacer(modifier = Modifier.width(30.dp))
-            Box(
-                modifier =
-                Modifier
-                    .size(300.dp)
-                    .background(Color(1.0f, 0.647f, 0.0f)),
-                // Orange
-            )
-            Spacer(modifier = Modifier.width(30.dp))
-            Box(
-                modifier =
-                Modifier
-                    .size(300.dp)
-                    .background(Color.Gray),
-            )
-        }
-//        ###########   Buttons   ###########
-        Row(
-            modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(top = 420.dp, start = 50.dp),
-            verticalAlignment = Alignment.Top,
-        ) {
-            Button(
-                onClick = {},
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
-                modifier =
-                Modifier
-                    .height(60.dp)
-                    .width(80.dp),
-            ) {
-                Image(
-                    painter = painterResource("skipStart.svg"),
-                    contentDescription = null,
-                    modifier =
-                    Modifier
-                        .size(50.dp),
-                )
-            }
-            Spacer(modifier = Modifier.width(250.dp))
-            Button(
-                onClick = {},
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
-                modifier =
-                Modifier
-                    .height(60.dp)
-                    .width(80.dp),
-            ) {
-                Image(
-                    painter = painterResource("skipPrev.svg"),
-                    contentDescription = null,
-                    modifier =
-                    Modifier
-                        .size(50.dp),
-                )
-            }
-            Spacer(modifier = Modifier.width(30.dp))
-
-            Button(
-                onClick = { checkRun = !checkRun },
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
-                modifier =
-                Modifier
-                    .height(60.dp)
-                    .width(80.dp),
-            ) {
-                Image(
-                    painter = painterResource(buttonRun),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                )
-            }
-
-            Spacer(modifier = Modifier.width(30.dp))
-
-            Button(
-                onClick = {},
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
-                modifier =
-                Modifier
-                    .height(60.dp)
-                    .width(80.dp),
-            ) {
-                Image(
-                    painter = painterResource("skipNext.svg"),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                )
-            }
-            Spacer(modifier = Modifier.width(250.dp))
-            Button(
-                onClick = {},
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
-                modifier =
-                Modifier
-                    .height(60.dp)
-                    .width(80.dp),
-            ) {
-                Image(
-                    painter = painterResource("skipEnd.svg"),
-                    contentDescription = null,
-                    modifier =
-                    Modifier
-                        .size(50.dp),
-                )
-            }
-        }
-    }
+    VideoEdit().DisplayVideoScreen()
 
     Button(onClick = onNavigate) {
         Text("Back")

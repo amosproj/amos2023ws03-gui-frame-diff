@@ -44,4 +44,7 @@ bin/
 ### properties ###
 .properties
 
+src/main/resources/test/*.png
+
+
 
