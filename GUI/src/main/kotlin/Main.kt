@@ -99,7 +99,7 @@ fun SelectVideoScreen(onNavigate: () -> Unit) {
         // Perform your video difference computation here
         Button(
             onClick = onNavigate,
-            //            enabled = video1Path?.isNotEmpty() == true && video2Path?.isNotEmpty() == true
+            // enabled = video1Path?.isNotEmpty() == true && video2Path?.isNotEmpty() == true
         ) {
             Text("Compute differences and navigate")
         }
