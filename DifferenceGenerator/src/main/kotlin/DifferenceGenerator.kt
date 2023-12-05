@@ -92,21 +92,21 @@ class DifferenceGenerator(
      *  - red and black pixels: a frame was modified (both videos contain the frame)
      */
     override fun generateDifference() {
-        val encoder = FFmpegFrameRecorder(this.outputFile, video1Grabber.imageWidth, video1Grabber.imageHeight)
+        val encoder = FFmpegFrameRecorder(this.outputFile, this.width, this.height)
         encoder.videoCodec = AV_CODEC_ID_FFV1
         encoder.frameRate = 1.0
         encoder.start()
 
         alignment = algorithm.run(video1Grabber, video2Grabber)
 
-        // reset the grabbers to put the iterators to the videos' starts
+        // reset the grabbers to put the iterators to the videos' beginning
         video1Grabber.reset()
         video2Grabber.reset()
 
         for (el in alignment) {
             when (el) {
                 AlignmentElement.MATCH -> {
-                    encoder.record(getDifferences(video1Grabber.next(), video2Grabber.next()))
+                    encoder.record(getDifferencesBetweenBufferedImages(video1Grabber.next(), video2Grabber.next()))
                 }
                 AlignmentElement.INSERTION -> {
                     encoder.record(getColoredFrame(Color.GREEN))
@@ -124,6 +124,8 @@ class DifferenceGenerator(
 
         video1Grabber.stop()
         video2Grabber.stop()
+        video1Grabber.release()
+        video2Grabber.release()
     }
 
     /**
@@ -133,7 +135,7 @@ class DifferenceGenerator(
      * @param image2 the second image
      * @return a frame where different pixels are red and identical pixels are black
      */
-    private fun getDifferences(
+    private fun getDifferencesBetweenBufferedImages(
         image1: BufferedImage,
         image2: BufferedImage,
     ): Frame {
@@ -156,11 +158,12 @@ class DifferenceGenerator(
             differencesData.data[index] = 0x00.toByte() // blue
             differencesData.data[index + 1] = 0x00.toByte() // green
 
+            var differenceRed = 0x00.toByte()
             if (blue1 != blue2 || green1 != green2 || red1 != red2) {
-                differencesData.data[index + 2] = 0xFF.toByte() // red
-            } else {
-                differencesData.data[index + 2] = 0x00.toByte() // red
+                differenceRed = 0xFF.toByte() // red
             }
+
+            differencesData.data[index + 2] = differenceRed
             index += 3
         }
         return converter.getFrame(differences)

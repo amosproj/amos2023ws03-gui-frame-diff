@@ -26,8 +26,8 @@ class optimizer():
         script_directory = os.path.dirname(script_directory)# /src
         script_directory = os.path.dirname(script_directory)# /DifferenceGenerator
 
-        gapOpen = trial.suggest_float("gapOpen", -1.0, 0.0)
-        gapExtend = trial.suggest_float("gapExtend", -1.0, 0.0 )
+        gapOpen = trial.suggest_float("gapOpen", -1.0, 0.5)
+        gapExtend = trial.suggest_float("gapExtend", -1.0, 0.5 )
 
         command = 'gradlew test --tests "DifferenceGeneratorTest.Test a generated case using TestCaseGenerator" --info '
         command = command + "-DgapOpenPenalty=" +'"' +str(gapOpen)+'"'
@@ -45,4 +45,12 @@ class optimizer():
 
 
 if __name__ == "__main__":
-    optimizer()
+    # run while true
+    # stop only on keyboard interrupt otherwise run even on crash
+    while True:
+        try:
+            optimizer()
+        except Exception as e:
+            continue
+        except KeyboardInterrupt:
+            break
