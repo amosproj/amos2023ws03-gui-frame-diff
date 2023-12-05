@@ -27,7 +27,7 @@ class VideoEdit {
         val resourceFolder = "test/"
 
         val folderPath: Path =
-            object {}.javaClass.getResource(resourceFolder).toURI().let { uri ->
+            object {}.javaClass.getResource(resourceFolder)!!.toURI().let { uri ->
                 if (uri.scheme == "jar") {
                     FileSystems.newFileSystem(uri, emptyMap<String, Any>()).getPath(resourceFolder)
                 } else {
@@ -39,6 +39,7 @@ class VideoEdit {
             Files.walk(folderPath, 1)
                 .filter { Files.isRegularFile(it) }
                 .map { folderPath.relativize(it).toString() }
+                .sorted()
                 .toList()
 
         var checkRun by remember { mutableStateOf(true) }
