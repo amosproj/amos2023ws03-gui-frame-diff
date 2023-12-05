@@ -126,7 +126,7 @@ class DivideAndConquerAligner<T>(private val algorithm: AlignmentAlgorithm<T>, p
         }
 
         // mark duplicates with a zero-length byte-array
-        return hashArray.mapIndexed { index, x -> if (duplicates.contains(index)) ByteArray(0) else x }.toTypedArray()
+        return hashArray.mapIndexed { index, x -> if (index in duplicates) ByteArray(0) else x }.toTypedArray()
     }
 
     /**

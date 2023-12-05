@@ -1,6 +1,5 @@
 package hashing
 
-import wrappers.Resettable2DFrameConverter
 import java.awt.image.BufferedImage
 import java.awt.image.DataBufferByte
 import java.security.MessageDigest
@@ -9,8 +8,6 @@ import java.security.MessageDigest
  * A hasher for BufferedImages.
  */
 class VideoFrameHasher : ObjectHasher<BufferedImage> {
-    private val converter = Resettable2DFrameConverter()
-
     /**
      * Returns the hash of the given image.
      *

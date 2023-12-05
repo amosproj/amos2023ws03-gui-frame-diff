@@ -38,7 +38,7 @@ class DifferenceGenerator(
     private var mask: Mask
 
     /**
-     * Initializes a new instance of the [DifferenceGenerator] class.
+     * Initializes a new instance of the class.
      *
      * @throws Exception if the videos are not in an [AcceptedCodecs.ACCEPTED_CODECS].
      */

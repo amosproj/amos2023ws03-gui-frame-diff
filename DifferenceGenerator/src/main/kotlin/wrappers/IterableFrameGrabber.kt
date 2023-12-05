@@ -14,7 +14,7 @@ open class IterableFrameGrabber(videoFile: File) : ResettableIterable<BufferedIm
     private val converter = Resettable2DFrameConverter()
 
     /**
-     * Initializes a new instance of the [IterableFrameGrabber] class.
+     * Initializes a new instance of the class.
      * Start the frame grabber and grab the first image.
      */
     init {

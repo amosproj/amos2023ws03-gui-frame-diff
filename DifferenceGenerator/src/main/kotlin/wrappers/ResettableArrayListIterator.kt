@@ -4,7 +4,7 @@ package wrappers
  * An iterator for ArrayLists that can be reset and have a size.
  *
  * This implementation can be used to plug [ArrayList]s into functions or classes that expect
- * [ResettableIterable]s. E.g. the [AlignmentAlgorithm] class.
+ * [ResettableIterable]s. E.g. the AlignmentAlgorithm class.
  */
 class ResettableArrayListIterator<T>(private val arr: ArrayList<T>) : ResettableIterable<T> {
     private var index = 0
