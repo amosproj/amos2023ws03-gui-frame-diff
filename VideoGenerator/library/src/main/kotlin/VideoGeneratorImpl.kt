@@ -11,7 +11,7 @@ import javax.imageio.ImageIO
  * @param videoPath The path to the output video file.
  */
 class VideoGeneratorImpl(
-    private val videoPath: String
+    private val videoPath: String,
 ) : AbstractVideoGenerator(videoPath) {
     private lateinit var recorder: FFmpegFrameRecorder
     var codecId: Int = avcodec.AV_CODEC_ID_FFV1
@@ -104,5 +104,4 @@ class VideoGeneratorImpl(
         frameRate = 25.0
         videoOptions = codecOptions
     }
-
 }

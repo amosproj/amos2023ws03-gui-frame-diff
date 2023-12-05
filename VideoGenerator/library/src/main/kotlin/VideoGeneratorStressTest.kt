@@ -1,10 +1,8 @@
+import org.bytedeco.ffmpeg.global.avcodec
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
-import org.bytedeco.ffmpeg.global.avcodec
-import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import java.io.File
 import java.lang.Exception
 import java.text.DecimalFormat
@@ -13,22 +11,21 @@ import kotlin.math.pow
 import kotlin.system.measureTimeMillis
 
 class VideoGeneratorStressTest {
-
-
     private lateinit var videoGenerator: VideoGeneratorImpl
     private val videoPath = "src/resources/testOutput.mkv"
     private val inputPath = "../example/app/src/androidTest/assets/screen"
-    private val testCodecs = mapOf<Int, Map<String, String>?>(
-        avcodec.AV_CODEC_ID_FFV1 to null,
-        //avcodec.AV_CODEC_ID_YUV4 to null,
-        //avcodec.AV_CODEC_ID_H265 to null,
-        avcodec.AV_CODEC_ID_VP9 to mapOf<String, String>("lossless" to "1"),
-        //avcodec.AV_CODEC_ID_VP8 to mapOf<String,String>("lossless" to "1"),
-        //avcodec.AV_CODEC_ID_VP9 to null,
-        //avcodec.AV_CODEC_ID_H264 to mapOf<String, String>("crf" to "0"),
-        //avcodec.AV_CODEC_ID_SNOW to null,
-        //avcodec.AV_CODEC_ID_JPEG2000 to mapOf<String, String>("pred" to "1")
-    )
+    private val testCodecs =
+        mapOf<Int, Map<String, String>?>(
+            avcodec.AV_CODEC_ID_FFV1 to null,
+            // avcodec.AV_CODEC_ID_YUV4 to null,
+            // avcodec.AV_CODEC_ID_H265 to null,
+            avcodec.AV_CODEC_ID_VP9 to mapOf<String, String>("lossless" to "1"),
+            // avcodec.AV_CODEC_ID_VP8 to mapOf<String,String>("lossless" to "1"),
+            // avcodec.AV_CODEC_ID_VP9 to null,
+            // avcodec.AV_CODEC_ID_H264 to mapOf<String, String>("crf" to "0"),
+            // avcodec.AV_CODEC_ID_SNOW to null,
+            // avcodec.AV_CODEC_ID_JPEG2000 to mapOf<String, String>("pred" to "1")
+        )
     private val testSizes = arrayOf(10, 100, 500, 800, 1000)
 
     @BeforeEach
@@ -60,18 +57,19 @@ class VideoGeneratorStressTest {
     private fun loadNFrames(n: Int = 100) {
         var combinedFileSize = 0L
         try {
-            val time = measureTimeMillis {
-                var i = 0
-                while (i < n) {
-                    val randomFrame = getRandomFrame(inputPath)
-                    if (randomFrame != null) {
-                        combinedFileSize += randomFrame.length()
-                        videoGenerator.loadFrame(randomFrame.readBytes())
+            val time =
+                measureTimeMillis {
+                    var i = 0
+                    while (i < n) {
+                        val randomFrame = getRandomFrame(inputPath)
+                        if (randomFrame != null) {
+                            combinedFileSize += randomFrame.length()
+                            videoGenerator.loadFrame(randomFrame.readBytes())
+                        }
+                        i++
                     }
-                    i++
+                    videoGenerator.save()
                 }
-                videoGenerator.save()
-            }
             val video = File(videoPath)
             assertTrue(video.exists())
             println("Codec: ${avcodec.avcodec_get_name(videoGenerator.codecId).string}")
@@ -79,14 +77,14 @@ class VideoGeneratorStressTest {
             println(
                 "File size reduced from ${readableFileSize(combinedFileSize)} to ${
                     readableFileSize(
-                        video.length()
+                        video.length(),
                     )
                 } (${
                     String.format(
                         "%.1f",
-                        video.length().toDouble() / combinedFileSize.toDouble() * 100
+                        video.length().toDouble() / combinedFileSize.toDouble() * 100,
                     )
-                }%)"
+                }%)",
             )
         } catch (e: Exception) {
             println("Codec: ${avcodec.avcodec_get_name(videoGenerator.codecId).string}")
@@ -94,7 +92,6 @@ class VideoGeneratorStressTest {
             e.printStackTrace()
             assertTrue(false)
         }
-
     }
 
     private fun getRandomFrame(path: String): File? {
@@ -107,7 +104,7 @@ class VideoGeneratorStressTest {
         val units = arrayOf("B", "kB", "MB", "GB", "TB")
         val digitGroups = (log10(size.toDouble()) / log10(1024.0)).toInt()
         return DecimalFormat("#,##0.#").format(
-            size / 1024.0.pow(digitGroups.toDouble())
+            size / 1024.0.pow(digitGroups.toDouble()),
         ) + " " + units[digitGroups]
     }
 }
