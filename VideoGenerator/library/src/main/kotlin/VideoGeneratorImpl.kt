@@ -11,9 +11,12 @@ import javax.imageio.ImageIO
  * @param videoPath The path to the output video file.
  */
 class VideoGeneratorImpl(
-    private val videoPath: String,
+    private val videoPath: String
 ) : AbstractVideoGenerator(videoPath) {
     private lateinit var recorder: FFmpegFrameRecorder
+    var codecId: Int = avcodec.AV_CODEC_ID_FFV1
+    var videoFormat: String = "matroska"
+    var codecOptions: Map<String, String> = mapOf("" to "")
 
     /**
      * Loads a frame from the given byte array.
@@ -96,8 +99,10 @@ class VideoGeneratorImpl(
         imageWidth: Int,
         imageHeight: Int,
     ) = FFmpegFrameRecorder(videoPath, imageWidth, imageHeight).apply {
-        videoCodec = avcodec.AV_CODEC_ID_FFV1
-        format = "matroska"
+        videoCodec = codecId
+        format = videoFormat
         frameRate = 25.0
+        videoOptions = codecOptions
     }
+
 }
