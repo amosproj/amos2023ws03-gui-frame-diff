@@ -193,7 +193,7 @@ class VideoEdit {
 
                 Button(
                     onClick = {
-                        if (index < resourceFolder.length) {
+                        if (index < fileNames.size - 1) {
                             index++
                         }
                         println("next button clicked")
