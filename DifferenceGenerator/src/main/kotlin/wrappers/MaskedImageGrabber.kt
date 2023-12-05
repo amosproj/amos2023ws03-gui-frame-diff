@@ -18,10 +18,6 @@ class MaskedImageGrabber(videoFile: File, var mask: Mask?) : IterableFrameGrabbe
      */
     override fun next(): BufferedImage {
         val image = super.next()
-        return if (mask != null) {
-            mask!!.apply(image)
-        } else {
-            image
-        }
+        return mask?.apply(image) ?: image
     }
 }

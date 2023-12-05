@@ -114,13 +114,13 @@ class DivideAndConquerAligner<T>(private val algorithm: AlignmentAlgorithm<T>, p
      * @return The array of hashes with duplicates marked as empty byte-arrays.
      */
     private fun markDuplicates(hashArray: Array<ByteArray>): Array<ByteArray> {
-        val duplicates: Set<Int> = setOf()
+        val duplicates: MutableSet<Int> = mutableSetOf()
         for (i in hashArray.indices) {
             for (j in i + 1 until hashArray.size) {
                 // if two hashes are equal, put the indices of both in the duplicates set
                 if (hashArray[i].contentEquals(hashArray[j])) {
-                    duplicates.plus(j)
-                    duplicates.plus(i)
+                    duplicates.add(j)
+                    duplicates.add(j)
                 }
             }
         }
