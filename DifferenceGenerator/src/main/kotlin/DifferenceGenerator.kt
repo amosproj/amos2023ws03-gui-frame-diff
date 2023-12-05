@@ -62,8 +62,8 @@ class DifferenceGenerator(
                 CompositeMask(maskFile, this.width, this.height)
             }
 
-        video1Grabber.setMask(mask)
-        video2Grabber.setMask(mask)
+        video1Grabber.mask = mask
+        video2Grabber.mask = mask
 
         generateDifference()
     }
