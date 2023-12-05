@@ -10,6 +10,7 @@
       . Gradle Build-Tool installed.
 2. **Performing the Build:**
     - `./gradlew build` 
+    - `./gradlew downloadAndUnzipTestAssets` to get some example screenshots
     - Create an application for your OS
        - `./gradlew createDistributable`
        - Executable at `build/compose/binaries/main/app/GUI/`
