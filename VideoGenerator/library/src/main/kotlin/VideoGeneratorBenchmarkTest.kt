@@ -10,7 +10,7 @@ import kotlin.math.log10
 import kotlin.math.pow
 import kotlin.system.measureTimeMillis
 
-class VideoGeneratorStressTest {
+class VideoGeneratorBenchmarkTest {
     private lateinit var videoGenerator: VideoGeneratorImpl
     private val videoPath = "src/resources/testOutput.mkv"
     private val inputPath = "../example/app/src/androidTest/assets/screen"
