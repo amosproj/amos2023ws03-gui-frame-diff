@@ -1,5 +1,6 @@
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.Frame
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import wrappers.Resettable2DFrameConverter
 import java.awt.image.DataBufferByte
@@ -11,6 +12,7 @@ import kotlin.system.measureTimeMillis
 
 // maybe an interface for the methods?
 
+@Tag("benchmark")
 internal class ReadRuntimeTests {
     private val resourcesPathPrefix = "src/test/resources/"
     private val video9Frames = resourcesPathPrefix + "9Screenshots.mov"

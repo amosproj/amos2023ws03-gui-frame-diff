@@ -1,4 +1,5 @@
 import org.bytedeco.javacv.Frame
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import wrappers.Resettable2DFrameConverter
 import java.awt.Color
@@ -7,6 +8,7 @@ import kotlin.system.measureTimeMillis
 
 // maybe an interface for the methods?
 
+@Tag("benchmark")
 internal class WriteRuntimeTests {
     private val runAmount = 50
     private val size = 6000
