@@ -1,0 +1,27 @@
+name: test
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+jobs:
+  lib2:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./DifferenceGenerator
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+      - name: Run the Gradle package task
+        uses: gradle/gradle-build-action@v2
+
+      - name: Download test assets
+        run: ./gradlew downloadAndUnzipTestAssets
+      - name: Run Tests
+        run: ./gradlew test
