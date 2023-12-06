@@ -1,6 +1,11 @@
+root = true
+
 # Apply standard rules to all Kotlin files
 [*.{kt,kts}]
+ktlint_code_style = ktlint_official
 ktlint_standard = enabled
+indent_size = 4
+indent_style = space
 
 # Ignore code in Prototype directory
 [Prototypes/**/*.kt]
