@@ -6,12 +6,12 @@
  * of frames in a given direction, jumping to a specific percentage of the video, jumping to a specific frame,
  * and jumping to the next difference frame. Implementing classes should provide implementation for these methods.
  */
-abstract class AbstractFrameNavigationInterface {
+interface AbstractFrameNavigationInterface {
 
     /**
      * Jump n frames in a specified direction
      */
-    abstract fun jumpFrames(frames: Int, direction: Boolean)
+    abstract fun jumpFrames(frames: Int, forward: Boolean)
 
     /**
      * Jump to a specified percentage of the diff video
@@ -26,5 +26,5 @@ abstract class AbstractFrameNavigationInterface {
     /**
      * Jump to the next diff
      */
-    abstract fun jumpToNextDiff(direction: Boolean)
+    abstract fun jumpToNextDiff(forward: Boolean)
 }
