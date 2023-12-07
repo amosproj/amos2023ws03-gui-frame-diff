@@ -26,5 +26,5 @@ abstract class AbstractFrameNavigationInterface {
     /**
      * Jump to the next diff
      */
-    abstract fun jumpToNextDiff()
+    abstract fun jumpToNextDiff(direction: Boolean)
 }
