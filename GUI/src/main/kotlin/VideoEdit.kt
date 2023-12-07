@@ -8,6 +8,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -20,10 +21,14 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 class VideoEdit {
+    @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     fun DisplayVideoScreen() {
         var fileNames by remember { mutableStateOf(emptyList<String>()) }
         var index by remember { mutableStateOf(0) }
+//        ############test################
+
+        //        ############test################
         val resourceFolder = "test/"
 
         val folderPath: Path =
@@ -41,14 +46,6 @@ class VideoEdit {
                 .map { folderPath.relativize(it).toString() }
                 .sorted()
                 .toList()
-
-        var checkRun by remember { mutableStateOf(true) }
-        val buttonRun =
-            if (checkRun) {
-                "play.svg"
-            } else {
-                "pause.svg"
-            }
 
         MaterialTheme {
 //        ###########   Text   ###########
@@ -136,6 +133,7 @@ class VideoEdit {
             ) {
                 Button(
                     onClick = {
+                        println("prev diff button clicked")
                     },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
                     modifier =
@@ -157,7 +155,7 @@ class VideoEdit {
                         if (index > 0) {
                             index--
                         }
-                        println("prev button clicked")
+                        println("prev frame button clicked")
                     },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
                     modifier =
@@ -173,31 +171,14 @@ class VideoEdit {
                                 .size(50.dp),
                     )
                 }
-                Spacer(modifier = Modifier.width(130.dp))
-
-                Button(
-                    onClick = { checkRun = !checkRun },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
-                    modifier =
-                        Modifier
-                            .height(60.dp)
-                            .width(80.dp),
-                ) {
-                    Image(
-                        painter = painterResource(buttonRun),
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(130.dp))
+                Spacer(modifier = Modifier.width(340.dp))
 
                 Button(
                     onClick = {
                         if (index < fileNames.size - 1) {
                             index++
                         }
-                        println("next button clicked")
+                        println("next frame button clicked")
                     },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
                     modifier =
@@ -213,7 +194,9 @@ class VideoEdit {
                 }
                 Spacer(modifier = Modifier.width(450.dp))
                 Button(
-                    onClick = {},
+                    onClick = {
+                        println("next diff button clicked")
+                    },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
                     modifier =
                         Modifier

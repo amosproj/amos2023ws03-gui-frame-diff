@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
@@ -42,12 +44,25 @@ sealed class Screen {
  *
  * @return [Unit]
  */
+@OptIn(ExperimentalComposeUiApi::class)
 fun main(): Unit =
     application {
         Window(
             title = "amos2023ws03-gui-frame-diff",
             onCloseRequest = ::exitApplication,
             state = WindowState(width = 1800.dp, height = 1000.dp),
+            onKeyEvent = { event ->
+                if (event.type == KeyEventType.KeyDown && event.key == Key.DirectionRight && !event.isCtrlPressed) {
+                    println("right was pressed ")
+                } else if (event.type == KeyEventType.KeyDown && event.key == Key.DirectionLeft && !event.isCtrlPressed) {
+                    println("left was pressed ")
+                } else if (event.type == KeyEventType.KeyDown && event.isCtrlPressed && event.key == Key.DirectionRight) {
+                    println("Ctrl + right was pressed")
+                } else if (event.type == KeyEventType.KeyDown && event.isCtrlPressed && event.key == Key.DirectionLeft) {
+                    println("Ctrl + left was pressed")
+                }
+                false
+            },
         ) {
             App()
         }
