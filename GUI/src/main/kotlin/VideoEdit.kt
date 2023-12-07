@@ -1,3 +1,5 @@
+
+import algorithms.Gotoh
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -26,6 +28,12 @@ class VideoEdit {
     fun DisplayVideoScreen() {
         var fileNames by remember { mutableStateOf(emptyList<String>()) }
         var index by remember { mutableStateOf(0) }
+        DifferenceGenerator(
+            "test.mp4",
+            "test.mp4",
+            "test.mp4",
+            Gotoh(PixelCountMetric(), 2.0, 3.0),
+        )
 //        ############test################
 
         //        ############test################
