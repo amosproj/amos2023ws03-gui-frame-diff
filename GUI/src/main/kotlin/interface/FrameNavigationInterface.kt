@@ -1,4 +1,5 @@
 
+
 /**
  * Provides navigation methods for frames in a video.
  *
@@ -7,7 +8,6 @@
  * and jumping to the next difference frame. Implementing classes should provide implementation for these methods.
  */
 interface FrameNavigationInterface {
-
     /**
      * Jump n frames in a specified direction
      */
