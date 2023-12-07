@@ -26,7 +26,7 @@ jobs:
       - name: Give exec permission for ./gradlew
         run: chmod +x ./gradlew
       - name: Assemble the apk
-        run: ./gradlew assemble
+        run: ./gradlew assembleDebug assembleAndroidTest
       - name: Download test assets
         run: ./gradlew downloadAndUnzipTestAssets
       - name: Run Tests
