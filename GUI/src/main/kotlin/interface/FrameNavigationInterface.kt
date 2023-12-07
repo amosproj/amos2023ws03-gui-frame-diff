@@ -11,7 +11,7 @@ interface FrameNavigationInterface {
     /**
      * Jump n frames in a specified direction
      */
-    fun jumpFrames(frames: Int, forward: Boolean)
+    fun jumpFrames(frames: Int)
 
     /**
      * Jump to a specified percentage of the diff video
