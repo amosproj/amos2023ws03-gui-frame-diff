@@ -1,0 +1,53 @@
+name: test
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+jobs:
+  lib1:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./VideoGenerator/example
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          cache: 'gradle'
+          cache-dependency-path: |
+            ./VideoGenerator/example/*.gradle*
+            ./VideoGenerator/example/**/gradle-wrapper.properties
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Give exec permission for ./gradlew
+        run: chmod +x ./gradlew
+      - name: Assemble the apk
+        run: ./gradlew assembleDebug assembleAndroidTest
+      - name: Download test assets
+        run: ./gradlew downloadAndUnzipTestAssets
+      - name: Run Tests
+        run: ./gradlew test
+  lib2:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./DifferenceGenerator
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          cache: 'gradle'
+          cache-dependency-path: |
+            ./DifferenceGenerator/*.gradle*
+            ./DifferenceGenerator/**/gradle-wrapper.properties
+
+      - name: Download test assets
+        run: ./gradlew downloadAndUnzipTestAssets
+      - name: Run Tests
+        run: ./gradlew test

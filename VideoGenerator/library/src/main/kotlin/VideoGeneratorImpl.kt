@@ -1,4 +1,5 @@
 import org.bytedeco.ffmpeg.global.avcodec
+import org.bytedeco.ffmpeg.global.avutil
 import org.bytedeco.javacv.FFmpegFrameRecorder
 import org.bytedeco.javacv.Frame
 import java.io.ByteArrayInputStream
@@ -17,6 +18,11 @@ class VideoGeneratorImpl(
     var codecId: Int = avcodec.AV_CODEC_ID_FFV1
     var videoFormat: String = "matroska"
     var codecOptions: Map<String, String> = mapOf("" to "")
+
+    init {
+        // turn off verbose ffmpeg output
+        avutil.av_log_set_level(avutil.AV_LOG_QUIET)
+    }
 
     /**
      * Loads a frame from the given byte array.

@@ -21,6 +21,10 @@ dependencies {
     testImplementation(kotlin("test"))
 }
 
+tasks.test {
+    useJUnitPlatform { excludeTags("benchmark") }
+}
+
 kotlin {
     jvmToolchain(11)
 }
