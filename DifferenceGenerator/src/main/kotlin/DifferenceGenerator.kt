@@ -3,6 +3,7 @@ import algorithms.AlignmentElement
 import mask.CompositeMask
 import mask.Mask
 import org.bytedeco.ffmpeg.global.avcodec.AV_CODEC_ID_FFV1
+import org.bytedeco.ffmpeg.global.avutil
 import org.bytedeco.javacv.FFmpegFrameRecorder
 import org.bytedeco.javacv.Frame
 import wrappers.MaskedImageGrabber
@@ -64,6 +65,9 @@ class DifferenceGenerator(
 
         video1Grabber.mask = mask
         video2Grabber.mask = mask
+
+        // turn off verbose ffmpeg output
+        avutil.av_log_set_level(avutil.AV_LOG_QUIET)
 
         generateDifference()
     }
