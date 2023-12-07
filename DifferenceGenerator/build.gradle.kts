@@ -9,13 +9,18 @@ plugins {
     id("com.github.jk1.dependency-license-report") version "2.5"
 }
 
+// needed if imported as a dependency
+repositories {
+    mavenCentral()
+}
+
 group = "org.example"
 version = "1.0-SNAPSHOT"
 
 dependencies {
     testImplementation(kotlin("test"))
     implementation("org.bytedeco:javacv-platform:1.5.7")
-    testImplementation(project(mapOf("path" to ":VideoGenerator")))
+    implementation(project(path = ":VideoGenerator"))
 }
 
 tasks.test {

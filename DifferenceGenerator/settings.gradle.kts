@@ -1,8 +1,5 @@
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        mavenCentral()
-    }
+    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
 }
 
 include(":VideoGenerator")
