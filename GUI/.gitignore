@@ -43,8 +43,11 @@ bin/
 
 ### properties ###
 .properties
+local.properties
 
-src/main/resources/test/*.png
+### Resources ###
+src/main/resources/test/
+src/main/resources/*.zip
 
 
 
