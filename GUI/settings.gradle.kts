@@ -11,3 +11,7 @@ pluginManagement {
 }
 
 rootProject.name = "GUI"
+
+include(":DifferenceGenerator", ":VideoGenerator")
+project(":DifferenceGenerator").projectDir = rootProject.projectDir.resolve("../DifferenceGenerator")
+project(":VideoGenerator").projectDir = rootProject.projectDir.resolve("../VideoGenerator/library")

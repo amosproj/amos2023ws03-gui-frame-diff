@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 
 plugins {
-    kotlin("jvm")
+    kotlin("jvm") version "1.8.0"
     id("org.jetbrains.compose")
     id("com.github.jk1.dependency-license-report") version "2.5"
 }
@@ -28,6 +28,8 @@ dependencies {
     // (in a separate module for demo project and in testMain).
     // With compose.desktop.common you will also lose @Preview functionality
     implementation(compose.desktop.currentOs)
+    implementation("org.bytedeco:javacv-platform:1.5.7")
+    implementation(project(path = ":DifferenceGenerator"))
 }
 
 compose.desktop {
