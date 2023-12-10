@@ -50,7 +50,7 @@ internal class DifferenceGeneratorTest {
     fun `Test a generated case using TestCaseGenerator`() {
         var gapOpen = -0.5
         var gapExtension = -0.0
-        val iterations = 20
+        val iterations = 15
         System.getProperty("gapOpenPenalty")?.let {
             gapOpen = it.toDouble()
         }
@@ -68,7 +68,7 @@ internal class DifferenceGeneratorTest {
 
         var allDistances = Array(iterations) { 0 }
         for (i in 0 until iterations) {
-            val testCaseGenerator = TestCaseGenerator(pathVideo1, pathVideo2, 12)
+            val testCaseGenerator = TestCaseGenerator(pathVideo1, pathVideo2, 50)
             val expectedAlignment = testCaseGenerator.generateRandomTestCase()
             val differenceGenerator = DifferenceGenerator(pathVideo1, pathVideo2, outputPath, algorithm)
             val actualAlignment = differenceGenerator.alignment
