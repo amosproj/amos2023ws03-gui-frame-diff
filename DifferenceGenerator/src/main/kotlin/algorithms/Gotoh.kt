@@ -18,8 +18,8 @@ import wrappers.ResettableIterable
  */
 class Gotoh<T>(
     private val metric: MetricInterface<T>,
-    private val gapOpenPenalty: Double,
-    private val gapExtensionPenalty: Double,
+    private val gapOpenPenalty: Double = 0.2,
+    private val gapExtensionPenalty: Double = -0.8,
 ) : AlignmentAlgorithm<T>() {
     private lateinit var score: Array<DoubleArray>
     private lateinit var gapA: Array<DoubleArray>
