@@ -3,6 +3,7 @@ package logic.differenceGeneratorWrapper
 import DifferenceGenerator
 import PixelCountMetric
 import algorithms.AlignmentAlgorithm
+import algorithms.AlignmentElement
 import algorithms.DivideAndConquerAligner
 import algorithms.Gotoh
 import hashing.VideoFrameHasher
@@ -57,5 +58,14 @@ class DifferenceGeneratorWrapper(
         }
         differenceGenerator.generateDifference()
         return outputPath
+    }
+
+    /**
+     * Returns the sequence of alignment elements.
+     *
+     * @return The sequence of alignment elements.
+     */
+    fun getSequence(): Array<AlignmentElement> {
+        return differenceGenerator.alignment
     }
 }
