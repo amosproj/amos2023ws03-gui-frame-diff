@@ -30,7 +30,7 @@ class TestCaseGenerator(
                         0.3f,
                     AlignmentElement.DELETION to
                         0.05f,
-                    AlignmentElement.MATCH to
+                    AlignmentElement.PERFECT to
                         0.65f,
                 ),
             AlignmentElement.DELETION to
@@ -39,16 +39,16 @@ class TestCaseGenerator(
                         0.05f,
                     AlignmentElement.DELETION to
                         0.2f,
-                    AlignmentElement.MATCH to
+                    AlignmentElement.PERFECT to
                         0.75f,
                 ),
-            AlignmentElement.MATCH to
+            AlignmentElement.PERFECT to
                 mapOf(
                     AlignmentElement.INSERTION to
                         0.1f,
                     AlignmentElement.DELETION to
                         0.05f,
-                    AlignmentElement.MATCH to
+                    AlignmentElement.PERFECT to
                         0.85f,
                 ),
         )
@@ -64,7 +64,7 @@ class TestCaseGenerator(
         var position = 0
         var result = ArrayList<AlignmentElement>()
 
-        var currentElement = AlignmentElement.MATCH
+        var currentElement = AlignmentElement.PERFECT
 
         while (position < baseLength) { // + Random.nextInt(-2, 2)
             // use transitionProbabilites to determine next element
@@ -96,7 +96,7 @@ class TestCaseGenerator(
                         AlignmentElement.DELETION
                     }
                     else -> {
-                        AlignmentElement.MATCH
+                        AlignmentElement.PERFECT
                     }
                 }
             // add the next element to the result
@@ -114,7 +114,7 @@ class TestCaseGenerator(
                 AlignmentElement.DELETION -> {
                     videoGenerator1.loadFrame(getByteArray(position + 1, false))
                 }
-                AlignmentElement.MATCH -> {
+                AlignmentElement.PERFECT -> {
                     videoGenerator1.loadFrame(getByteArray(position + 1, false))
                     videoGenerator2.loadFrame(
                         getByteArray(
@@ -123,6 +123,7 @@ class TestCaseGenerator(
                         ),
                     )
                 }
+                else -> throw Exception("Invalid alignment element")
             }
 
             position++

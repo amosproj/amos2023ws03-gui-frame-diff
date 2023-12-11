@@ -9,11 +9,13 @@ import wrappers.ResettableIterable
  * MATCH: the two objects in the sequence are associated with each other.
  * INSERTION: the object in the second sequence is not contained in the first sequence.
  * DELETION: the object in the first sequence is not contained in the second sequence.
+ * PERFECT: the two objects in the sequence are equal.
  */
 enum class AlignmentElement {
     MATCH,
     INSERTION,
     DELETION,
+    PERFECT,
 }
 
 /**
