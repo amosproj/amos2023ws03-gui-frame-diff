@@ -1,39 +1,31 @@
+import algorithms.AlignmentElement
+import androidx.compose.material.Surface
 import androidx.compose.runtime.*
-import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.input.key.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
+import models.AllVideos
 import ui.screens.DiffScreen
 import ui.screens.SelectVideoScreen
+import ui.themes.defaultTheme
 
 /**
  * The main entry point of the application.
  *
  * @return [Unit]
  */
-@OptIn(ExperimentalComposeUiApi::class)
+
 fun main(): Unit =
     application {
         Window(
             title = "amos2023ws03-gui-frame-diff",
             onCloseRequest = ::exitApplication,
             state = WindowState(width = 1800.dp, height = 1000.dp),
-            onKeyEvent = { event ->
-                if (event.type == KeyEventType.KeyDown && event.key == Key.DirectionRight && !event.isCtrlPressed) {
-                    println("right was pressed ")
-                } else if (event.type == KeyEventType.KeyDown && event.key == Key.DirectionLeft && !event.isCtrlPressed) {
-                    println("left was pressed ")
-                } else if (event.type == KeyEventType.KeyDown && event.isCtrlPressed && event.key == Key.DirectionRight) {
-                    println("Ctrl + right was pressed")
-                } else if (event.type == KeyEventType.KeyDown && event.isCtrlPressed && event.key == Key.DirectionLeft) {
-                    println("Ctrl + left was pressed")
-                }
-                false
-            },
         ) {
-            App()
+            // applies the default Theme to the application
+            defaultTheme { App() }
         }
     }
 
@@ -44,23 +36,27 @@ fun main(): Unit =
  */
 @Composable
 fun App() {
-    var screen by remember { mutableStateOf<Screen>(Screen.SelectVideoScreen) }
+    // Background Color
+    Surface(color = Color.hsv(340f, 0.83f, 0.04f)) {
+        var screen by remember { mutableStateOf<Screen>(Screen.SelectVideoScreen) }
+        var pathObj by remember { mutableStateOf(AllVideos("", "", "")) }
+        var sequenceObj by remember { mutableStateOf(arrayOf<AlignmentElement>()) }
 
-    /**
-     * This function is used to change the screen.
-     *
-     * @param newScreen The new screen to be displayed.
-     * @return [Unit]
-     */
-    fun setScreen(newScreen: Screen) {
-        screen = newScreen
-    }
+        fun setDiffScreen(
+            pathsObj: AllVideos<String>,
+            sequences: Array<AlignmentElement>,
+        ) {
+            screen = Screen.DiffScreen
+            sequenceObj = sequences
+            pathObj = pathsObj
+        }
 
-    when (screen) {
-        is Screen.SelectVideoScreen -> SelectVideoScreen(::setScreen)
-        is Screen.DiffScreen -> DiffScreen()
-        else -> {
-            throw Exception("Screen not implemented")
+        when (screen) {
+            is Screen.SelectVideoScreen -> SelectVideoScreen(::setDiffScreen)
+            is Screen.DiffScreen -> DiffScreen(pathObj, sequenceObj)
+            else -> {
+                throw Exception("Screen not implemented")
+            }
         }
     }
 }
