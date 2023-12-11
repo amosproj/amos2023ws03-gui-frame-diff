@@ -138,18 +138,20 @@ class DivideAndConquerAligner<T>(private val algorithm: AlignmentAlgorithm<T>, p
      */
     private fun findMatches(): Array<Pair<Int, Int>> {
         val equals = ArrayList<Pair<Int, Int>>()
+        // optimize runtime and prevent swapped matches by keeping track of the minimum index
+        var minimum = -1
         // find all equal frames that are not marked as duplicates
         for (i in hashes1.indices) {
             // skip if marked as duplicate
             if (hashes1[i].isEmpty()) continue
-            for (j in hashes2.indices) {
+            for (j in minimum + 1 until hashes2.size) {
                 if (hashes1[i].contentEquals(hashes2[j])) {
                     equals.add(Pair(i, j)) // only one pair is possible
+                    minimum = j
                     break
                 }
             }
         }
-
         return equals.toTypedArray()
     }
 }
