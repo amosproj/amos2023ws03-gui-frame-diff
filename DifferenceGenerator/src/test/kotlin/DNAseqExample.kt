@@ -27,10 +27,10 @@ class DNAseqExample {
             alignment,
             arrayOf(
                 AlignmentElement.INSERTION, AlignmentElement.INSERTION,
-                AlignmentElement.MATCH, AlignmentElement.MATCH, AlignmentElement.MATCH,
-                AlignmentElement.MATCH, AlignmentElement.MATCH,
+                AlignmentElement.PERFECT, AlignmentElement.PERFECT, AlignmentElement.PERFECT,
+                AlignmentElement.PERFECT, AlignmentElement.PERFECT,
                 AlignmentElement.DELETION, AlignmentElement.DELETION, AlignmentElement.DELETION,
-                AlignmentElement.MATCH, AlignmentElement.MATCH, AlignmentElement.MATCH, AlignmentElement.MATCH,
+                AlignmentElement.PERFECT, AlignmentElement.PERFECT, AlignmentElement.PERFECT, AlignmentElement.MATCH,
             ),
         )
 
@@ -61,6 +61,13 @@ class DNAseqExample {
                     l2.add('-')
                     lDifference.add(' ')
                     i++
+                }
+                AlignmentElement.PERFECT -> {
+                    l1.add(a[i])
+                    l2.add(b[j])
+                    lDifference.add('|')
+                    i++
+                    j++
                 }
             }
         }

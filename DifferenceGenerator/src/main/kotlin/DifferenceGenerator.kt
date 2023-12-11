@@ -121,9 +121,13 @@ class DifferenceGenerator(
                     encoder.record(getColoredFrame(Color.BLUE))
                     video1Grabber.next()
                 }
+                AlignmentElement.PERFECT -> {
+                    encoder.record(getColoredFrame(Color.BLACK))
+                    video1Grabber.next()
+                    video2Grabber.next()
+                }
             }
         }
-
         encoder.stop()
         encoder.release()
 

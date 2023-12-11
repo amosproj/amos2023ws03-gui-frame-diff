@@ -1,68 +1,100 @@
 package ui.screens
-import Screen
+import algorithms.AlignmentElement
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import logic.differenceGeneratorWrapper.DifferenceGeneratorWrapper
+import models.AllVideos
+import ui.components.AutoSizeText
 import ui.components.FileSelectorButton
+import java.nio.file.FileSystems
 
 /**
- * A Composable function that creates a screen to select two videos and an output path.
- *
- * @param setScreen A function that will be called if the user selected all three paths and wants to
- * continue.
- * @return [Unit]
+ *  TODO: remove this function
+ *  This function is used to get the path of a file in the resources folder.
+ *  @param name the name of the file
+ *  @return [String] the path of the file
  */
-@Composable
-fun SelectVideoScreen(setScreen: (Screen) -> Unit) {
-    // Variables to store paths of the selected videos
-    var video1Path by remember { mutableStateOf<String?>("") }
-    var video2Path by remember { mutableStateOf<String?>("") }
-    var outputPath by remember { mutableStateOf<String?>("") }
+private fun getPath(name: String): String {
+    return FileSystems.getDefault().getPath("src", "main", "resources", name).toString()
+}
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        Row {
-            FileSelectorButton(buttonText = "Select Video 1") { selectedFilePath ->
-                // Update video1Path after file being selected
-                video1Path = selectedFilePath
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            FileSelectorButton(buttonText = "Select Video 2") { selectedFilePath ->
-                // Update video2Path after file being selected
-                video2Path = selectedFilePath
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            // text input field to set outputPath
-            TextField(
-                label = { Text("Input Output Path") },
-                value = outputPath ?: "",
-                onValueChange = { newText ->
-                    outputPath = newText
+@Composable
+fun SelectVideoScreen(setScreen: (AllVideos<String>, Array<AlignmentElement>) -> Unit) {
+    // TODO: initialize with empty string
+    var video1Path by remember { mutableStateOf(getPath("9Screenshots.mov")) }
+    var video2Path by remember { mutableStateOf(getPath("10ScreenshotsModified.mov")) }
+    var outputPath by remember { mutableStateOf(getPath("output.mov")) }
+
+    // column represents the whole screen
+    Column(modifier = Modifier.fillMaxSize()) {
+        // video selection
+        Row(modifier = Modifier.weight(0.85f)) {
+            FileSelectorButton(
+                buttonText = "Select Video 1",
+                buttonPath = video1Path,
+                onUpdateResult = { selectedFilePath ->
+                    video1Path = selectedFilePath
+                },
+            )
+
+            FileSelectorButton(
+                buttonText = "Select Video 2",
+                buttonPath = video2Path,
+                onUpdateResult = { selectedFilePath ->
+                    video2Path = selectedFilePath
                 },
             )
         }
-        // Perform your video difference computation here
-        Button(
-            onClick = {
-                DifferenceGeneratorWrapper(
-                    video1Path = video1Path!!,
-                    video2Path = video2Path!!,
-                    outputPath = outputPath!!,
-                ).getDifferences()
-                setScreen(Screen.DiffScreen)
-            },
-            enabled =
-                video1Path?.isNotEmpty() == true &&
-                    video2Path?.isNotEmpty() == true &&
-                    outputPath?.isNotEmpty() == true,
-        ) {
-            Text("Compute differences and navigate")
+        // button to compute the differences
+        Row(modifier = Modifier.weight(0.15f)) {
+            ComputeDifferencesButton(video1Path, video2Path, outputPath, setScreen)
         }
-        Text("Selected Video 1 Path: $video1Path")
-        Text("Selected Video 2 Path: $video2Path")
+    }
+}
+
+/**
+ * A Composable function that creates a button to compute the differences between two videos.
+ *
+ * @param video1Path the path of the first video
+ * @param video2Path the path of the second video
+ * @param outputPath the path of the output video
+ * @param setScreen a function to set the screen
+ * @return [Unit]
+ */
+@Composable
+fun RowScope.ComputeDifferencesButton(
+    video1Path: String,
+    video2Path: String,
+    outputPath: String,
+    setScreen: (AllVideos<String>, Array<AlignmentElement>) -> Unit,
+) {
+    Button(
+        // fills all availible space
+        modifier = Modifier.weight(1f).padding(8.dp).fillMaxSize(1f),
+        onClick = {
+            // generate the differences
+            val generator =
+                DifferenceGeneratorWrapper(
+                    video1Path = video1Path,
+                    video2Path = video2Path,
+                    outputPath = outputPath,
+                )
+            generator.getDifferences()
+            // set the screen
+            setScreen(AllVideos(video1Path, video2Path, outputPath), generator.getSequence())
+        },
+        // enable the button only if all the paths are not empty
+        enabled =
+            video1Path.isNotEmpty() && video2Path.isNotEmpty() && outputPath.isNotEmpty(),
+    ) {
+        AutoSizeText(
+            text = "Compute and Display Differences",
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            // remove default centering
+            modifier = Modifier,
+        )
     }
 }

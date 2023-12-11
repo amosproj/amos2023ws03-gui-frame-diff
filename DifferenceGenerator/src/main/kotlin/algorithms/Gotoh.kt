@@ -157,7 +157,12 @@ class Gotoh<T>(
             }
 
         while (i > 0 || j > 0) {
-            traceback.add(origin)
+            // if there is a perfect match, add PERFECT instead of MATCH
+            if (origin == AlignmentElement.MATCH && similarityM[i][j] == 1.0) {
+                traceback.add(AlignmentElement.PERFECT)
+            } else {
+                traceback.add(origin)
+            }
 
             when (origin) {
                 AlignmentElement.MATCH -> {
@@ -195,6 +200,7 @@ class Gotoh<T>(
 
                     j--
                 }
+                else -> throw Exception("Invalid alignment element")
             }
         }
 

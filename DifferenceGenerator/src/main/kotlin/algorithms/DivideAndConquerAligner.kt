@@ -66,7 +66,7 @@ class DivideAndConquerAligner<T>(private val algorithm: AlignmentAlgorithm<T>, p
             alignment.addAll(getSubAlignment(subArray1, subArray2))
 
             // insert a match for the currently selected exact match
-            alignment += AlignmentElement.MATCH
+            alignment += AlignmentElement.PERFECT
 
             // update last match indices
             lastMatchIndex1 = matchPair.first + 1

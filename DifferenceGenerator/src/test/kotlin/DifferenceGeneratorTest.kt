@@ -103,16 +103,16 @@ internal class DifferenceGeneratorTest {
             )
         val expectedAlignment =
             arrayOf(
-                AlignmentElement.MATCH,
+                AlignmentElement.PERFECT,
                 AlignmentElement.DELETION,
                 AlignmentElement.MATCH,
+                AlignmentElement.PERFECT,
                 AlignmentElement.MATCH,
+                AlignmentElement.PERFECT,
                 AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
+                AlignmentElement.PERFECT,
+                AlignmentElement.PERFECT,
+                AlignmentElement.PERFECT,
             )
         assertArrayEquals(
             expectedAlignment,
@@ -144,16 +144,16 @@ internal class DifferenceGeneratorTest {
         println(g.alignment.joinToString())
         val expectedAlignment =
             arrayOf(
-                AlignmentElement.MATCH,
+                AlignmentElement.PERFECT,
                 AlignmentElement.INSERTION,
                 AlignmentElement.MATCH,
+                AlignmentElement.PERFECT,
                 AlignmentElement.MATCH,
+                AlignmentElement.PERFECT,
                 AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
+                AlignmentElement.PERFECT,
+                AlignmentElement.PERFECT,
+                AlignmentElement.PERFECT,
             )
         assertArrayEquals(
             expectedAlignment,
@@ -179,16 +179,16 @@ internal class DifferenceGeneratorTest {
         println(g.alignment.joinToString())
         val expectedAlignment =
             arrayOf(
-                AlignmentElement.MATCH,
+                AlignmentElement.PERFECT,
                 AlignmentElement.INSERTION,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
+                AlignmentElement.PERFECT,
+                AlignmentElement.PERFECT,
+                AlignmentElement.PERFECT,
+                AlignmentElement.PERFECT,
+                AlignmentElement.PERFECT,
+                AlignmentElement.PERFECT,
+                AlignmentElement.PERFECT,
+                AlignmentElement.PERFECT,
                 AlignmentElement.DELETION,
                 AlignmentElement.DELETION,
             )
@@ -236,16 +236,16 @@ internal class DifferenceGeneratorTest {
             )
         val expectedAlignment =
             arrayOf(
-                AlignmentElement.MATCH,
+                AlignmentElement.PERFECT,
                 AlignmentElement.DELETION,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
-                AlignmentElement.MATCH,
+                AlignmentElement.PERFECT,
+                AlignmentElement.PERFECT,
+                AlignmentElement.PERFECT,
+                AlignmentElement.PERFECT,
+                AlignmentElement.PERFECT,
+                AlignmentElement.PERFECT,
+                AlignmentElement.PERFECT,
+                AlignmentElement.PERFECT,
             )
         assertArrayEquals(
             expectedAlignment,
