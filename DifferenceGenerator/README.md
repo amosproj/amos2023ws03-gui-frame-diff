@@ -19,8 +19,9 @@ Before you get started, make sure you have the following installed:
 
 1. Clone the project repository to your local machine
 2. Change your working directory to the project folder
-3. Build the project using `gradle build`
-4. Run the project using `gradle run`
+3. `./gradlew downloadAndUnzipTestAssets` to get some example screenshots
+4. Build the project using `./gradlew assemble`
+5. Run the project using `./gradlew run`
 
 ### Initialization
 
@@ -29,4 +30,4 @@ Your difference generator should extend the `AbstractDifferenceGenerator` class.
 ### Testing
 
 Tests can be found under `src/test/kotlin/` and resources under `src/test/resources/`.
-To run all tests use `gradle test`.
+To run all tests use `./gradlew test`.
