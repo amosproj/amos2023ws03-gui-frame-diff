@@ -1,6 +1,12 @@
+import com.github.jk1.license.filter.DependencyFilter
+import com.github.jk1.license.filter.LicenseBundleNormalizer
+import com.github.jk1.license.render.InventoryHtmlReportRenderer
+import com.github.jk1.license.render.ReportRenderer
+
 plugins {
     kotlin("jvm")
     application
+    id("com.github.jk1.dependency-license-report") version "2.5"
 }
 
 group = "org.example"
@@ -30,6 +36,12 @@ kotlin {
     jvmToolchain(11)
 }
 
+licenseReport {
+    outputDir = "../../licenses/reports/VideoGenerator"
+    renderers = arrayOf<ReportRenderer>(InventoryHtmlReportRenderer("report.html", "VideoGenerator"))
+    filters = arrayOf<DependencyFilter>(LicenseBundleNormalizer())
+    allowedLicensesFile = File("../../licenses/allowed-licenses.json")
+}
 /*
 // commented out, as this is now a library not containing a main function
 application {
