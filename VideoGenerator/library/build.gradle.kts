@@ -37,10 +37,11 @@ kotlin {
 }
 
 licenseReport {
-    outputDir = "../../licenses/reports/VideoGenerator"
+    val licensesDir = File(projectDir, "../../licenses/").absolutePath
+    outputDir = "$licensesDir/reports/VideoGenerator"
     renderers = arrayOf<ReportRenderer>(InventoryHtmlReportRenderer("report.html", "VideoGenerator"))
     filters = arrayOf<DependencyFilter>(LicenseBundleNormalizer())
-    allowedLicensesFile = File("../../licenses/allowed-licenses.json")
+    allowedLicensesFile = File(licensesDir, "allowed-licenses.json")
 }
 /*
 // commented out, as this is now a library not containing a main function

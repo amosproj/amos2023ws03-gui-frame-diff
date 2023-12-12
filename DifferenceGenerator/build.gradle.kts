@@ -38,10 +38,11 @@ application {
 }
 
 licenseReport {
-    outputDir = "../licenses/reports/DifferenceGenerator"
+    val licensesDir = File(projectDir, "../licenses/").absolutePath
+    outputDir = "$licensesDir/reports/DifferenceGenerator"
     renderers = arrayOf<ReportRenderer>(InventoryHtmlReportRenderer("report.html", "DifferenceGenerator"))
     filters = arrayOf<DependencyFilter>(LicenseBundleNormalizer())
-    allowedLicensesFile = File("../licenses/allowed-licenses.json")
+    allowedLicensesFile = File(licensesDir, "allowed-licenses.json")
 }
 
 tasks.register("downloadAndUnzipTestAssets") {
