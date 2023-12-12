@@ -61,15 +61,21 @@ class VideoGeneratorFileSystemTest {
             throw RuntimeException("Problem with creating the Input/Output dirs")
         }
 
+        val outputFile = File(testOutputDir.path + "/output.mkv")
+        if (outputFile.exists()) {
+            val deleteResult = outputFile.delete()
+            throw RuntimeException("Could not delete existing output file!")
+        }
+
         for (assetFileName in assetsFiles) {
             val destFile = File(testInputDir, assetFileName)
-            if (!destFile.exists()) {
-                val srcStream = instrumentationContext.assets.open(assetSubDir + assetFileName)
-                val destStream = FileOutputStream(destFile)
-                copyStream(srcStream, destStream)
-            } else {
-                throw RuntimeException("Problem while creating the File on the Device")
+            val srcStream = instrumentationContext.assets.open(assetSubDir + assetFileName)
+            if (destFile.exists()) {
+                val deleteResult = destFile.delete()
+                throw RuntimeException("Could not delete existing input copy!")
             }
+            val destStream = FileOutputStream(destFile)
+            copyStream(srcStream, destStream)
         }
     }
 
