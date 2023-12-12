@@ -25,10 +25,3 @@ Before you get started, make sure you have the following installed:
 ### Initialization
 
 Your video generator should extend the `AbstractVideoGenerator` class. You can then initialize your video generator.
-
-### License check
-
-To generate a license report in `../licenses/VideoGenerator`, execute `./gradlew generateLicenseReport`.
-The gradle task `./gradlew checkLicense` can be used to check if any dependencies with disallowed licenses
-are in use. The tasks fails with an error if that is the case.
-
