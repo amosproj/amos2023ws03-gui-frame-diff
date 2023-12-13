@@ -6,7 +6,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
-import models.AllVideos
+import models.AppState
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import wrappers.Resettable2DFrameConverter
 import java.awt.image.BufferedImage
@@ -18,14 +18,14 @@ import kotlin.math.min
  * @param paths [AllVideos] object containing the paths to the videos.
  * @param alignment [Array] of [AlignmentElement]s containing the alignment sequence.
  */
-class FrameNavigation(paths: AllVideos<String>, alignment: Array<AlignmentElement>) : FrameNavigationInterface {
+class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface {
     // create the grabbers
-    private val video1Grabber: FFmpegFrameGrabber = FFmpegFrameGrabber(paths.video1)
-    private val video2Grabber: FFmpegFrameGrabber = FFmpegFrameGrabber(paths.video2)
-    private val grabberDiff: FFmpegFrameGrabber = FFmpegFrameGrabber(paths.diffVideo)
+    private val video1Grabber: FFmpegFrameGrabber = FFmpegFrameGrabber(state.value.video1Path)
+    private val video2Grabber: FFmpegFrameGrabber = FFmpegFrameGrabber(state.value.video2Path)
+    private val grabberDiff: FFmpegFrameGrabber = FFmpegFrameGrabber(state.value.outputPath)
 
     // create the sequences
-    private var diffSequence: Array<AlignmentElement> = alignment
+    private var diffSequence: Array<AlignmentElement> = state.value.sequenceObj
     private var video1Frames: MutableList<Int> = mutableListOf()
     private var video2Frames: MutableList<Int> = mutableListOf()
 
