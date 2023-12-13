@@ -80,7 +80,7 @@ fun DiffScreen(
         }
 //        ###########   Timeline   ###########
 
-        Row(modifier = Modifier.fillMaxWidth().weight(0.2f), horizontalArrangement = Arrangement.Center) {
+        Row(modifier = Modifier.fillMaxWidth().weight(0.2f).background(color = Color.Black), horizontalArrangement = Arrangement.Center) {
             timeline(navigator)
         }
 //        ###########   Buttons   ###########
@@ -103,7 +103,7 @@ private fun timeline(navigator: FrameNavigation) {
             Modifier
                 .background(color = Color.LightGray)
 //                .fillMaxWidth(fraction = 0.8f)
-                .width(600.dp)
+                .fillMaxWidth(0.8f)
                 .height(100.dp)
                 .layout { measurable, constraints ->
                     val placeable = measurable.measure(constraints)
