@@ -1,5 +1,4 @@
 package ui.screens
-import algorithms.AlignmentElement
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.runtime.*
@@ -7,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import logic.differenceGeneratorWrapper.DifferenceGeneratorWrapper
 import models.AllVideos
+import models.AppState
 import ui.components.AutoSizeText
 import ui.components.FileSelectorButton
 import java.nio.file.FileSystems
@@ -22,7 +22,7 @@ private fun getPath(name: String): String {
 }
 
 @Composable
-fun SelectVideoScreen(setScreen: (AllVideos<String>, Array<AlignmentElement>) -> Unit) {
+fun SelectVideoScreen(state: MutableState<AppState>) {
     // TODO: initialize with empty string
     var video1Path by remember { mutableStateOf(getPath("9Screenshots.mov")) }
     var video2Path by remember { mutableStateOf(getPath("10ScreenshotsModified.mov")) }
@@ -50,7 +50,7 @@ fun SelectVideoScreen(setScreen: (AllVideos<String>, Array<AlignmentElement>) ->
         }
         // button to compute the differences
         Row(modifier = Modifier.weight(0.15f)) {
-            ComputeDifferencesButton(video1Path, video2Path, outputPath, setScreen)
+            ComputeDifferencesButton(video1Path, video2Path, outputPath, state)
         }
     }
 }
@@ -69,7 +69,7 @@ fun RowScope.ComputeDifferencesButton(
     video1Path: String,
     video2Path: String,
     outputPath: String,
-    setScreen: (AllVideos<String>, Array<AlignmentElement>) -> Unit,
+    state: MutableState<AppState>,
 ) {
     Button(
         // fills all availible space
@@ -84,7 +84,13 @@ fun RowScope.ComputeDifferencesButton(
                 )
             generator.getDifferences()
             // set the screen
-            setScreen(AllVideos(video1Path, video2Path, outputPath), generator.getSequence())
+//            setScreen(AllVideos(video1Path, video2Path, outputPath), generator.getSequence())
+            state.value =
+                state.value.copy(
+                    screen = Screen.DiffScreen,
+                    sequenceObj = generator.getSequence(),
+                    pathObj = AllVideos(video1Path, video2Path, outputPath),
+                )
         },
         // enable the button only if all the paths are not empty
         enabled =

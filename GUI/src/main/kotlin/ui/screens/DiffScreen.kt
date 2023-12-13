@@ -19,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
 import models.AllVideos
+import models.AppState
 import ui.components.AutoSizeText
 
 /**
@@ -30,12 +31,9 @@ import ui.components.AutoSizeText
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun DiffScreen(
-    paths: AllVideos<String>,
-    sequence: Array<AlignmentElement>,
-) {
+fun DiffScreen(state: MutableState<AppState>) {
     // create the navigator, which implements the jumping logic
-    val navigator = FrameNavigation(paths, sequence)
+    val navigator = FrameNavigation(state.value.pathObj, state.value.sequenceObj)
     // force into focus to intercept key presses
     val focusRequester = remember { FocusRequester() }
     // map of key presses to actions
