@@ -1,20 +1,26 @@
 package ui.screens
 import algorithms.AlignmentElement
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.key.*
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
@@ -69,6 +75,52 @@ fun DiffScreen(
             DisplayedImage(bitmap = navigator.video1Bitmap)
             DisplayedImage(bitmap = navigator.diffBitmap)
             DisplayedImage(bitmap = navigator.video2Bitmap)
+        }
+//        ###########   Timeline   ###########
+        var clickPosition by remember { mutableStateOf(Offset.Zero) }
+
+        Box(
+            modifier =
+                Modifier
+                    .background(color = Color.LightGray)
+                    .fillMaxWidth(fraction = 0.8f)
+                    .height(200.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .pointerInput(Unit) {
+                        detectTapGestures { offset ->
+                            clickPosition = offset
+                        }
+                    }
+                    .pointerInput(Unit) {
+                        detectDragGestures(
+                            onDragStart = { offset ->
+                                clickPosition = offset
+                            },
+                            onDrag = { change, dragAmount ->
+                                // during drag
+                                clickPosition =
+                                    clickPosition.copy(
+                                        x = clickPosition.x + dragAmount.x,
+                                    )
+                            },
+                        )
+                    },
+        ) {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                drawLine(
+                    start = Offset(clickPosition.x, 0f),
+                    end = Offset(clickPosition.x, size.height),
+                    color = Color.Red,
+                    strokeWidth = 4f,
+                )
+            }
+            Text(
+                text = "Click here",
+            )
+            Text(
+                text = "Clickposition: $clickPosition",
+                modifier = Modifier.align(Alignment.BottomEnd),
+            )
         }
 //        ###########   Buttons   ###########
         Row(modifier = Modifier.fillMaxWidth().weight(0.2f)) {
