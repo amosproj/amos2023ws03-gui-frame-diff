@@ -21,6 +21,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
@@ -94,6 +96,8 @@ fun DiffScreen(state: MutableState<AppState>) {
 @Composable
 private fun timeline(navigator: FrameNavigation) {
     var clickPosition by remember { mutableStateOf(Offset.Zero) }
+    val density = LocalDensity.current
+    var componentWidth by remember { mutableStateOf(0f) }
     Box(
         modifier =
             Modifier
@@ -101,12 +105,24 @@ private fun timeline(navigator: FrameNavigation) {
 //                .fillMaxWidth(fraction = 0.8f)
                 .width(600.dp)
                 .height(100.dp)
+                .layout { measurable, constraints ->
+                    val placeable = measurable.measure(constraints)
+
+                    // Store the width
+                    componentWidth =
+                        with(density) {
+                            placeable.width.toFloat()
+                        }
+                    layout(placeable.width, placeable.height) {
+                        placeable.placeRelative(0, 0)
+                    }
+                }
 //                    .align(Alignment.CenterHorizontally)
                 .pointerInput(Unit) {
                     detectTapGestures { offset ->
                         clickPosition = offset
                         println(clickPosition.x.toDouble() / 6)
-                        navigator.jumpToPercentage(clickPosition.x.toDouble() / 6)
+                        navigator.jumpToPercentage(clickPosition.x.toDouble() / componentWidth * 100)
                     }
                 }
                 .pointerInput(Unit) {
@@ -117,9 +133,9 @@ private fun timeline(navigator: FrameNavigation) {
                         onDrag = { change, dragAmount ->
                             clickPosition =
                                 clickPosition.copy(
-                                    x = clickPosition.x + dragAmount.x,
+                                    x = (clickPosition.x + dragAmount.x).coerceIn(0f, componentWidth),
                                 )
-                            navigator.jumpToPercentage(clickPosition.x.toDouble() / 6)
+                            navigator.jumpToPercentage(clickPosition.x.toDouble() / componentWidth * 100)
                         },
                     )
                 },
