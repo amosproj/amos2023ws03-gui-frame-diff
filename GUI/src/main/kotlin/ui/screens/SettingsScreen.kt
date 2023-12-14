@@ -28,7 +28,7 @@ fun SettingsScreen(state: MutableState<AppState>) {
         // gap open penalty
         Row(modifier = Modifier.weight(0.2f)) {
             CustomSlider(
-                title = "Gap Open Penalty",
+                title = " gapOpenPenalty",
                 default = state.value.gapOpenPenalty,
                 minValue = -1.0,
                 maxValue = 0.5,
@@ -38,7 +38,7 @@ fun SettingsScreen(state: MutableState<AppState>) {
         // gap extend penalty
         Row(modifier = Modifier.weight(0.2f)) {
             CustomSlider(
-                title = "Gap Extend Penalty",
+                title = "gapExtensionPenalty",
                 default = state.value.gapExtendPenalty,
                 minValue = -1.0,
                 maxValue = 0.5,
@@ -48,7 +48,7 @@ fun SettingsScreen(state: MutableState<AppState>) {
         // mask
         Row(modifier = Modifier.weight(0.2f)) {
             FileSelectorButton(
-                buttonText = "Upload  Mask",
+                buttonText = "Upload Mask",
                 buttonPath = state.value.maskPath,
                 onUpdateResult = { selectedFilePath ->
                     state.value = state.value.copy(maskPath = selectedFilePath)
