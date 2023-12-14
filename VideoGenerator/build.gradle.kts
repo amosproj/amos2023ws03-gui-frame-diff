@@ -37,7 +37,7 @@ kotlin {
 }
 
 licenseReport {
-    val licensesDir = File(projectDir, "../../licenses/").absolutePath
+    val licensesDir = File(projectDir, "../licenses/").absolutePath
     outputDir = "$licensesDir/reports/VideoGenerator"
     renderers = arrayOf<ReportRenderer>(InventoryHtmlReportRenderer("report.html", "VideoGenerator"))
     filters = arrayOf<DependencyFilter>(LicenseBundleNormalizer())

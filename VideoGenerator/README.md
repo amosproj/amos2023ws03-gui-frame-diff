@@ -29,11 +29,11 @@ Your video generator should extend the `AbstractVideoGenerator` class. You can t
 ## Example App
 
 The example app is used to try out the library and its functionalities.
-If you're using something else than kotlin 1.9.0, you have to change the 
+If you're using something else than kotlin 1.9.0, you have to change the
 ```
 android {
     ...
- 
+
     composeOptions {
         kotlinCompilerExtensionVersion = "XXX"
     }
@@ -49,14 +49,14 @@ rootProject.name = "example"
 include(":app")
 
 include(":videogenerator")
-project(":videogenerator").projectDir = File("../library")
+project(":videogenerator").projectDir = File("../")
 ```
 
 `example/app/build.gradle.kt`:
 ```
 dependencies {
     ...
-    
+
     implementation(project(path = ":videogenerator"))
 }
 ```
@@ -78,9 +78,37 @@ the URL and destination File can be set in `example/app/build.gradle.kts
 
 1. Run `./gradlew test` in the library module to execute unit tests.
 
+# Video Generator
+
+## Introduction
+
+This project provides an abstract class for video generators called `AbstractVideoGenerator`. You can extend this class
+to create your own video generator. It allows you to generate videos by adding frames and saving the video to an output
+path.
+
+## Getting Started
+
+### Prerequisites
+
+Before you get started, make sure you have the following installed:
+
+- Java
+- Gradle
+
+### Installation
+
+1. Clone the project repository to your local machine
+2. Change your working directory to the project folder
+3. Build the project using `./gradlew assemble`
+4. Execute unit tests using `./gradlew test`
+
+### Initialization
+
+Your video generator should extend the `AbstractVideoGenerator` class. You can then initialize your video generator.
+
 ## Benchmark
 
-For the Bechmark the two open and free codecs FFV1 and VP9 were compared.
+For the Benchmark the two open and free codecs FFV1 and VP9 were compared.
 
 | Results        	| 10    	| 100   	| 500   	| 800   	| 1000  	| 5000  	| 10000 	|
 |----------------	|-------	|-------	|-------	|-------	|-------	|-------	|-------	|
@@ -89,4 +117,4 @@ For the Bechmark the two open and free codecs FFV1 and VP9 were compared.
 | VP9 file size  	| 69.5% 	| 60.5% 	| 57.3% 	| 56.8% 	| 59.1% 	| 57.3% 	| 56.5% 	|
 | FFV1 file size 	| 84.4% 	| 74.7% 	| 76.3% 	| 76.6% 	| 76.2% 	| 75.8% 	| 76.2% 	|
 
-More Information about the Benchmark Results can be found [here](benchmarkOutput.txt).
+More information about the benchmark results can be found [here](benchmarkOutput.txt).
