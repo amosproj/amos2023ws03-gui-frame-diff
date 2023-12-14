@@ -28,5 +28,8 @@ interface FrameNavigationInterface {
      */
     fun jumpToNextDiff(forward: Boolean)
 
+    /**
+     * get count of frames in diff as String
+     */
     fun getSizeOfDiff(): String
 }

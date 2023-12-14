@@ -97,6 +97,44 @@ fun DiffScreen(state: MutableState<AppState>) {
     }
 }
 
+/**
+ * A Composable function that creates a box to display text.
+ * @param text [String] containing the text to be displayed.
+ * @return [Unit]
+ */
+
+@Composable
+fun RowScope.Title(text: String) {
+    AutoSizeText(
+        text = text,
+        modifier = Modifier.weight(1f).fillMaxSize().padding(20.dp),
+    )
+}
+
+/**
+ * A Composable function that creates a box to display an image.
+ * @param bitmap [MutableState] of [ImageBitmap] containing the bitmap to be displayed.
+ * @param modifier [Modifier] to be applied to the [Box].
+ * @return [Unit]
+ */
+@Composable
+fun RowScope.DisplayedImage(
+    bitmap: MutableState<ImageBitmap>,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier.weight(1f).background(Color.Gray).padding(8.dp).fillMaxSize(1f),
+        contentAlignment = Alignment.Center,
+    ) {
+        Image(bitmap = bitmap.value, null)
+    }
+}
+
+/**
+ * A Composable function that creates a box to display the timeline.
+ * @param navigator [FrameNavigation] containing the navigator.
+ * @return [Unit]
+ */
 @Composable
 private fun timeline(navigator: FrameNavigation) {
     var clickPosition by remember { mutableStateOf(Offset.Zero) }
@@ -196,39 +234,6 @@ private fun timeline(navigator: FrameNavigation) {
                 modifier = Modifier.align(Alignment.CenterEnd).padding(20.dp),
             )
         }
-    }
-}
-
-/**
- * A Composable function that creates a box to display text.
- * @param text [String] containing the text to be displayed.
- * @return [Unit]
- */
-
-@Composable
-fun RowScope.Title(text: String) {
-    AutoSizeText(
-        text = text,
-        modifier = Modifier.weight(1f).fillMaxSize().padding(20.dp),
-    )
-}
-
-/**
- * A Composable function that creates a box to display an image.
- * @param bitmap [MutableState] of [ImageBitmap] containing the bitmap to be displayed.
- * @param modifier [Modifier] to be applied to the [Box].
- * @return [Unit]
- */
-@Composable
-fun RowScope.DisplayedImage(
-    bitmap: MutableState<ImageBitmap>,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier.weight(1f).background(Color.Gray).padding(8.dp).fillMaxSize(1f),
-        contentAlignment = Alignment.Center,
-    ) {
-        Image(bitmap = bitmap.value, null)
     }
 }
 
