@@ -1,5 +1,4 @@
 package ui.screens
-import algorithms.AlignmentElement
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
@@ -23,8 +22,7 @@ import ui.components.AutoSizeText
 
 /**
  * A Composable function that creates a screen to display the differences between two videos.
- * @param paths [AllVideos] object containing the paths to the videos.
- * @param sequence [Array] of [AlignmentElement]s containing the alignment sequence.
+ * @param state [MutableState]<[AppState]> containing the global state.
  * @return [Unit]
  */
 

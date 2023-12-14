@@ -15,8 +15,7 @@ import kotlin.math.min
 
 /**
  * A class that implements the [FrameNavigationInterface] interface.
- * @param paths [AllVideos] object containing the paths to the videos.
- * @param alignment [Array] of [AlignmentElement]s containing the alignment sequence.
+ * @param state [MutableState]<[AppState]> containing the global state.
  */
 class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface {
     // create the grabbers

@@ -15,7 +15,6 @@ import ui.themes.defaultTheme
  *
  * @return [Unit]
  */
-
 fun main(): Unit =
     application {
         Window(

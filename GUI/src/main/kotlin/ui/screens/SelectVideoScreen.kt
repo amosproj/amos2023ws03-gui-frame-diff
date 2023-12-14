@@ -9,6 +9,11 @@ import models.AppState
 import ui.components.AutoSizeText
 import ui.components.FileSelectorButton
 
+/**
+ * A Composable function that creates a screen to select the videos to compare.
+ * @param state [MutableState]<[AppState]> containing the global state.
+ * @return [Unit]
+ */
 @Composable
 fun SelectVideoScreen(state: MutableState<AppState>) {
     // column represents the whole screen
