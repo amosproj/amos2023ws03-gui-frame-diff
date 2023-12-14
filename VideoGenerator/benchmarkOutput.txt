@@ -1,0 +1,67 @@
+System:
+
+	OS: Ubuntu 22.04
+	CPU: 11th Gen Intel® Core™ i7-1165G7 @ 2.80GHz × 8 
+	RAM: 16 GB
+	SSD: NVMe 2200/1400 (read / write)
+
+Results:
+
+Codec: ffv1
+Loading 10 Files took 1091 ms (109 ms / frame)
+File size reduced from 1.9 MB to 1.6 MB (84.4%)
+
+Codec: vp9
+Loading 10 Files took 1482 ms (148 ms / frame)
+File size reduced from 1.9 MB to 1.3 MB (69.5%)
+
+Codec: ffv1
+Loading 100 Files took 6073 ms (60 ms / frame)
+File size reduced from 23.9 MB to 17.9 MB (74.7%)
+
+Codec: vp9
+Loading 100 Files took 13453 ms (134 ms / frame)
+File size reduced from 23.9 MB to 14.5 MB (60.5%)
+
+Codec: ffv1
+Loading 500 Files took 28252 ms (56 ms / frame)
+File size reduced from 111.5 MB to 85.1 MB (76.3%)
+
+Codec: vp9
+Loading 500 Files took 67882 ms (135 ms / frame)
+File size reduced from 111.5 MB to 63.8 MB (57.3%)
+
+Codec: ffv1
+Loading 800 Files took 44959 ms (56 ms / frame)
+File size reduced from 182.6 MB to 139.8 MB (76.6%)
+
+Codec: vp9
+Loading 800 Files took 130111 ms (162 ms / frame)
+File size reduced from 182.6 MB to 103.7 MB (56.8%)
+
+Codec: ffv1
+Loading 1000 Files took 66150 ms (66 ms / frame)
+File size reduced from 220.2 MB to 167.9 MB (76.2%)
+
+Codec: vp9
+Loading 1000 Files took 179594 ms (179 ms / frame)
+File size reduced from 220.2 MB to 130.2 MB (59.1%)
+
+Codec: ffv1
+Loading 5000 Files took 329820 ms (65 ms / frame)
+File size reduced from 1.1 GB to 845.2 MB (75.8%)
+
+Codec: vp9
+Loading 5000 Files took 800385 ms (160 ms / frame)
+File size reduced from 1.1 GB to 638.6 MB (57.3%)
+
+Codec: ffv1
+Loading 10000 Files took 608707 ms (60 ms / frame)
+File size reduced from 2.2 GB to 1.7 GB (76.2%)
+
+Codec: vp9
+Loading 10000 Files took 1554801 ms (155 ms / frame)
+File size reduced from 2.2 GB to 1.2 GB (56.5%)
+
+
+

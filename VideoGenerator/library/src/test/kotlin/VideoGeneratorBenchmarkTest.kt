@@ -19,16 +19,10 @@ class VideoGeneratorBenchmarkTest {
     private val testCodecs =
         mapOf<Int, Map<String, String>?>(
             avcodec.AV_CODEC_ID_FFV1 to null,
-            // avcodec.AV_CODEC_ID_YUV4 to null,
-            // avcodec.AV_CODEC_ID_H265 to null,
             avcodec.AV_CODEC_ID_VP9 to mapOf<String, String>("lossless" to "1"),
-            // avcodec.AV_CODEC_ID_VP8 to mapOf<String,String>("lossless" to "1"),
-            // avcodec.AV_CODEC_ID_VP9 to null,
-            // avcodec.AV_CODEC_ID_H264 to mapOf<String, String>("crf" to "0"),
-            // avcodec.AV_CODEC_ID_SNOW to null,
-            // avcodec.AV_CODEC_ID_JPEG2000 to mapOf<String, String>("pred" to "1")
         )
     private val testSizes = arrayOf(10, 100, 500, 800, 1000)
+    private lateinit var testDataSet: ArrayList<File>
 
     @BeforeEach
     fun setUp() {
@@ -43,8 +37,9 @@ class VideoGeneratorBenchmarkTest {
 
     @Test
     fun stressTest() {
-        for (codec in testCodecs) {
-            for (size in testSizes) {
+        for (size in testSizes) {
+            testDataSet = getNRandomFrames(inputPath, size)
+            for (codec in testCodecs) {
                 videoGenerator.codecId = codec.key
                 if (codec.value != null) {
                     videoGenerator.codecOptions = codec.value!!
@@ -63,11 +58,9 @@ class VideoGeneratorBenchmarkTest {
                 measureTimeMillis {
                     var i = 0
                     while (i < n) {
-                        val randomFrame = getRandomFrame(inputPath)
-                        if (randomFrame != null) {
-                            combinedFileSize += randomFrame.length()
-                            videoGenerator.loadFrame(randomFrame.readBytes())
-                        }
+                        val frame = testDataSet[i]
+                        combinedFileSize += frame.length()
+                        videoGenerator.loadFrame(frame.readBytes())
                         i++
                     }
                     videoGenerator.save()
@@ -96,9 +89,16 @@ class VideoGeneratorBenchmarkTest {
         }
     }
 
-    private fun getRandomFrame(path: String): File? {
+    private fun getNRandomFrames(
+        path: String,
+        n: Int,
+    ): ArrayList<File> {
+        val testSet = ArrayList<File>()
         val inputDir = File(path)
-        return inputDir.listFiles()?.random()
+        for (i in 1..n) {
+            inputDir.listFiles()?.random()?.let { testSet.add(it) }
+        }
+        return testSet
     }
 
     private fun readableFileSize(size: Long): String {
