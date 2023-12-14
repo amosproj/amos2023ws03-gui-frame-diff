@@ -83,7 +83,7 @@ fun DiffScreen(state: MutableState<AppState>) {
         // ###########   Timeline   ###########
         var clickPosition by remember { mutableStateOf(Offset.Zero) }
 
-        Row(modifier = Modifier.fillMaxWidth().weight(0.2f).background(color = Color.Black), horizontalArrangement = Arrangement.Center) {
+        Row(modifier = Modifier.fillMaxWidth().weight(0.2f).background(color = Color.Gray), horizontalArrangement = Arrangement.Center) {
             timeline(navigator)
         }
 
@@ -102,84 +102,100 @@ private fun timeline(navigator: FrameNavigation) {
     var clickPosition by remember { mutableStateOf(Offset.Zero) }
     val density = LocalDensity.current
     var componentWidth by remember { mutableStateOf(0f) }
-    Box(
-        modifier =
-            Modifier
-                .background(color = Color.LightGray)
-//                .fillMaxWidth(fraction = 0.8f)
-                .fillMaxWidth(0.8f)
-                .height(100.dp)
-                .border(
-                    width = 2.dp,
-                    color = Color.Black,
-                )
-                .layout { measurable, constraints ->
-                    val placeable = measurable.measure(constraints)
-
-                    // Store the width
-                    componentWidth =
-                        with(density) {
-                            placeable.width.toFloat()
-                        }
-                    layout(placeable.width, placeable.height) {
-                        placeable.placeRelative(0, 0)
-                    }
-                }
-//                    .align(Alignment.CenterHorizontally)
-                .pointerInput(Unit) {
-                    detectTapGestures { offset ->
-                        clickPosition = offset
-                        println(clickPosition.x.toDouble() / 6)
-                        navigator.jumpToPercentage(clickPosition.x.toDouble() / componentWidth * 100)
-                    }
-                }
-                .pointerInput(Unit) {
-                    detectDragGestures(
-                        onDragStart = { offset ->
-                            clickPosition = offset
-                        },
-                        onDrag = { change, dragAmount ->
-                            clickPosition =
-                                clickPosition.copy(
-                                    x = (clickPosition.x + dragAmount.x).coerceIn(0f, componentWidth),
-                                )
-                            navigator.jumpToPercentage(clickPosition.x.toDouble() / componentWidth * 100)
-                        },
-                    )
-                },
-    ) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            drawLine(
-                start = Offset(clickPosition.x, 0f),
-                end = Offset(clickPosition.x, size.height),
-                color = Color.Red,
-                strokeWidth = 6f,
+    Column(modifier = Modifier.background(color = Color.Gray)) {
+        Box(modifier = Modifier.fillMaxWidth(0.8f)) {
+            Text(
+                text = "0",
+                fontSize = 22.sp,
+                color = Color.Black,
+                modifier = Modifier.align(Alignment.BottomStart).padding(start = 10.dp, bottom = 2.dp),
+            )
+            Text(
+                text = "${navigator.getSizeOfDiff()}",
+                fontSize = 22.sp,
+                color = Color.Black,
+                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 10.dp, bottom = 2.dp),
             )
         }
-        Text(
-            text = "0%",
-            color = Color.Black,
-            fontSize = 25.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.CenterStart).padding(20.dp),
-        )
+        Box(
+            modifier =
+                Modifier
+                    .background(color = Color.LightGray)
+//                .fillMaxWidth(fraction = 0.8f)
+                    .fillMaxWidth(0.8f)
+                    .height(100.dp)
+                    .border(
+                        width = 2.dp,
+                        color = Color.Black,
+                    )
+                    .layout { measurable, constraints ->
+                        val placeable = measurable.measure(constraints)
 
-        val x = (clickPosition.x / componentWidth * 100).toInt()
+                        // Store the width
+                        componentWidth =
+                            with(density) {
+                                placeable.width.toFloat()
+                            }
+                        layout(placeable.width, placeable.height) {
+                            placeable.placeRelative(0, 0)
+                        }
+                    }
+//                    .align(Alignment.CenterHorizontally)
+                    .pointerInput(Unit) {
+                        detectTapGestures { offset ->
+                            clickPosition = offset
+                            println(clickPosition.x.toDouble() / 6)
+                            navigator.jumpToPercentage(clickPosition.x.toDouble() / componentWidth * 100)
+                        }
+                    }
+                    .pointerInput(Unit) {
+                        detectDragGestures(
+                            onDragStart = { offset ->
+                                clickPosition = offset
+                            },
+                            onDrag = { change, dragAmount ->
+                                clickPosition =
+                                    clickPosition.copy(
+                                        x = (clickPosition.x + dragAmount.x).coerceIn(0f, componentWidth),
+                                    )
+                                navigator.jumpToPercentage(clickPosition.x.toDouble() / componentWidth * 100)
+                            },
+                        )
+                    },
+        ) {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                drawLine(
+                    start = Offset(clickPosition.x, 0f),
+                    end = Offset(clickPosition.x, size.height),
+                    color = Color.Red,
+                    strokeWidth = 6f,
+                )
+            }
+            Text(
+                text = "0%",
+                color = Color.Black,
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.align(Alignment.CenterStart).padding(20.dp),
+            )
 
-        Text(
-            text = "$x %",
-            color = Color.Black,
-            fontSize = 25.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.Center).padding(2.dp),
-        )
-        Text(
-            text = "100%",
-            color = Color.Black,
-            fontSize = 25.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.CenterEnd).padding(20.dp),
-        )
+            val currentPercentage = (clickPosition.x / componentWidth * 100).toInt()
+
+            Text(
+                text = "$currentPercentage %",
+                color = Color.Black,
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.align(Alignment.Center).padding(2.dp),
+            )
+            Text(
+                text = "100%",
+                color = Color.Black,
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.align(Alignment.CenterEnd).padding(20.dp),
+            )
+        }
     }
 }
 
