@@ -50,16 +50,8 @@ The reports are all saved in the `./licenses/reports/<SubprojectName>` directori
 Currently, we are allowing the licenses `MIT` and `Apache 2.0`. This information can be changed
 in `./licenses/allowed-licenses.json`.
 
-For `lib1`:
+For `lib1` (analogous for `lib2` ("VideoGenerator") and the `gui` ("GUI"))
 - Run a task that fails if dependencies with non-allowed licenses are found.
-- `cd ./VideoGenerator/library && ./gradlew checkLicense`
+- `cd ./VideoGenerator && ./gradlew checkLicense`
 - Generate a license report in html
-- `cd ./VideoGenerator/library && ./gradlew generateLicenseReport`
-
-For `lib2` (analogous for the `gui`):
-- Run a task that fails if dependencies with non-allowed licenses are found.
-- `cd ./DifferenceGenerator/ && ./gradlew checkLicense`
-- Generate a license report in html
-- `cd ./DifferenceGenerator/ && ./gradlew generateLicenseReport`
-
-
+- `cd ./VideoGenerator && ./gradlew generateLicenseReport`
