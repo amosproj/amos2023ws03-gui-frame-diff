@@ -181,8 +181,8 @@ private fun timeline(navigator: FrameNavigation) {
 //                    .align(Alignment.CenterHorizontally)
                     .pointerInput(Unit) {
                         detectTapGestures { offset ->
-                            val percent = navigator.jumpToPercentage(offset.x.toDouble() / componentWidth * 100)
-                            indicatorPosition = indicatorPosition.copy(x = percent.toFloat() * componentWidth / 100)
+                            val percent = navigator.jumpToPercentage(offset.x.toDouble() / componentWidth)
+                            indicatorPosition = indicatorPosition.copy(x = percent.toFloat() * componentWidth)
                             println(indicatorPosition.x.toDouble() / 6)
                         }
                     }
