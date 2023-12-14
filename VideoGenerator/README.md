@@ -88,4 +88,5 @@ For the Bechmark the two open and free codecs FFV1 and VP9 were compared.
 | FFV1 ms/frame  	| 109   	| 60    	| 56    	| 56    	| 66    	| 65    	| 60    	|
 | VP9 file size  	| 69.5% 	| 60.5% 	| 57.3% 	| 56.8% 	| 59.1% 	| 57.3% 	| 56.5% 	|
 | FFV1 file size 	| 84.4% 	| 74.7% 	| 76.3% 	| 76.6% 	| 76.2% 	| 75.8% 	| 76.2% 	|
+
 More Information about the Benchmark Results can be found [here](benchmarkOutput.txt).
