@@ -12,6 +12,7 @@ import wrappers.Resettable2DFrameConverter
 import java.awt.image.BufferedImage
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 /**
  * A class that implements the [FrameNavigationInterface] interface.
@@ -105,17 +106,19 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
     /**
      * Jump to a specified percentage of the diff video.
      * @param percentage [Double] containing the percentage to jump to.
-     * @return [Unit]
+     * @return [Double] containing the percentage that was actually jumped to.
      */
-    override fun jumpToPercentage(percentage: Double) {
+    override fun jumpToPercentage(percentage: Double): Double {
         // check bounds
         if (percentage < 0 || percentage > 100) {
             throw Exception("Percentage must be between 0 and 100")
         }
         // calculate the frame to jump to
-        val diffFrame = (grabberDiff.lengthInFrames.toDouble() / 100 * percentage).toInt()
+        val diffFrame = (grabberDiff.lengthInFrames.toDouble() / 100 * percentage).roundToInt()
         // jump to the frame
         jumpToFrame(diffFrame)
+
+        return diffFrame.toDouble() / grabberDiff.lengthInFrames.toDouble() * 100
     }
 
     /**

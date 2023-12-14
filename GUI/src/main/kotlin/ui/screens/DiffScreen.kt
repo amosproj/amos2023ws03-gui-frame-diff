@@ -137,7 +137,7 @@ fun RowScope.DisplayedImage(
  */
 @Composable
 private fun timeline(navigator: FrameNavigation) {
-    var clickPosition by remember { mutableStateOf(Offset.Zero) }
+    var indicatorPosition by remember { mutableStateOf(Offset.Zero) }
     val density = LocalDensity.current
     var componentWidth by remember { mutableStateOf(0f) }
     Column(modifier = Modifier.background(color = Color.Gray)) {
@@ -181,30 +181,29 @@ private fun timeline(navigator: FrameNavigation) {
 //                    .align(Alignment.CenterHorizontally)
                     .pointerInput(Unit) {
                         detectTapGestures { offset ->
-                            clickPosition = offset
-                            println(clickPosition.x.toDouble() / 6)
-                            navigator.jumpToPercentage(clickPosition.x.toDouble() / componentWidth * 100)
+                            val percent = navigator.jumpToPercentage(offset.x.toDouble() / componentWidth * 100)
+                            indicatorPosition = indicatorPosition.copy(x = percent.toFloat() * componentWidth / 100)
+                            println(indicatorPosition.x.toDouble() / 6)
                         }
                     }
                     .pointerInput(Unit) {
                         detectDragGestures(
                             onDragStart = { offset ->
-                                clickPosition = offset
+                                indicatorPosition = offset
                             },
                             onDrag = { change, dragAmount ->
-                                clickPosition =
-                                    clickPosition.copy(
-                                        x = (clickPosition.x + dragAmount.x).coerceIn(0f, componentWidth),
+                                indicatorPosition =
+                                    indicatorPosition.copy(
+                                        x = (indicatorPosition.x + dragAmount.x).coerceIn(0f, componentWidth),
                                     )
-                                navigator.jumpToPercentage(clickPosition.x.toDouble() / componentWidth * 100)
                             },
                         )
                     },
         ) {
             Canvas(modifier = Modifier.fillMaxSize()) {
                 drawLine(
-                    start = Offset(clickPosition.x, 0f),
-                    end = Offset(clickPosition.x, size.height),
+                    start = Offset(indicatorPosition.x, 0f),
+                    end = Offset(indicatorPosition.x, size.height),
                     color = Color.Red,
                     strokeWidth = 6f,
                 )
@@ -217,7 +216,7 @@ private fun timeline(navigator: FrameNavigation) {
                 modifier = Modifier.align(Alignment.CenterStart).padding(20.dp),
             )
 
-            val currentPercentage = (clickPosition.x / componentWidth * 100).toInt()
+            val currentPercentage = (indicatorPosition.x / componentWidth * 100).toInt()
 
             Text(
                 text = "$currentPercentage %",
