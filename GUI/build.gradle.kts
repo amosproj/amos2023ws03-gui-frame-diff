@@ -17,9 +17,9 @@ group = "com.example"
 version = "1.0-SNAPSHOT"
 
 repositories {
+    google()
     mavenCentral()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-    google()
 }
 
 dependencies {
@@ -67,9 +67,9 @@ licenseReport {
 }
 
 tasks.register("downloadAndUnzipTestAssets") {
-    val assetPath = "src/main/resources/"
-    val zipDestinationPath = assetPath + "assets.zip"
-    val sourceUrl = "ftp://seitzfabian.de/pub/GUI-Screenshots.zip"
+    val assetPath = "src/test/resources/"
+    val zipDestinationPath = assetPath + "guiAssets.zip"
+    val sourceUrl = "ftp://seitzfabian.de/pub/guiAssets.zip"
     createDir(assetPath)
     download(sourceUrl, zipDestinationPath)
     unzip(zipDestinationPath, assetPath)
