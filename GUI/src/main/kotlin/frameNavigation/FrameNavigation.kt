@@ -99,6 +99,7 @@ class FrameNavigation(paths: AllVideos<String>, alignment: Array<AlignmentElemen
      * @return [Unit]
      */
     override fun jumpFrames(frames: Int) {
+        println(diffSequence.size)
         jumpToFrame(grabberDiff.frameNumber + frames)
     }
 
@@ -113,7 +114,7 @@ class FrameNavigation(paths: AllVideos<String>, alignment: Array<AlignmentElemen
             throw Exception("Percentage must be between 0 and 100")
         }
         // calculate the frame to jump to
-        val diffFrame = (grabberDiff.lengthInFrames / 100 * percentage).toInt()
+        val diffFrame = (grabberDiff.lengthInFrames.toDouble() / 100 * percentage).toInt()
         // jump to the frame
         jumpToFrame(diffFrame)
     }
@@ -136,6 +137,7 @@ class FrameNavigation(paths: AllVideos<String>, alignment: Array<AlignmentElemen
         video1Bitmap.value = getBitmap(video1Grabber)
         video2Bitmap.value = getBitmap(video2Grabber)
         diffBitmap.value = getBitmap(grabberDiff)
+        println()
     }
 
     /**
@@ -172,5 +174,9 @@ class FrameNavigation(paths: AllVideos<String>, alignment: Array<AlignmentElemen
         }
         // jump to the frame
         jumpToFrame(index)
+    }
+
+    override fun getSizeOfDiff(): String {
+        return diffSequence.size.toString()
     }
 }
