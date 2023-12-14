@@ -38,7 +38,7 @@ class VideoGeneratorBenchmarkTest {
     @Test
     fun stressTest() {
         for (size in testSizes) {
-            testDataSet = getNRandomFrame(inputPath, size)
+            testDataSet = getNRandomFrames(inputPath, size)
             for (codec in testCodecs) {
                 videoGenerator.codecId = codec.key
                 if (codec.value != null) {
@@ -89,7 +89,7 @@ class VideoGeneratorBenchmarkTest {
         }
     }
 
-    private fun getNRandomFrame(
+    private fun getNRandomFrames(
         path: String,
         n: Int,
     ): ArrayList<File> {
