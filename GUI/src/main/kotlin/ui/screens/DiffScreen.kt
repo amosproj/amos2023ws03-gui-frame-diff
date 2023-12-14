@@ -164,7 +164,7 @@ private fun timeline(navigator: FrameNavigation) {
             modifier = Modifier.align(Alignment.CenterStart).padding(20.dp),
         )
 
-        val x = clickPosition.x / componentWidth * 100
+        val x = (clickPosition.x / componentWidth * 100).toInt()
 
         Text(
             text = "$x %",
