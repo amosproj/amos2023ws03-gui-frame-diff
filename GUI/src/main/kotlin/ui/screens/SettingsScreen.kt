@@ -3,19 +3,23 @@ package ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
-import androidx.compose.material.Slider
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import models.AppState
-import ui.components.AutoSizeText
+import ui.components.CustomSlider
 import ui.components.FileSelectorButton
 
+/**
+ * SettingsScreen is the screen where the user can change the settings of the app.
+ *
+ * @param state the state of the app
+ */
 @Composable
 fun SettingsScreen(state: MutableState<AppState>) {
+    // Contains the whole Screen
     Column(modifier = Modifier.fillMaxSize()) {
         // Title
         Row(modifier = Modifier.weight(0.2f)) {
@@ -54,35 +58,6 @@ fun SettingsScreen(state: MutableState<AppState>) {
         // save
         Row(modifier = Modifier.weight(0.2f)) {
             SaveButton(state)
-        }
-    }
-}
-
-@Composable
-fun RowScope.CustomSlider(
-    title: String,
-    default: Double,
-    minValue: Double,
-    maxValue: Double,
-    onChange: (Double) -> Unit,
-) {
-    var sliderValue by remember { mutableStateOf(default) }
-    Column(modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f)) {
-        AutoSizeText(text = title, modifier = Modifier.weight(0.5f).padding(8.dp).fillMaxHeight(1f).align(Alignment.CenterHorizontally))
-        Row(modifier = Modifier.weight(0.2f)) {
-            AutoSizeText(text = minValue.toString(), modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxHeight(1f))
-            Slider(
-                value = sliderValue.toFloat(),
-                steps = ((maxValue - minValue) * 100).toInt() - 1,
-                onValueChange = {
-                    onChange(it.toDouble())
-                    sliderValue = it.toDouble()
-                },
-                valueRange = minValue.toFloat()..maxValue.toFloat(),
-                modifier = Modifier.weight(0.5f).padding(8.dp).fillMaxHeight(1f),
-            )
-            AutoSizeText(text = maxValue.toString(), modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxHeight(1f))
-            AutoSizeText(text = String.format("%.2f", sliderValue), modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxHeight(1f))
         }
     }
 }
