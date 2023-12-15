@@ -1,11 +1,15 @@
 package ui.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Slider
+import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import java.awt.SystemColor.text
 
 /**
  * Title is a composable that displays a title.
@@ -26,6 +30,7 @@ fun RowScope.CustomSlider(
 ) {
     // the value of the slider
     var sliderValue by remember { mutableStateOf(default) }
+    var textValue by remember { mutableStateOf(default.toString()) }
     // Column contains the slider construct
     Column(modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f)) {
         // title
@@ -41,6 +46,7 @@ fun RowScope.CustomSlider(
                 onValueChange = {
                     onChange(it.toDouble())
                     sliderValue = it.toDouble()
+                    textValue = String.format("%.2f", it).replace(",", ".")
                 },
                 valueRange = minValue.toFloat()..maxValue.toFloat(),
                 modifier = Modifier.weight(0.5f).padding(8.dp).fillMaxHeight(1f),
@@ -48,7 +54,21 @@ fun RowScope.CustomSlider(
             // max value
             AutoSizeText(text = maxValue.toString(), modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxHeight(1f))
             // current value
-            AutoSizeText(text = String.format("%.2f", sliderValue), modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxHeight(1f))
+            TextField(
+                value = textValue,
+                onValueChange = { newText ->
+                    val filteredText = newText.filter { it.isDigit() || it == '.' || it == '-' }
+                    val newValue = filteredText.toFloatOrNull()
+                    textValue = filteredText
+                    if (newValue == null) {
+                        return@TextField
+                    }
+                    if (newValue in minValue..maxValue) {
+                        sliderValue = newValue.toDouble()
+                    }
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            )
         }
     }
 }
