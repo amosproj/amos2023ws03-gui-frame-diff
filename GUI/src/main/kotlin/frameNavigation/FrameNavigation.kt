@@ -117,8 +117,13 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
             throw Exception("Percentage must be between 0.0 and 1.0")
         }
 
-        // calculate the frame to jump to
-        val diffFrame = (grabberDiff.lengthInFrames.toDouble() * percentage).roundToInt()
+        // calculate the index to jump to; round to the nearest whole integer
+        val diffFrame = ((diffSequence.size - 1).toDouble() * percentage).roundToInt()
+
+        // check if the frame is already displayed
+        if (diffFrame == currentIndex.value) {
+            return
+        }
 
         // jump to the frame
         jumpToFrame(diffFrame)
@@ -169,7 +174,7 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
      */
     override fun jumpToNextDiff(forward: Boolean) {
         // get the current frame
-        var index = grabberDiff.frameNumber
+        var index = currentIndex.value
         // create a function that increments or decrements the index
         val op: (Int) -> Int = if (forward) { x: Int -> x + 1 } else { x: Int -> x - 1 }
         // ignore current frame by jumping once
