@@ -54,6 +54,7 @@ class Timeline {
                 )
             }
 //            #### timeline box ####
+            var helper = Offset.Zero
             Box(
                 modifier =
                     Modifier
@@ -83,15 +84,13 @@ class Timeline {
                         .pointerInput(Unit) {
                             detectDragGestures(
                                 onDragStart = { offset ->
+                                    helper = offset
                                     val percent = navigator.jumpToPercentage(offset.x.toDouble() / componentWidth)
                                     indicatorPosition = indicatorPosition.copy(x = percent.toFloat() * componentWidth)
                                 },
                                 onDrag = { _, dragAmount ->
-                                    indicatorPosition =
-                                        indicatorPosition.copy(
-                                            x = (indicatorPosition.x + dragAmount.x).coerceIn(0f, componentWidth),
-                                        )
-                                    val percent = navigator.jumpToPercentage(indicatorPosition.x.toDouble() / componentWidth)
+                                    helper = helper.copy(x = helper.x + dragAmount.x)
+                                    val percent = navigator.jumpToPercentage(helper.x.toDouble() / componentWidth)
                                     indicatorPosition = indicatorPosition.copy(x = percent.toFloat() * componentWidth)
                                 },
 //                            onDragEnd = {
