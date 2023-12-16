@@ -24,12 +24,15 @@ class Timeline {
      */
     @Composable
     fun timeline(navigator: FrameNavigation) {
-//        coordinates of the clicked position in the timelinebox
-        var indicatorPosition by remember { mutableStateOf(Offset.Zero) }
-//        set the width of the timelinebox
+        // set the width of the timelinebox
         var componentWidth by remember { mutableStateOf(0.8f) }
-//        current percentage on the cursor
-        val currentPercentage = (indicatorPosition.x / componentWidth * 100).toInt()
+
+        // current percentage on the cursor as Int between 0 and 100
+        val currentPercentage = (navigator.currentRelativePosition.value * 100).toInt()
+
+        // current x-offset of the indicator
+        val currentOffset = (navigator.currentRelativePosition.value * componentWidth).toFloat()
+
         Column(
             modifier = Modifier.background(color = Color.Gray).fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -45,7 +48,7 @@ class Timeline {
                 AutoSizeText(
                     text = "$currentPercentage%",
                     color = Color.Black,
-                    modifier = Modifier.offset(x = ((indicatorPosition.x) - 1).dp),
+                    modifier = Modifier.offset(x = (currentOffset - 1).dp),
                 )
                 AutoSizeText(
                     text = "${navigator.getSizeOfDiff()}",
@@ -77,33 +80,26 @@ class Timeline {
                         }
                         .pointerInput(Unit) {
                             detectTapGestures { offset ->
-                                val percent = navigator.jumpToPercentage(offset.x.toDouble() / componentWidth)
-                                indicatorPosition = indicatorPosition.copy(x = percent.toFloat() * componentWidth)
+                                navigator.jumpToPercentage(offset.x.toDouble() / componentWidth)
                             }
                         }
                         .pointerInput(Unit) {
                             detectDragGestures(
                                 onDragStart = { offset ->
                                     helper = offset
-                                    val percent = navigator.jumpToPercentage(offset.x.toDouble() / componentWidth)
-                                    indicatorPosition = indicatorPosition.copy(x = percent.toFloat() * componentWidth)
+                                    navigator.jumpToPercentage(offset.x.toDouble() / componentWidth)
                                 },
                                 onDrag = { _, dragAmount ->
                                     helper = helper.copy(x = helper.x + dragAmount.x)
-                                    val percent = navigator.jumpToPercentage(helper.x.toDouble() / componentWidth)
-                                    indicatorPosition = indicatorPosition.copy(x = percent.toFloat() * componentWidth)
+                                    navigator.jumpToPercentage((helper.x.toDouble() / componentWidth))
                                 },
-//                            onDragEnd = {
-//                                val percent = navigator.jumpToPercentage(indicatorPosition.x.toDouble() / componentWidth)
-//                                indicatorPosition = indicatorPosition.copy(x = percent.toFloat() * componentWidth)
-//                            },
                             )
                         },
             ) {
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     drawLine(
-                        start = Offset(indicatorPosition.x, 0f),
-                        end = Offset(indicatorPosition.x, size.height),
+                        start = Offset(currentOffset, 0f),
+                        end = Offset(currentOffset, size.height),
                         color = Color.Red,
                         strokeWidth = 6f,
                     )

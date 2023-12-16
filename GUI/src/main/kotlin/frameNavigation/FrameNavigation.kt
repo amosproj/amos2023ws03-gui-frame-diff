@@ -10,8 +10,6 @@ import models.AppState
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import wrappers.Resettable2DFrameConverter
 import java.awt.image.BufferedImage
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 /**
@@ -36,6 +34,13 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
     var video1Bitmap: MutableState<ImageBitmap> = mutableStateOf(BufferedImage(1, 1, 1).toComposeImageBitmap())
     var video2Bitmap: MutableState<ImageBitmap> = mutableStateOf(BufferedImage(1, 1, 1).toComposeImageBitmap())
     var diffBitmap: MutableState<ImageBitmap> = mutableStateOf(BufferedImage(1, 1, 1).toComposeImageBitmap())
+
+    // state variables for the current frame index
+    var currentIndex: MutableState<Int> = mutableStateOf(0)
+
+    // holds the relative position of the current frame in the diff video
+    // 0.0 means the first frame, 1.0 means the last frame
+    var currentRelativePosition: MutableState<Double> = mutableStateOf(0.0)
 
     init {
         // start the grabbers
@@ -105,13 +110,11 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
     /**
      * Jump to a specified percentage of the diff video.
      * @param percentage [Double] containing the percentage to jump to, between 0 and 1.
-     * @return [Double] containing the percentage that was actually jumped to.
-     * @return [Double] containing the percentage that was actually jumped to.
      */
-    override fun jumpToPercentage(percentage: Double): Double {
+    override fun jumpToPercentage(percentage: Double) {
         // check bounds
         if (percentage < 0.0 || percentage > 1.0) {
-            throw Exception("Percentage must be between 0 and 1.0")
+            throw Exception("Percentage must be between 0.0 and 1.0")
         }
 
         // calculate the frame to jump to
@@ -119,8 +122,6 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
 
         // jump to the frame
         jumpToFrame(diffFrame)
-
-        return diffFrame.toDouble() / grabberDiff.lengthInFrames.toDouble()
     }
 
     /**
@@ -130,13 +131,15 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
      */
     override fun jumpToFrame(index: Int) {
         // check bounds
-        var indexAligned = index
-        indexAligned = max(indexAligned, 0)
-        indexAligned = min(indexAligned, diffSequence.size - 1)
+        val boundedIndex = index.coerceIn(0, diffSequence.size - 1)
+        currentIndex.value = boundedIndex
+        currentRelativePosition.value = boundedIndex.toDouble() / (diffSequence.size - 1).toDouble()
+
         // jump to the frame in each video by mapping the frame using the generated sequences
-        video1Grabber.setVideoFrameNumber(video1Frames[indexAligned])
-        video2Grabber.setVideoFrameNumber(video2Frames[indexAligned])
-        grabberDiff.setVideoFrameNumber(indexAligned)
+        video1Grabber.setVideoFrameNumber(video1Frames[boundedIndex])
+        video2Grabber.setVideoFrameNumber(video2Frames[boundedIndex])
+        grabberDiff.setVideoFrameNumber(boundedIndex)
+
         // update the bitmaps
         video1Bitmap.value = getBitmap(video1Grabber)
         video2Bitmap.value = getBitmap(video2Grabber)

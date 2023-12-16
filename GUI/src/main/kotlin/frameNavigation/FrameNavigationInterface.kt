@@ -16,7 +16,7 @@ interface FrameNavigationInterface {
     /**
      * Jump to a specified percentage of the diff video
      */
-    fun jumpToPercentage(percentage: Double): Double
+    fun jumpToPercentage(percentage: Double)
 
     /**
      * Jump to a concretely specified frame
