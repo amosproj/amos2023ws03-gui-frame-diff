@@ -57,7 +57,7 @@ class Timeline {
                 )
             }
 //            #### timeline box ####
-            var helper = Offset.Zero
+            var cursorOffset = Offset.Zero
             Box(
                 modifier =
                     Modifier
@@ -86,12 +86,12 @@ class Timeline {
                         .pointerInput(Unit) {
                             detectDragGestures(
                                 onDragStart = { offset ->
-                                    helper = offset
+                                    cursorOffset = offset
                                     navigator.jumpToPercentage(offset.x.toDouble() / componentWidth)
                                 },
                                 onDrag = { _, dragAmount ->
-                                    helper = helper.copy(x = helper.x + dragAmount.x)
-                                    navigator.jumpToPercentage((helper.x.toDouble() / componentWidth))
+                                    cursorOffset = cursorOffset.copy(x = cursorOffset.x + dragAmount.x)
+                                    navigator.jumpToPercentage((cursorOffset.x.toDouble() / componentWidth).coerceIn(0.0, 1.0))
                                 },
                             )
                         },
