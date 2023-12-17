@@ -77,48 +77,8 @@ fun DiffScreen(state: MutableState<AppState>) {
         // ###########   Timeline   ###########
         var clickPosition by remember { mutableStateOf(Offset.Zero) }
 
-        Box(
-            modifier =
-                Modifier
-                    .background(color = Color.LightGray)
-                    .fillMaxWidth(fraction = 0.8f)
-                    .height(200.dp)
-                    .align(Alignment.CenterHorizontally)
-                    .pointerInput(Unit) {
-                        detectTapGestures { offset ->
-                            clickPosition = offset
-                        }
-                    }
-                    .pointerInput(Unit) {
-                        detectDragGestures(
-                            onDragStart = { offset ->
-                                clickPosition = offset
-                            },
-                            onDrag = { change, dragAmount ->
-                                // during drag
-                                clickPosition =
-                                    clickPosition.copy(
-                                        x = clickPosition.x + dragAmount.x,
-                                    )
-                            },
-                        )
-                    },
-        ) {
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                drawLine(
-                    start = Offset(clickPosition.x, 0f),
-                    end = Offset(clickPosition.x, size.height),
-                    color = Color.Red,
-                    strokeWidth = 4f,
-                )
-            }
-            Text(
-                text = "Click here",
-            )
-            Text(
-                text = "Clickposition: $clickPosition",
-                modifier = Modifier.align(Alignment.BottomEnd),
-            )
+        Row(modifier = Modifier.fillMaxWidth().weight(0.2f), horizontalArrangement = Arrangement.Center) {
+            timeline(navigator)
         }
 
         // ###########   Buttons   ###########
@@ -128,6 +88,57 @@ fun DiffScreen(state: MutableState<AppState>) {
             jumpButton(onClick = { navigator.jumpFrames(1) }, content = "skipNext.svg")
             jumpButton(onClick = { navigator.jumpToNextDiff(true) }, content = "skipEnd.svg")
         }
+    }
+}
+
+@Composable
+private fun timeline(navigator: FrameNavigation) {
+    var clickPosition by remember { mutableStateOf(Offset.Zero) }
+    Box(
+        modifier =
+            Modifier
+                .background(color = Color.LightGray)
+//                .fillMaxWidth(fraction = 0.8f)
+                .width(600.dp)
+                .height(100.dp)
+//                    .align(Alignment.CenterHorizontally)
+                .pointerInput(Unit) {
+                    detectTapGestures { offset ->
+                        clickPosition = offset
+                        println(clickPosition.x.toDouble() / 6)
+                        navigator.jumpToPercentage(clickPosition.x.toDouble() / 6)
+                    }
+                }
+                .pointerInput(Unit) {
+                    detectDragGestures(
+                        onDragStart = { offset ->
+                            clickPosition = offset
+                        },
+                        onDrag = { change, dragAmount ->
+                            clickPosition =
+                                clickPosition.copy(
+                                    x = clickPosition.x + dragAmount.x,
+                                )
+                            navigator.jumpToPercentage(clickPosition.x.toDouble() / 6)
+                        },
+                    )
+                },
+    ) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawLine(
+                start = Offset(clickPosition.x, 0f),
+                end = Offset(clickPosition.x, size.height),
+                color = Color.Red,
+                strokeWidth = 4f,
+            )
+        }
+        Text(
+            text = "Click here",
+        )
+        Text(
+            text = "Clickposition: $clickPosition",
+            modifier = Modifier.align(Alignment.BottomEnd),
+        )
     }
 }
 
