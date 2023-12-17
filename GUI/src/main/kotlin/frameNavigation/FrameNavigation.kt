@@ -99,7 +99,6 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
      * @return [Unit]
      */
     override fun jumpFrames(frames: Int) {
-        println(diffSequence.size)
         jumpToFrame(grabberDiff.frameNumber + frames)
     }
 
@@ -107,11 +106,12 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
      * Jump to a specified percentage of the diff video.
      * @param percentage [Double] containing the percentage to jump to, between 0 and 1.
      * @return [Double] containing the percentage that was actually jumped to.
+     * @return [Double] containing the percentage that was actually jumped to.
      */
     override fun jumpToPercentage(percentage: Double): Double {
         // check bounds
         if (percentage < 0.0 || percentage > 1.0) {
-            throw Exception("Percentage must be between 0 and 100")
+            throw Exception("Percentage must be between 0 and 1.0")
         }
 
         // calculate the frame to jump to
@@ -141,7 +141,6 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
         video1Bitmap.value = getBitmap(video1Grabber)
         video2Bitmap.value = getBitmap(video2Grabber)
         diffBitmap.value = getBitmap(grabberDiff)
-        println()
     }
 
     /**

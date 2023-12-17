@@ -1,16 +1,12 @@
 package ui.screens
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.Canvas
+import Timeline
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -21,14 +17,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.key.*
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.layout
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.WindowPosition.PlatformDefault.x
 import frameNavigation.FrameNavigation
 import models.AppState
 import ui.components.AutoSizeText
@@ -83,8 +73,8 @@ fun DiffScreen(state: MutableState<AppState>) {
         // ###########   Timeline   ###########
         var clickPosition by remember { mutableStateOf(Offset.Zero) }
 
-        Row(modifier = Modifier.fillMaxWidth().weight(0.2f).background(color = Color.Gray), horizontalArrangement = Arrangement.Center) {
-            timeline(navigator)
+        Row(modifier = Modifier.fillMaxSize().weight(0.2f)) {
+            Timeline().timeline(navigator)
         }
 
         // ###########   Buttons   ###########
@@ -127,112 +117,6 @@ fun RowScope.DisplayedImage(
         contentAlignment = Alignment.Center,
     ) {
         Image(bitmap = bitmap.value, null)
-    }
-}
-
-/**
- * A Composable function that creates a box to display the timeline.
- * @param navigator [FrameNavigation] containing the navigator.
- * @return [Unit]
- */
-@Composable
-private fun timeline(navigator: FrameNavigation) {
-    var indicatorPosition by remember { mutableStateOf(Offset.Zero) }
-    val density = LocalDensity.current
-    var componentWidth by remember { mutableStateOf(0f) }
-    Column(modifier = Modifier.background(color = Color.Gray)) {
-        Box(modifier = Modifier.fillMaxWidth(0.8f)) {
-            Text(
-                text = "0",
-                fontSize = 22.sp,
-                color = Color.Black,
-                modifier = Modifier.align(Alignment.BottomStart).padding(start = 10.dp, bottom = 2.dp),
-            )
-            Text(
-                text = "${navigator.getSizeOfDiff()}",
-                fontSize = 22.sp,
-                color = Color.Black,
-                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 10.dp, bottom = 2.dp),
-            )
-        }
-        Box(
-            modifier =
-                Modifier
-                    .background(color = Color.LightGray)
-//                .fillMaxWidth(fraction = 0.8f)
-                    .fillMaxWidth(0.8f)
-                    .height(100.dp)
-                    .border(
-                        width = 2.dp,
-                        color = Color.Black,
-                    )
-                    .layout { measurable, constraints ->
-                        val placeable = measurable.measure(constraints)
-
-                        // Store the width
-                        componentWidth =
-                            with(density) {
-                                placeable.width.toFloat()
-                            }
-                        layout(placeable.width, placeable.height) {
-                            placeable.placeRelative(0, 0)
-                        }
-                    }
-//                    .align(Alignment.CenterHorizontally)
-                    .pointerInput(Unit) {
-                        detectTapGestures { offset ->
-                            val percent = navigator.jumpToPercentage(offset.x.toDouble() / componentWidth)
-                            indicatorPosition = indicatorPosition.copy(x = percent.toFloat() * componentWidth)
-                            println(indicatorPosition.x.toDouble() / 6)
-                        }
-                    }
-                    .pointerInput(Unit) {
-                        detectDragGestures(
-                            onDragStart = { offset ->
-                                indicatorPosition = offset
-                            },
-                            onDrag = { change, dragAmount ->
-                                indicatorPosition =
-                                    indicatorPosition.copy(
-                                        x = (indicatorPosition.x + dragAmount.x).coerceIn(0f, componentWidth),
-                                    )
-                            },
-                        )
-                    },
-        ) {
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                drawLine(
-                    start = Offset(indicatorPosition.x, 0f),
-                    end = Offset(indicatorPosition.x, size.height),
-                    color = Color.Red,
-                    strokeWidth = 6f,
-                )
-            }
-            Text(
-                text = "0%",
-                color = Color.Black,
-                fontSize = 25.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.align(Alignment.CenterStart).padding(20.dp),
-            )
-
-            val currentPercentage = (indicatorPosition.x / componentWidth * 100).toInt()
-
-            Text(
-                text = "$currentPercentage %",
-                color = Color.Black,
-                fontSize = 25.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.align(Alignment.Center).padding(2.dp),
-            )
-            Text(
-                text = "100%",
-                color = Color.Black,
-                fontSize = 25.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.align(Alignment.CenterEnd).padding(20.dp),
-            )
-        }
     }
 }
 
