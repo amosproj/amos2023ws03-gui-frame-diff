@@ -1,6 +1,5 @@
 package ui.screens
 
-import Timeline
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
@@ -13,7 +12,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.key.*
@@ -22,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
 import models.AppState
 import ui.components.AutoSizeText
+import ui.components.Timeline
 
 /**
  * A Composable function that creates a screen to display the differences between two videos.
@@ -70,9 +69,7 @@ fun DiffScreen(state: MutableState<AppState>) {
             DisplayedImage(bitmap = navigator.video2Bitmap)
         }
 
-        // ###########   Timeline   ###########
-        var clickPosition by remember { mutableStateOf(Offset.Zero) }
-
+        // ###########   ui.components.Timeline   ###########
         Row(modifier = Modifier.fillMaxSize().weight(0.2f)) {
             Timeline().timeline(navigator)
         }

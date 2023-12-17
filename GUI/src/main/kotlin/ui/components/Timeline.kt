@@ -1,3 +1,5 @@
+package ui.components
+
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,7 +16,6 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
-import ui.components.AutoSizeText
 
 class Timeline {
     /**
