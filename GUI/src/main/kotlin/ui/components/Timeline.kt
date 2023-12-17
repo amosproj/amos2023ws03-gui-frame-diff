@@ -13,6 +13,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
@@ -33,14 +35,17 @@ class Timeline {
 
         // current x-offset of the indicator
         val currentOffset = (navigator.currentRelativePosition.value * componentWidth).toFloat()
-
+        // current x-offset of the indicator as dp to show current percentage
+        val currentOffsetDp = with(LocalDensity.current) { currentOffset.toDp() }
+        // width of text component to center the current percentage over the cursor
+        var textWidth by remember { mutableStateOf(0f) }
         Column(
             modifier = Modifier.background(color = Color.Gray).fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Box(modifier = Modifier.fillMaxWidth(0.8f).fillMaxHeight(0.3f)) {
-                Box {
-                }
+            Box(
+                modifier = Modifier.fillMaxWidth(0.8f).fillMaxHeight(0.3f),
+            ) {
                 AutoSizeText(
                     text = "0",
                     color = Color.Black,
@@ -49,7 +54,11 @@ class Timeline {
                 AutoSizeText(
                     text = "$currentPercentage%",
                     color = Color.Black,
-                    modifier = Modifier.offset(x = (currentOffset - 1).dp),
+                    modifier =
+                        Modifier.onGloballyPositioned {
+                                coordinates ->
+                            textWidth = coordinates.size.width.toFloat()
+                        }.offset(x = (currentOffsetDp - (textWidth / 3).dp)),
                 )
                 AutoSizeText(
                     text = "${navigator.getSizeOfDiff()}",
@@ -81,6 +90,8 @@ class Timeline {
                         }
                         .pointerInput(Unit) {
                             detectTapGestures { offset ->
+                                println("offset: $currentOffset")
+                                println("componenWidth: $componentWidth")
                                 navigator.jumpToPercentage(offset.x.toDouble() / componentWidth)
                             }
                         }
