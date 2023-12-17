@@ -1,5 +1,6 @@
 package ui.screens
 
+import androidx.compose.foundation.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,7 +25,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.WindowPosition.PlatformDefault.x
 import frameNavigation.FrameNavigation
 import models.AppState
 import ui.components.AutoSizeText
@@ -105,6 +109,10 @@ private fun timeline(navigator: FrameNavigation) {
 //                .fillMaxWidth(fraction = 0.8f)
                 .fillMaxWidth(0.8f)
                 .height(100.dp)
+                .border(
+                    width = 2.dp,
+                    color = Color.Black,
+                )
                 .layout { measurable, constraints ->
                     val placeable = measurable.measure(constraints)
 
@@ -145,15 +153,32 @@ private fun timeline(navigator: FrameNavigation) {
                 start = Offset(clickPosition.x, 0f),
                 end = Offset(clickPosition.x, size.height),
                 color = Color.Red,
-                strokeWidth = 4f,
+                strokeWidth = 6f,
             )
         }
         Text(
-            text = "Click here",
+            text = "0%",
+            color = Color.Black,
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.align(Alignment.CenterStart).padding(20.dp),
+        )
+
+        val x = clickPosition.x / componentWidth * 100
+
+        Text(
+            text = "$x %",
+            color = Color.Black,
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.align(Alignment.Center).padding(2.dp),
         )
         Text(
-            text = "Clickposition: $clickPosition",
-            modifier = Modifier.align(Alignment.BottomEnd),
+            text = "100%",
+            color = Color.Black,
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.align(Alignment.CenterEnd).padding(20.dp),
         )
     }
 }
