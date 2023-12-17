@@ -1,8 +1,11 @@
 package ui.screens
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import logic.differenceGeneratorWrapper.DifferenceGeneratorWrapper
 import models.AppState
@@ -39,6 +42,7 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
         // button to compute the differences
         Row(modifier = Modifier.weight(0.15f)) {
             ComputeDifferencesButton(state)
+            AdvancedSettingsButton(state)
         }
     }
 }
@@ -53,16 +57,11 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
 fun RowScope.ComputeDifferencesButton(state: MutableState<AppState>) {
     Button(
         // fills all available space
-        modifier = Modifier.weight(1f).padding(8.dp).fillMaxSize(1f),
+        modifier = Modifier.weight(0.9f).padding(8.dp).fillMaxSize(1f),
         onClick = {
             // generate the differences
-            val generator =
-                DifferenceGeneratorWrapper(
-                    video1Path = state.value.video1Path,
-                    video2Path = state.value.video2Path,
-                    outputPath = state.value.outputPath,
-                )
-            generator.getDifferences()
+            val generator = DifferenceGeneratorWrapper(state)
+            generator.getDifferences(state.value.outputPath)
             // set the sequence and screen
             state.value = state.value.copy(sequenceObj = generator.getSequence(), screen = Screen.DiffScreen)
         },
@@ -74,6 +73,24 @@ fun RowScope.ComputeDifferencesButton(state: MutableState<AppState>) {
             textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             // remove default centering
             modifier = Modifier,
+        )
+    }
+}
+
+@Composable
+fun RowScope.AdvancedSettingsButton(state: MutableState<AppState>) {
+    Button(
+        // fills all available space
+        modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxSize(1f),
+        onClick = {
+            // set the screen
+            state.value = state.value.copy(screen = Screen.SettingsScreen)
+        },
+    ) {
+        Image(
+            painter = painterResource("settings.svg"),
+            contentDescription = "settings",
+            modifier = Modifier.fillMaxSize().alpha(0.8f).padding(4.dp),
         )
     }
 }

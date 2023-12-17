@@ -8,6 +8,7 @@ import androidx.compose.ui.window.application
 import models.AppState
 import ui.screens.DiffScreen
 import ui.screens.SelectVideoScreen
+import ui.screens.SettingsScreen
 import ui.themes.defaultTheme
 
 /**
@@ -37,12 +38,13 @@ fun App() {
     // Background Color
     Surface(color = Color.hsv(340f, 0.83f, 0.04f)) {
         // create the global state
-        var globalState = remember { mutableStateOf(AppState()) }
+        val globalState = remember { mutableStateOf(AppState()) }
         // pass the global state to the screen, access data using state.value.*
         // to update the global state, use state.value = state.value.copy(...)
         when (globalState.value.screen) {
             is Screen.SelectVideoScreen -> SelectVideoScreen(globalState)
             is Screen.DiffScreen -> DiffScreen(globalState)
+            is Screen.SettingsScreen -> SettingsScreen(globalState)
             else -> throw Exception("Screen not implemented")
         }
     }

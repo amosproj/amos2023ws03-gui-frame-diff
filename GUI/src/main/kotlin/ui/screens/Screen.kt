@@ -19,4 +19,13 @@ sealed class Screen {
      * @extends Screen
      */
     object DiffScreen : Screen()
+
+    /**
+     * The SettingsScreen class represents the screen that displays the settings.
+     * It is a subclass of the Screen class.
+     *
+     * @constructor Creates a new SettingsScreen object.
+     * @extends Screen
+     */
+    object SettingsScreen : Screen()
 }
