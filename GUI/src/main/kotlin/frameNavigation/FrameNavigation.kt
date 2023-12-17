@@ -188,10 +188,10 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
     }
 
     /**
-     * get count of frames in diff as String
-     * @return [String]
+     * Get count of frames in diff
+     * @return [Int] containing the number of frames in the diff.
      */
-    override fun getSizeOfDiff(): String {
-        return diffSequence.size.toString()
+    override fun getSizeOfDiff(): Int {
+        return diffSequence.size
     }
 }
