@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
 import models.AppState
 import ui.components.AutoSizeText
-import ui.components.Timeline
+import ui.components.timeline
 
 /**
  * A Composable function that creates a screen to display the differences between two videos.
@@ -71,7 +71,7 @@ fun DiffScreen(state: MutableState<AppState>) {
 
         // ###########   ui.components.Timeline   ###########
         Row(modifier = Modifier.fillMaxSize().weight(0.2f)) {
-            Timeline().timeline(navigator)
+            timeline(navigator)
         }
 
         // ###########   Buttons   ###########
