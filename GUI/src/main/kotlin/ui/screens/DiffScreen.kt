@@ -1,4 +1,5 @@
 package ui.screens
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
 import models.AppState
 import ui.components.AutoSizeText
+import ui.components.timeline
 
 /**
  * A Composable function that creates a screen to display the differences between two videos.
@@ -48,24 +50,31 @@ fun DiffScreen(state: MutableState<AppState>) {
             Modifier.fillMaxSize().focusRequester(focusRequester).focusable()
                 .onKeyEvent { event -> keyEventHandler(event, keyActions) },
     ) {
-//        ###########   Focus   ###########
+        // ###########   Focus   ###########
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
         }
 
-//        ###########   Text   ###########
+        // ###########   Text   ###########
         Row(modifier = Modifier.fillMaxWidth().weight(0.2f)) {
             Title(text = "Video 1")
             Title(text = "Diff")
             Title(text = "Video 2")
         }
-//        ###########   Box   ###########
+
+        // ###########   Box   ###########
         Row(modifier = Modifier.fillMaxWidth().fillMaxHeight().weight(0.6f)) {
             DisplayedImage(bitmap = navigator.video1Bitmap)
             DisplayedImage(bitmap = navigator.diffBitmap)
             DisplayedImage(bitmap = navigator.video2Bitmap)
         }
-//        ###########   Buttons   ###########
+
+        // ###########   ui.components.Timeline   ###########
+        Row(modifier = Modifier.fillMaxSize().weight(0.2f)) {
+            timeline(navigator)
+        }
+
+        // ###########   Buttons   ###########
         Row(modifier = Modifier.fillMaxWidth().weight(0.2f)) {
             jumpButton(onClick = { navigator.jumpToNextDiff(false) }, content = "skipStart.svg")
             jumpButton(onClick = { navigator.jumpFrames(-1) }, content = "skipPrev.svg")

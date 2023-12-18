@@ -10,8 +10,7 @@ import models.AppState
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import wrappers.Resettable2DFrameConverter
 import java.awt.image.BufferedImage
-import kotlin.math.max
-import kotlin.math.min
+import kotlin.math.roundToInt
 
 /**
  * A class that implements the [FrameNavigationInterface] interface.
@@ -35,6 +34,13 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
     var video1Bitmap: MutableState<ImageBitmap> = mutableStateOf(BufferedImage(1, 1, 1).toComposeImageBitmap())
     var video2Bitmap: MutableState<ImageBitmap> = mutableStateOf(BufferedImage(1, 1, 1).toComposeImageBitmap())
     var diffBitmap: MutableState<ImageBitmap> = mutableStateOf(BufferedImage(1, 1, 1).toComposeImageBitmap())
+
+    // state variables for the current frame index
+    var currentIndex: MutableState<Int> = mutableStateOf(0)
+
+    // holds the relative position of the current frame in the diff video
+    // 0.0 means the first frame, 1.0 means the last frame
+    var currentRelativePosition: MutableState<Double> = mutableStateOf(0.0)
 
     init {
         // start the grabbers
@@ -103,16 +109,22 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
 
     /**
      * Jump to a specified percentage of the diff video.
-     * @param percentage [Double] containing the percentage to jump to.
-     * @return [Unit]
+     * @param percentage [Double] containing the percentage to jump to, between 0 and 1.
      */
     override fun jumpToPercentage(percentage: Double) {
         // check bounds
-        if (percentage < 0 || percentage > 100) {
-            throw Exception("Percentage must be between 0 and 100")
+        if (percentage < 0.0 || percentage > 1.0) {
+            throw Exception("Percentage must be between 0.0 and 1.0")
         }
-        // calculate the frame to jump to
-        val diffFrame = (grabberDiff.lengthInFrames / 100 * percentage).toInt()
+
+        // calculate the index to jump to; round to the nearest whole integer
+        val diffFrame = ((diffSequence.size - 1).toDouble() * percentage).roundToInt()
+
+        // check if the frame is already displayed
+        if (diffFrame == currentIndex.value) {
+            return
+        }
+
         // jump to the frame
         jumpToFrame(diffFrame)
     }
@@ -124,13 +136,15 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
      */
     override fun jumpToFrame(index: Int) {
         // check bounds
-        var indexAligned = index
-        indexAligned = max(indexAligned, 0)
-        indexAligned = min(indexAligned, diffSequence.size - 1)
+        val boundedIndex = index.coerceIn(0, diffSequence.size - 1)
+        currentIndex.value = boundedIndex
+        currentRelativePosition.value = boundedIndex.toDouble() / (diffSequence.size - 1).toDouble()
+
         // jump to the frame in each video by mapping the frame using the generated sequences
-        video1Grabber.setVideoFrameNumber(video1Frames[indexAligned])
-        video2Grabber.setVideoFrameNumber(video2Frames[indexAligned])
-        grabberDiff.setVideoFrameNumber(indexAligned)
+        video1Grabber.setVideoFrameNumber(video1Frames[boundedIndex])
+        video2Grabber.setVideoFrameNumber(video2Frames[boundedIndex])
+        grabberDiff.setVideoFrameNumber(boundedIndex)
+
         // update the bitmaps
         video1Bitmap.value = getBitmap(video1Grabber)
         video2Bitmap.value = getBitmap(video2Grabber)
@@ -160,7 +174,7 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
      */
     override fun jumpToNextDiff(forward: Boolean) {
         // get the current frame
-        var index = grabberDiff.frameNumber
+        var index = currentIndex.value
         // create a function that increments or decrements the index
         val op: (Int) -> Int = if (forward) { x: Int -> x + 1 } else { x: Int -> x - 1 }
         // ignore current frame by jumping once
@@ -171,5 +185,13 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
         }
         // jump to the frame
         jumpToFrame(index)
+    }
+
+    /**
+     * Get count of frames in diff
+     * @return [Int] containing the number of frames in the diff.
+     */
+    override fun getSizeOfDiff(): Int {
+        return diffSequence.size
     }
 }
