@@ -17,6 +17,7 @@ import androidx.compose.ui.input.key.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowState
 import frameNavigation.FrameNavigation
 import models.AppState
 import ui.components.AutoSizeText
@@ -46,8 +47,8 @@ fun DiffScreen(state: MutableState<AppState>) {
     Column(
         // grab focus, fill all available space, assign key press handler
         modifier =
-            Modifier.fillMaxSize().focusRequester(focusRequester).focusable()
-                .onKeyEvent { event -> keyEventHandler(event, keyActions) },
+        Modifier.fillMaxSize().focusRequester(focusRequester).focusable()
+            .onKeyEvent { event -> keyEventHandler(event, keyActions) },
     ) {
 //        ###########   Focus   ###########
         LaunchedEffect(Unit) {
@@ -62,9 +63,9 @@ fun DiffScreen(state: MutableState<AppState>) {
         }
 //        ###########   Box   ###########
         Row(modifier = Modifier.fillMaxWidth().fillMaxHeight().weight(0.6f)) {
-            DisplayedImage(bitmap = navigator.video1Bitmap)
-            DisplayedImage(bitmap = navigator.diffBitmap)
-            DisplayedImage(bitmap = navigator.video2Bitmap)
+            DisplayedImage(bitmap = navigator.video1Bitmap, navigator = navigator)
+            DisplayedImage(bitmap = navigator.diffBitmap, navigator = navigator)
+            DisplayedImage(bitmap = navigator.video2Bitmap, navigator = navigator)
         }
 //        ###########   Buttons   ###########
         Row(modifier = Modifier.fillMaxWidth().weight(0.2f)) {
@@ -100,10 +101,25 @@ fun RowScope.Title(text: String) {
 fun windowCreator(
     bitmap: MutableState<ImageBitmap>,
     b: Boolean,
+    setB: (Boolean) -> Unit,
+    navigator: FrameNavigation,
 ) {
     if (b) {
-        Window(onCloseRequest = { }) {
-            Image(bitmap = bitmap.value, null)
+        Window(onCloseRequest = { setB(false) }, state = WindowState(width = 1800.dp, height = 1000.dp)) {
+            Column {
+                Row() {
+                    Image(bitmap = bitmap.value, null)
+                }
+
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    jumpButton(onClick = { navigator.jumpToNextDiff(false) }, content = "skipStart.svg")
+                    jumpButton(onClick = { navigator.jumpFrames(-1) }, content = "skipPrev.svg")
+                    jumpButton(onClick = {
+                        navigator.jumpFrames(1)
+                    }, content = "skipNext.svg")
+                    jumpButton(onClick = { navigator.jumpToNextDiff(true) }, content = "skipEnd.svg")
+                }
+            }
         }
     }
 }
@@ -112,23 +128,23 @@ fun windowCreator(
 fun RowScope.DisplayedImage(
     bitmap: MutableState<ImageBitmap>,
     modifier: Modifier = Modifier,
+    navigator: FrameNavigation,
 ) {
     val isWindowOpen = remember { mutableStateOf(false) }
-    windowCreator(bitmap, isWindowOpen.value)
+    windowCreator(bitmap, isWindowOpen.value, { isWindowOpen.value = it }, navigator)
     Column(modifier = Modifier.fillMaxSize().weight(1f)) {
         Row(modifier.weight(0.15f)) {
             Spacer(Modifier.weight(0.7f))
             jumpButton(content = "full-screen.svg", weight = 0.3f, onClick = {
-                isWindowOpen.value = !isWindowOpen.value
+                isWindowOpen.value = true
             })
         }
-
         Row(
             modifier =
-                modifier.weight(0.85f)
-                    .background(Color.Gray)
-                    .padding(8.dp)
-                    .fillMaxWidth(1f),
+            modifier.weight(0.85f)
+                .background(Color.Gray)
+                .padding(8.dp)
+                .fillMaxWidth(1f),
             verticalAlignment = Alignment.CenterVertically,
         ) { Image(bitmap = bitmap.value, null) }
     }
