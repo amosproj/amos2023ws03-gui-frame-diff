@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Window
 import frameNavigation.FrameNavigation
 import models.AppState
 import ui.components.AutoSizeText
@@ -96,17 +97,29 @@ fun RowScope.Title(text: String) {
  * @return [Unit]
  */
 @Composable
+fun windowCreator(
+    bitmap: MutableState<ImageBitmap>,
+    b: Boolean,
+) {
+    if (b) {
+        Window(onCloseRequest = { }) {
+            Image(bitmap = bitmap.value, null)
+        }
+    }
+}
+
+@Composable
 fun RowScope.DisplayedImage(
     bitmap: MutableState<ImageBitmap>,
     modifier: Modifier = Modifier,
 ) {
+    val isWindowOpen = remember { mutableStateOf(false) }
+    windowCreator(bitmap, isWindowOpen.value)
     Column(modifier = Modifier.fillMaxSize().weight(1f)) {
         Row(modifier.weight(0.15f)) {
             Spacer(Modifier.weight(0.7f))
             jumpButton(content = "full-screen.svg", weight = 0.3f, onClick = {
-//                Window(onCloseRequest = {}) {
-//                    Image(bitmap = bitmap.value, null)
-//                }
+                isWindowOpen.value = !isWindowOpen.value
             })
         }
 
