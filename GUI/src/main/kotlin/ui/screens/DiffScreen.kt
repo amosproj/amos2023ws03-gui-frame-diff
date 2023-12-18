@@ -100,11 +100,24 @@ fun RowScope.DisplayedImage(
     bitmap: MutableState<ImageBitmap>,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier.weight(1f).background(Color.Gray).padding(8.dp).fillMaxSize(1f),
-        contentAlignment = Alignment.Center,
-    ) {
-        Image(bitmap = bitmap.value, null)
+    Column(modifier = Modifier.fillMaxSize().weight(1f)) {
+        Row(modifier.weight(0.15f)) {
+            Spacer(Modifier.weight(0.7f))
+            jumpButton(content = "full-screen.svg", weight = 0.3f, onClick = {
+//                Window(onCloseRequest = {}) {
+//                    Image(bitmap = bitmap.value, null)
+//                }
+            })
+        }
+
+        Row(
+            modifier =
+                modifier.weight(0.85f)
+                    .background(Color.Gray)
+                    .padding(8.dp)
+                    .fillMaxWidth(1f),
+            verticalAlignment = Alignment.CenterVertically,
+        ) { Image(bitmap = bitmap.value, null) }
     }
 }
 
@@ -118,10 +131,12 @@ fun RowScope.DisplayedImage(
 fun RowScope.jumpButton(
     onClick: () -> Unit,
     content: String,
+    modifier: Modifier = Modifier,
+    weight: Float = 1f,
 ) {
     Button(
         onClick = onClick,
-        modifier = Modifier.weight(1f).padding(40.dp, 20.dp, 40.dp, 20.dp),
+        modifier = modifier.weight(weight).padding(40.dp, 20.dp, 40.dp, 20.dp),
     ) {
         Image(
             painter = painterResource(content),
