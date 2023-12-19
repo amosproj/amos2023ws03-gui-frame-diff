@@ -1,14 +1,15 @@
 package ui.components
 
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.input.key.onKeyEvent
 import frameNavigation.FrameNavigation
 
 /**
@@ -51,8 +52,19 @@ fun fullScreenContent(
     bitmap: MutableState<ImageBitmap>,
     navigator: FrameNavigation,
 ) {
-    Column {
+    val focusRequester = remember { FocusRequester() }
+    Column(
+        modifier =
+            Modifier.fillMaxSize().focusRequester(focusRequester).focusable()
+                .onKeyEvent { event -> keyEventHandler(event, navigator) },
+    ) {
+        // #####   Focus   #####
+        LaunchedEffect(Unit) {
+            focusRequester.requestFocus()
+        }
+        // #####   Difference Videos   #####
         wrappedImage(bitmap = bitmap)
+        // #####   Navigation   #####
         NavigationButtons(navigator = navigator, buttonModifier = Modifier.weight(1f))
     }
 }
