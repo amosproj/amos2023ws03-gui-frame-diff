@@ -15,7 +15,7 @@ import kotlin.system.measureTimeMillis
 class VideoGeneratorBenchmarkTest {
     private lateinit var videoGenerator: VideoGeneratorImpl
     private val videoPath = "src/resources/testOutput.mkv"
-    private val inputPath = "../example/app/src/androidTest/assets/screen"
+    private val inputPath = "example/app/src/androidTest/assets/screen"
     private val testCodecs =
         mapOf<Int, Map<String, String>?>(
             avcodec.AV_CODEC_ID_FFV1 to null,

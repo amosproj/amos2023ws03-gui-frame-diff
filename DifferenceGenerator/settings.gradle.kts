@@ -3,6 +3,6 @@ dependencyResolutionManagement {
 }
 
 include(":VideoGenerator")
-project(":VideoGenerator").projectDir = File("../VideoGenerator/library")
+project(":VideoGenerator").projectDir = File("../VideoGenerator")
 
 rootProject.name = "DifferenceGenerator"

@@ -17,4 +17,4 @@ rootProject.name = "example"
 include(":app")
 
 include(":videogenerator")
-project(":videogenerator").projectDir = File("../library")
+project(":videogenerator").projectDir = File("../")
