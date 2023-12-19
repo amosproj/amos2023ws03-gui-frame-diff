@@ -47,8 +47,8 @@ fun DiffScreen(state: MutableState<AppState>) {
     Column(
         // grab focus, fill all available space, assign key press handler
         modifier =
-        Modifier.fillMaxSize().focusRequester(focusRequester).focusable()
-            .onKeyEvent { event -> keyEventHandler(event, keyActions) },
+            Modifier.fillMaxSize().focusRequester(focusRequester).focusable()
+                .onKeyEvent { event -> keyEventHandler(event, keyActions) },
     ) {
 //        ###########   Focus   ###########
         LaunchedEffect(Unit) {
@@ -107,7 +107,7 @@ fun windowCreator(
     if (b) {
         Window(onCloseRequest = { setB(false) }, state = WindowState(width = 1800.dp, height = 1000.dp)) {
             Column {
-                Row() {
+                Row {
                     Image(bitmap = bitmap.value, null)
                 }
 
@@ -141,10 +141,10 @@ fun RowScope.DisplayedImage(
         }
         Row(
             modifier =
-            modifier.weight(0.85f)
-                .background(Color.Gray)
-                .padding(8.dp)
-                .fillMaxWidth(1f),
+                modifier.weight(0.85f)
+                    .background(Color.Gray)
+                    .padding(8.dp)
+                    .fillMaxWidth(1f),
             verticalAlignment = Alignment.CenterVertically,
         ) { Image(bitmap = bitmap.value, null) }
     }
