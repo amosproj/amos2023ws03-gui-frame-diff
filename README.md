@@ -45,13 +45,11 @@ It is also encouraged to use an on-save formatter as provided by IDEs like Intel
 
 ### License Checking
 
-The project uses a [gradle plugin](https://github.com/jk1/Gradle-License-Report) to generate dependency license reports.
-The reports are all saved in the `./licenses/reports/<SubprojectName>` directories.
-Currently, we are allowing the licenses `MIT` and `Apache 2.0`. This information can be changed
-in `./licenses/allowed-licenses.json`.
-
 For `lib1` (analogous for `lib2` ("VideoGenerator") and the `gui` ("GUI"))
 - Run a task that fails if dependencies with non-allowed licenses are found.
 - `cd ./VideoGenerator && ./gradlew checkLicense`
 - Generate a license report in html
 - `cd ./VideoGenerator && ./gradlew generateLicenseReport`
+
+For more information, read the [license README](./licenses/README.md).
+
