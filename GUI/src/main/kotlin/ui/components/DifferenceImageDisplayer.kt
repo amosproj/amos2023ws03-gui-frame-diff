@@ -35,8 +35,11 @@ fun RowScope.DisplayDifferenceImage(
     windowCreator(window, title) { fullScreenContent(bitmap = bitmap, navigator = navigator) }
 
     Column(modifier = Modifier.fillMaxSize().weight(1f)) {
-        // button sets the window to not null, which triggers the window creator
-        fullScreenButton { window.value = Unit }
+        // button sets the window to null and then to not null, which triggers the window render
+        fullScreenButton {
+            window.value = null
+            window.value = Unit
+        }
         wrappedImage(bitmap = bitmap, modifier = modifier.weight(0.85f))
     }
 }
