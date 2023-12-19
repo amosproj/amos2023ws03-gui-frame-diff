@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import models.AppState
 import ui.components.CustomSlider
 import ui.components.FileSelectorButton
+import ui.components.textTitle
 
 /**
  * SettingsScreen is the screen where the user can change the settings of the app.
@@ -23,7 +24,7 @@ fun SettingsScreen(state: MutableState<AppState>) {
     Column(modifier = Modifier.fillMaxSize()) {
         // Title
         Row(modifier = Modifier.weight(0.2f)) {
-            Title("Settings")
+            textTitle("Settings")
         }
         // gap open penalty
         Row(modifier = Modifier.weight(0.2f)) {
