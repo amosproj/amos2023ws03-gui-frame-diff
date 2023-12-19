@@ -42,6 +42,7 @@ licenseReport {
     outputDir = "$licensesDir/reports/DifferenceGenerator"
     renderers = arrayOf<ReportRenderer>(InventoryHtmlReportRenderer("report.html", "DifferenceGenerator"))
     filters = arrayOf<DependencyFilter>(LicenseBundleNormalizer())
+    excludeBoms = true
     allowedLicensesFile = File(licensesDir, "allowed-licenses.json")
 }
 

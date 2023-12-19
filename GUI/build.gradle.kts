@@ -63,6 +63,7 @@ licenseReport {
     outputDir = "$licensesDir/reports/GUI"
     renderers = arrayOf<ReportRenderer>(InventoryHtmlReportRenderer("report.html", "GUI"))
     filters = arrayOf<DependencyFilter>(LicenseBundleNormalizer())
+    excludeBoms = true
     allowedLicensesFile = File(licensesDir, "allowed-licenses.json")
 }
 

@@ -5,6 +5,21 @@
     },
     {
       "moduleLicense": "MIT License"
+    },
+    {
+      "moduleLicense": "Eclipse Public License - v 2.0"
+    },
+    {
+      "moduleLicense": null,
+      "moduleName": "org.jetbrains.kotlinx:.*"
+    },
+    {
+      "moduleLicense": null,
+      "moduleName": "org.jetbrains.skiko:.*"
+    },
+    {
+      "moduleLicense": null,
+      "moduleName": "org.jetbrains.compose..*"
     }
   ]
 }

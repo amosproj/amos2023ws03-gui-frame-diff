@@ -41,6 +41,7 @@ licenseReport {
     outputDir = "$licensesDir/reports/VideoGenerator"
     renderers = arrayOf<ReportRenderer>(InventoryHtmlReportRenderer("report.html", "VideoGenerator"))
     filters = arrayOf<DependencyFilter>(LicenseBundleNormalizer())
+    excludeBoms = true
     allowedLicensesFile = File(licensesDir, "allowed-licenses.json")
 }
 /*
