@@ -1,0 +1,61 @@
+name: license
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+jobs:
+  lib1:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./VideoGenerator
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          cache: 'gradle'
+          cache-dependency-path: |
+            ./VideoGenerator/*.gradle*
+            ./VideoGenerator/**/gradle-wrapper.properties
+
+      - name: Check licenses of Lib1
+        run: ./gradlew checkLicense
+  lib2:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./DifferenceGenerator
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          cache: 'gradle'
+          cache-dependency-path: |
+            ./DifferenceGenerator/*.gradle*
+            ./DifferenceGenerator/**/gradle-wrapper.properties
+
+      - name: Check licenses of Lib2
+        run: ./gradlew checkLicense
+  gui:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./GUI
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          cache: 'gradle'
+          cache-dependency-path: |
+            ./GUI/*.gradle*
+            ./GUI/**/gradle-wrapper.properties
+
+      - name: Check licenses of GUI
+        run: ./gradlew checkLicense
