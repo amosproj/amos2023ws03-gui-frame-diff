@@ -6,6 +6,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import frameNavigation.FrameNavigation
 
+/**
+ * A Composable function that creates a row of navigation buttons.
+ *
+ * @param navigator The FrameNavigation object that contains the navigation logic.
+ * @param buttonModifier The modifier to be applied to the buttons.
+ * @param rowModifier The modifier to be applied to the row.
+ * @return [Unit]
+ */
 @Composable
 fun NavigationButtons(
     navigator: FrameNavigation,

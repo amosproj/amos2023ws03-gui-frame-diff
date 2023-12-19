@@ -29,8 +29,8 @@ fun RowScope.CustomSlider(
     onChange: (Double) -> Unit,
 ) {
     // the value of the slider
-    var sliderValue by remember { mutableStateOf(default) }
-    var textValue by remember { mutableStateOf(default.toString()) }
+    var sliderValue = remember { mutableStateOf(default) }
+    var textValue = remember { mutableStateOf(default.toString()) }
     // Column contains the slider construct
     Column(modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f)) {
         // title
@@ -41,12 +41,12 @@ fun RowScope.CustomSlider(
             AutoSizeText(text = minValue.toString(), modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxHeight(1f))
             // slider
             Slider(
-                value = sliderValue.toFloat(),
+                value = sliderValue.value.toFloat(),
                 steps = ((maxValue - minValue) * 100).toInt() - 1,
                 onValueChange = {
                     onChange(it.toDouble())
-                    sliderValue = it.toDouble()
-                    textValue = String.format("%.2f", it).replace(",", ".")
+                    sliderValue.value = it.toDouble()
+                    textValue.value = String.format("%.2f", it).replace(",", ".")
                 },
                 valueRange = minValue.toFloat()..maxValue.toFloat(),
                 modifier = Modifier.weight(0.5f).padding(8.dp).fillMaxHeight(1f),
@@ -54,21 +54,39 @@ fun RowScope.CustomSlider(
             // max value
             AutoSizeText(text = maxValue.toString(), modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxHeight(1f))
             // current value
-            TextField(
-                value = textValue,
-                onValueChange = { newText ->
-                    val filteredText = newText.filter { it.isDigit() || it == '.' || it == '-' }
-                    val newValue = filteredText.toFloatOrNull()
-                    textValue = filteredText
-                    if (newValue == null) {
-                        return@TextField
-                    }
-                    if (newValue in minValue..maxValue) {
-                        sliderValue = newValue.toDouble()
-                    }
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            )
+            currentValueInputField(textValue, minValue, maxValue, sliderValue)
         }
     }
+}
+
+/**
+ * currentValueInputField is a composable that displays the current value of the slider.
+ *
+ * @param textValue the current value of the slider
+ * @param minValue the minimum value of the slider
+ * @param maxValue the maximum value of the slider
+ * @param sliderValue the value of the slider
+ */
+@Composable
+private fun currentValueInputField(
+    textValue: MutableState<String>,
+    minValue: Double,
+    maxValue: Double,
+    sliderValue: MutableState<Double>,
+) {
+    TextField(
+        value = textValue.value,
+        onValueChange = { newText ->
+            val filteredText = newText.filter { it.isDigit() || it == '.' || it == '-' }
+            val newValue = filteredText.toFloatOrNull()
+            textValue.value = filteredText
+            if (newValue == null) {
+                return@TextField
+            }
+            if (newValue in minValue..maxValue) {
+                sliderValue.value = newValue.toDouble()
+            }
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+    )
 }
