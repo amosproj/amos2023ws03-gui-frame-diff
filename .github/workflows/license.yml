@@ -20,7 +20,8 @@ jobs:
           cache-dependency-path: |
             ./VideoGenerator/*.gradle*
             ./VideoGenerator/**/gradle-wrapper.properties
-
+      - name: Give exec permission for ./gradlew
+        run: chmod +x ./gradlew
       - name: Check licenses of Lib1
         run: ./gradlew checkLicense
   lib2:
