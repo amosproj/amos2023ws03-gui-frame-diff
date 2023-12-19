@@ -17,7 +17,7 @@ jobs:
           cache-dependency-path: |
             ./**/*.gradle*
             ./**/gradle-wrapper.properties
-      - name: Run LicenseCheck for lib1
+      - name: Run LicenseCheck for Lib1
         run: chmod +x ./gradlew && ./gradlew checkLicense
         working-directory: ./VideoGenerator
       - name: Run LicenseCheck for Lib2
