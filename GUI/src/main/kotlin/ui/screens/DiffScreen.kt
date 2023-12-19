@@ -17,7 +17,7 @@ import androidx.compose.ui.input.key.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.WindowState
+import androidx.compose.ui.window.rememberWindowState
 import frameNavigation.FrameNavigation
 import models.AppState
 import ui.components.AutoSizeText
@@ -47,8 +47,8 @@ fun DiffScreen(state: MutableState<AppState>) {
     Column(
         // grab focus, fill all available space, assign key press handler
         modifier =
-        Modifier.fillMaxSize().focusRequester(focusRequester).focusable()
-            .onKeyEvent { event -> keyEventHandler(event, keyActions) },
+            Modifier.fillMaxSize().focusRequester(focusRequester).focusable()
+                .onKeyEvent { event -> keyEventHandler(event, keyActions) },
     ) {
 //        ###########   Focus   ###########
         LaunchedEffect(Unit) {
@@ -68,12 +68,20 @@ fun DiffScreen(state: MutableState<AppState>) {
             DisplayedImage(bitmap = navigator.video2Bitmap, navigator = navigator)
         }
 //        ###########   Buttons   ###########
-        Row(modifier = Modifier.fillMaxWidth().weight(0.2f)) {
-            jumpButton(onClick = { navigator.jumpToNextDiff(false) }, content = "skipStart.svg")
-            jumpButton(onClick = { navigator.jumpFrames(-1) }, content = "skipPrev.svg")
-            jumpButton(onClick = { navigator.jumpFrames(1) }, content = "skipNext.svg")
-            jumpButton(onClick = { navigator.jumpToNextDiff(true) }, content = "skipEnd.svg")
-        }
+        NavigationButtons(navigator = navigator, modifier = Modifier.weight(0.2f))
+    }
+}
+
+@Composable
+fun NavigationButtons(
+    navigator: FrameNavigation,
+    modifier: Modifier = Modifier,
+) {
+    Row(modifier = modifier.fillMaxWidth()) {
+        jumpButton(onClick = { navigator.jumpToNextDiff(false) }, content = "skipStart.svg")
+        jumpButton(onClick = { navigator.jumpFrames(-1) }, content = "skipPrev.svg")
+        jumpButton(onClick = { navigator.jumpFrames(1) }, content = "skipNext.svg")
+        jumpButton(onClick = { navigator.jumpToNextDiff(true) }, content = "skipEnd.svg")
     }
 }
 
@@ -100,28 +108,30 @@ fun RowScope.Title(text: String) {
 @Composable
 fun windowCreator(
     bitmap: MutableState<ImageBitmap>,
-    b: Boolean,
-    setB: (Boolean) -> Unit,
+    isWindowOpen: MutableState<Boolean>,
     navigator: FrameNavigation,
+    window: MutableState<Unit?>,
 ) {
-    if (b) {
-        Window(onCloseRequest = { setB(false) }, state = WindowState(width = 1800.dp, height = 1000.dp)) {
+    val state = rememberWindowState()
+    if (!isWindowOpen.value) {
+        return
+    }
+    window.value =
+        Window(
+            onCloseRequest = {
+                isWindowOpen.value = false
+                window.value = null
+            },
+            state = state,
+        ) {
             Column {
-                Row() {
+                Row {
                     Image(bitmap = bitmap.value, null)
                 }
 
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    jumpButton(onClick = { navigator.jumpToNextDiff(false) }, content = "skipStart.svg")
-                    jumpButton(onClick = { navigator.jumpFrames(-1) }, content = "skipPrev.svg")
-                    jumpButton(onClick = {
-                        navigator.jumpFrames(1)
-                    }, content = "skipNext.svg")
-                    jumpButton(onClick = { navigator.jumpToNextDiff(true) }, content = "skipEnd.svg")
-                }
+                NavigationButtons(navigator = navigator)
             }
         }
-    }
 }
 
 @Composable
@@ -131,20 +141,24 @@ fun RowScope.DisplayedImage(
     navigator: FrameNavigation,
 ) {
     val isWindowOpen = remember { mutableStateOf(false) }
-    windowCreator(bitmap, isWindowOpen.value, { isWindowOpen.value = it }, navigator)
+    var window = remember { mutableStateOf<Unit?>(null) }
+    windowCreator(bitmap, isWindowOpen, navigator, window)
+
     Column(modifier = Modifier.fillMaxSize().weight(1f)) {
+        // Button to pop out window
         Row(modifier.weight(0.15f)) {
             Spacer(Modifier.weight(0.7f))
             jumpButton(content = "full-screen.svg", weight = 0.3f, onClick = {
                 isWindowOpen.value = true
             })
         }
+        // Image
         Row(
             modifier =
-            modifier.weight(0.85f)
-                .background(Color.Gray)
-                .padding(8.dp)
-                .fillMaxWidth(1f),
+                modifier.weight(0.85f)
+                    .background(Color.Gray)
+                    .padding(8.dp)
+                    .fillMaxWidth(1f),
             verticalAlignment = Alignment.CenterVertically,
         ) { Image(bitmap = bitmap.value, null) }
     }
