@@ -1,4 +1,5 @@
 package ui.screens
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
@@ -23,6 +24,8 @@ import ui.components.NavigationButtons
 import ui.components.svgButton
 import ui.components.textTitle
 import ui.themes.wrapTheming
+import ui.components.AutoSizeText
+import ui.components.timeline
 
 /**
  * A Composable function that creates a screen to display the differences between two videos.
@@ -53,25 +56,33 @@ fun DiffScreen(state: MutableState<AppState>) {
             Modifier.fillMaxSize().focusRequester(focusRequester).focusable()
                 .onKeyEvent { event -> keyEventHandler(event, keyActions) },
     ) {
-//        ###########   Focus   ###########
+        // ###########   Focus   ###########
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
         }
 
-//        ###########   Text   ###########
+        // ###########   Text   ###########
         Row(modifier = Modifier.fillMaxWidth().weight(0.2f)) {
             textTitle(text = "Video 1")
             textTitle(text = "Diff")
             textTitle(text = "Video 2")
         }
-//        ###########   Box   ###########
+
+        // ###########   Box   ###########
         Row(modifier = Modifier.fillMaxWidth().fillMaxHeight().weight(0.6f)) {
             DisplayedImage(bitmap = navigator.video1Bitmap, navigator = navigator, title = "Video 1")
             DisplayedImage(bitmap = navigator.diffBitmap, navigator = navigator, title = "Diff")
             DisplayedImage(bitmap = navigator.video2Bitmap, navigator = navigator, title = "Video 2")
         }
-//        ###########   Buttons   ###########
+
+        // ###########   ui.components.Timeline   ###########
+        Row(modifier = Modifier.fillMaxSize().weight(0.2f)) {
+            timeline(navigator)
+        }
+
+        // ###########   Buttons   ###########
         NavigationButtons(navigator = navigator, buttonModifier = Modifier.weight(1f), rowModifier = Modifier.weight(0.2f))
+
     }
 }
 
