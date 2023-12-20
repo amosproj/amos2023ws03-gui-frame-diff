@@ -1,0 +1,28 @@
+name: license
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+jobs:
+  licenseCheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          cache: 'gradle'
+          cache-dependency-path: |
+            ./**/*.gradle*
+            ./**/gradle-wrapper.properties
+      - name: Run LicenseCheck for Lib1
+        run: chmod +x ./gradlew && ./gradlew checkLicense
+        working-directory: ./VideoGenerator
+      - name: Run LicenseCheck for Lib2
+        run: ./gradlew checkLicense
+        working-directory: ./DifferenceGenerator
+      - name: Run LicenseCheck for GUI
+        run: ./gradlew checkLicense
+        working-directory: ./GUI
