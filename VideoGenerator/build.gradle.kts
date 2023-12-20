@@ -9,7 +9,7 @@ plugins {
     id("com.github.jk1.dependency-license-report") version "2.5"
 }
 
-group = "org.example"
+group = "de.guiframediff"
 version = "1.0-SNAPSHOT"
 
 repositories {

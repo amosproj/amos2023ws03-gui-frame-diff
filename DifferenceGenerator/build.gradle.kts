@@ -14,7 +14,7 @@ repositories {
     mavenCentral()
 }
 
-group = "org.example"
+group = "de.guiframediff"
 version = "1.0-SNAPSHOT"
 
 dependencies {
