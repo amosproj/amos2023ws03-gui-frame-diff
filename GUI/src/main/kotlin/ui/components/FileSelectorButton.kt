@@ -59,17 +59,9 @@ fun RowScope.FileSelectorButton(
                 )
             }
             // row to display the button text
-            Row(modifier = Modifier.weight(0.15f)) {
-                AutoSizeText(
-                    text = buttonText,
-                )
-            }
+            Row(modifier = Modifier.weight(0.15f)) { AutoSizeText(text = buttonText) }
             // row to display the selected file path
-            Row(modifier = Modifier.weight(0.1f)) {
-                AutoSizeText(
-                    text = buttonPath,
-                )
-            }
+            Row(modifier = Modifier.weight(0.1f)) { AutoSizeText(text = buttonPath) }
         }
     }
 }
