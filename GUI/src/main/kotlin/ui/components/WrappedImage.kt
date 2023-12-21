@@ -58,15 +58,21 @@ fun wrappedImage(
                     }
                 },
         )
-        CursorDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-        ) {
-            DropdownMenuItem({
-                println("'Save image as png' was clicked")
-            }) {
-                Text("Save image as png")
-            }
+        DropdownMenu(expanded)
+    }
+}
+
+@Composable
+private fun DropdownMenu(expanded: Boolean) {
+    var expanded1 = expanded
+    CursorDropdownMenu(
+        expanded = expanded1,
+        onDismissRequest = { expanded1 = false },
+    ) {
+        DropdownMenuItem({
+            println("'Save image as png' was clicked")
+        }) {
+            Text("Save image as png")
         }
     }
 }
