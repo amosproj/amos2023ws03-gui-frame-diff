@@ -24,17 +24,6 @@ fun RowScope.FileSelectorButton(
     buttonPath: String,
     onUpdateResult: (String) -> Unit,
 ) {
-    /**
-     * Opens a file chooser dialog and returns the selected file path.
-     *
-     * @return The selected file path, or null if no file was selected.
-     */
-    fun openFileChooserAndGetPath(): String? {
-        val fileChooser = JFileChooser()
-        val result = fileChooser.showOpenDialog(null)
-        return if (result == JFileChooser.APPROVE_OPTION) fileChooser.selectedFile.absolutePath else null
-    }
-
     Button(
         modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f),
         onClick = {
@@ -64,4 +53,15 @@ fun RowScope.FileSelectorButton(
             Row(modifier = Modifier.weight(0.1f)) { AutoSizeText(text = buttonPath, minimalFontSize = 20) }
         }
     }
+}
+
+/**
+ * Opens a file chooser dialog and returns the selected file path.
+ *
+ * @return The selected file path, or null if no file was selected.
+ */
+fun openFileChooserAndGetPath(): String? {
+    val fileChooser = JFileChooser()
+    val result = fileChooser.showOpenDialog(null)
+    return if (result == JFileChooser.APPROVE_OPTION) fileChooser.selectedFile.absolutePath else null
 }

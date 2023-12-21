@@ -3,12 +3,15 @@ package ui.screens
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Button
+import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.*
+import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
 import models.AppState
 import ui.components.*
@@ -38,12 +41,14 @@ fun DiffScreen(state: MutableState<AppState>) {
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
         }
-
+        
+        // #####   Top Bar   #####
         TopAppBar {
             Row(modifier = Modifier.fillMaxWidth()) {
                 // #####   Save Collage Button   #####
+              saveCollageButton(navigator)
                 helpMenu(Modifier.weight(0.1f))
-                Spacer(modifier = Modifier.weight(0.9f))
+                Spacer(modifier = Modifier.weight(0.8f))
             }
         }
 
@@ -66,5 +71,16 @@ fun DiffScreen(state: MutableState<AppState>) {
 
         // #####   Navigation   #####
         NavigationButtons(navigator, Modifier.weight(1f), Modifier.weight(0.15f))
+    }
+}
+
+@Composable
+fun RowScope.saveCollageButton(navigator: FrameNavigation) {
+    // #####   Save Collage Button   #####
+    Button(
+        modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxSize(),
+        onClick = { openFileChooserAndGetPath()?.let { navigator.createCollage(it) } },
+    ) {
+        Text(text = "Save Collage")
     }
 }
