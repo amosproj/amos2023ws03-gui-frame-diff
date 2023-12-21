@@ -1,10 +1,11 @@
 package ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import logic.differenceGeneratorWrapper.DifferenceGeneratorWrapper
@@ -21,6 +22,15 @@ import ui.components.FileSelectorButton
 fun SelectVideoScreen(state: MutableState<AppState>) {
     // column represents the whole screen
     Column(modifier = Modifier.fillMaxSize()) {
+        // menu bar
+        TopAppBar {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                // #####   Save Collage Button   #####
+                helpMenu(Modifier.weight(0.1f))
+                Spacer(modifier = Modifier.weight(0.9f))
+            }
+        }
+
         // video selection
         Row(modifier = Modifier.weight(0.85f)) {
             FileSelectorButton(
@@ -92,5 +102,40 @@ fun RowScope.AdvancedSettingsButton(state: MutableState<AppState>) {
             contentDescription = "settings",
             modifier = Modifier.fillMaxSize().alpha(0.8f).padding(4.dp),
         )
+    }
+}
+
+@Composable
+fun helpMenu(modifier: Modifier = Modifier) {
+    var expanded by remember { mutableStateOf(false) }
+    Button(
+        modifier = modifier,
+        onClick = { expanded = !expanded },
+    ) {
+        Text("?", fontSize = MaterialTheme.typography.body2.fontSize)
+    }
+
+    DropdownMenu(
+        modifier = modifier.padding(8.dp),
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+    ) {
+        hyperlinkDropdownMenuItem("Project Page", "https://github.com/amosproj/amos2023ws03-gui-frame-diff")
+        hyperlinkDropdownMenuItem("Help", "https://github.com/amosproj/amos2023ws03-gui-frame-diff/blob/main/README.md")
+    }
+}
+
+@Composable
+fun hyperlinkDropdownMenuItem(
+    text: String,
+    uri: String,
+) {
+    val uriHandler = LocalUriHandler.current
+    DropdownMenuItem(
+        onClick = {
+            uriHandler.openUri(uri)
+        },
+    ) {
+        Text(text, fontSize = MaterialTheme.typography.body2.fontSize)
     }
 }
