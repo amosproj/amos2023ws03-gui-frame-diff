@@ -51,9 +51,10 @@ fun AutoSizeText(
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign = TextAlign.Center,
     lineHeight: TextUnit = TextUnit.Unspecified,
-    overflow: TextOverflow = TextOverflow.Clip,
-    maxLines: Int = Int.MAX_VALUE,
+    overflow: TextOverflow = TextOverflow.Ellipsis,
+    maxLines: Int = 1,
     style: TextStyle = LocalTextStyle.current,
+    minimalFontSize: Int = 1,
 ) {
     // create a state variable to hold the scaled style
     var scaled by remember { mutableStateOf(style) }
@@ -79,11 +80,8 @@ fun AutoSizeText(
             val width = result.layoutInput.constraints.maxWidth / result.layoutInput.text.length
             scaled =
                 scaled.copy(
-                    // fill until the text is too big, then shrink
-                    fontSize =
-                        with(localDensity) {
-                            if (height < width) height.toSp() else width.toSp()
-                        },
+                    // choose limit based on height or width or minimalFontSize
+                    fontSize = with(localDensity) { maxOf(minOf(height, width), minimalFontSize).toSp() },
                 )
         },
         // draw the text with the scaled style
