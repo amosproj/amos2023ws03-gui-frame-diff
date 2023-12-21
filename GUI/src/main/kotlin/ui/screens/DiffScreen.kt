@@ -41,14 +41,13 @@ fun DiffScreen(state: MutableState<AppState>) {
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
         }
-        
+
         // #####   Top Bar   #####
         TopAppBar {
             Row(modifier = Modifier.fillMaxWidth()) {
-                // #####   Save Collage Button   #####
-              saveCollageButton(navigator)
-                helpMenu(Modifier.weight(0.1f))
+                saveCollageButton(navigator, Modifier.weight(0.1f))
                 Spacer(modifier = Modifier.weight(0.8f))
+                helpMenu(Modifier.weight(0.1f))
             }
         }
 
@@ -75,10 +74,13 @@ fun DiffScreen(state: MutableState<AppState>) {
 }
 
 @Composable
-fun RowScope.saveCollageButton(navigator: FrameNavigation) {
+fun saveCollageButton(
+    navigator: FrameNavigation,
+    modifier: Modifier,
+) {
     // #####   Save Collage Button   #####
     Button(
-        modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxSize(),
+        modifier = modifier.padding(8.dp).fillMaxSize(),
         onClick = { openFileChooserAndGetPath()?.let { navigator.createCollage(it) } },
     ) {
         Text(text = "Save Collage")

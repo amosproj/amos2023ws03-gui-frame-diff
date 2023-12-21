@@ -26,9 +26,8 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
         // menu bar
         TopAppBar {
             Row(modifier = Modifier.fillMaxWidth()) {
-                // #####   Save Collage Button   #####
-                helpMenu(Modifier.weight(0.1f))
                 Spacer(modifier = Modifier.weight(0.9f))
+                helpMenu(Modifier.weight(0.1f))
             }
         }
 
