@@ -42,24 +42,9 @@ fun DiffScreen(state: MutableState<AppState>) {
             focusRequester.requestFocus()
         }
 
+        // #####   Top Bar   #####
         TopAppBar {
             Row(modifier = Modifier.fillMaxWidth()) {
-//                // #####   File Selectors   #####
-//                RowScope.FileSelectorButton(
-//                    buttonText = "Video 1",
-//                    buttonPath = state.value.video1Path,
-//                    onUpdateResult = { state.value.video1Path = it },
-//                )
-//                RowScope.FileSelectorButton(
-//                    buttonText = "Video 2",
-//                    buttonPath = state.value.video2Path,
-//                    onUpdateResult = { state.value.video2Path = it },
-//                )
-//                RowScope.FileSelectorButton(
-//                    buttonText = "Output",
-//                    buttonPath = state.value.outputPath,
-//                    onUpdateResult = { state.value.outputPath = it },
-//                )
                 // #####   Save Collage Button   #####
                 saveCollageButton(navigator)
             }
