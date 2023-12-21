@@ -40,7 +40,7 @@ fun RowScope.DisplayDifferenceImage(
             window.value = null
             window.value = Unit
         }
-        wrappedImage(bitmap = bitmap, modifier = modifier.weight(0.85f))
+        wrappedImage(bitmap = bitmap, modifier = modifier.weight(0.92f))
     }
 }
 

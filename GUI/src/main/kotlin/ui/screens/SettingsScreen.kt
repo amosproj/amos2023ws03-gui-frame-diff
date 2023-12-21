@@ -33,7 +33,9 @@ fun SettingsScreen(state: MutableState<AppState>) {
                 default = state.value.gapOpenPenalty,
                 minValue = -1.0,
                 maxValue = 0.5,
-                onChange = { state.value = state.value.copy(gapOpenPenalty = it) },
+                onChange = {
+                    state.value = state.value.copy(gapOpenPenalty = it)
+                },
             )
         }
         // gap extend penalty
@@ -56,10 +58,36 @@ fun SettingsScreen(state: MutableState<AppState>) {
                 },
             )
         }
-        // save
         Row(modifier = Modifier.weight(0.2f)) {
+            // back
+            BackButton(state)
+            // save
             SaveButton(state)
         }
+    }
+}
+
+@Composable
+fun RowScope.BackButton(state: MutableState<AppState>) {
+    Button(
+        // fills all available space
+        modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxSize(1f),
+        onClick = {
+            state.value =
+                // set all previus values
+                state.value.copy(
+                    screen = Screen.SelectVideoScreen,
+                    gapOpenPenalty = state.value.prevGapOpenPenalty,
+                    gapExtendPenalty = state.value.prevExtendPenalty,
+                    maskPath = state.value.prevMaskPath,
+                )
+        },
+    ) {
+        Image(
+            painter = painterResource("back-arrow.svg"),
+            contentDescription = "back",
+            modifier = Modifier.fillMaxSize().alpha(0.8f).padding(4.dp),
+        )
     }
 }
 
@@ -70,7 +98,13 @@ fun RowScope.SaveButton(state: MutableState<AppState>) {
         modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxSize(1f),
         onClick = {
             // set the screen
-            state.value = state.value.copy(screen = Screen.SelectVideoScreen)
+            state.value =
+                state.value.copy(
+                    screen = Screen.SelectVideoScreen,
+                    prevGapOpenPenalty = state.value.gapOpenPenalty,
+                    prevExtendPenalty = state.value.gapExtendPenalty,
+                    prevMaskPath = state.value.maskPath,
+                )
         },
     ) {
         Image(
