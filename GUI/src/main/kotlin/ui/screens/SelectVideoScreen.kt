@@ -12,6 +12,7 @@ import logic.differenceGeneratorWrapper.DifferenceGeneratorWrapper
 import models.AppState
 import ui.components.AutoSizeText
 import ui.components.FileSelectorButton
+import ui.components.helpMenu
 
 /**
  * A Composable function that creates a screen to select the videos to compare.
@@ -102,26 +103,6 @@ fun RowScope.AdvancedSettingsButton(state: MutableState<AppState>) {
             contentDescription = "settings",
             modifier = Modifier.fillMaxSize().alpha(0.8f).padding(4.dp),
         )
-    }
-}
-
-@Composable
-fun helpMenu(modifier: Modifier = Modifier) {
-    var expanded by remember { mutableStateOf(false) }
-    Button(
-        modifier = modifier,
-        onClick = { expanded = !expanded },
-    ) {
-        Text("?", fontSize = MaterialTheme.typography.body2.fontSize)
-    }
-
-    DropdownMenu(
-        modifier = modifier.padding(8.dp),
-        expanded = expanded,
-        onDismissRequest = { expanded = false },
-    ) {
-        hyperlinkDropdownMenuItem("Project Page", "https://github.com/amosproj/amos2023ws03-gui-frame-diff")
-        hyperlinkDropdownMenuItem("Help", "https://github.com/amosproj/amos2023ws03-gui-frame-diff/blob/main/README.md")
     }
 }
 
