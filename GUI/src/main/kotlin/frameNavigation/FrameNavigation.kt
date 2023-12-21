@@ -5,6 +5,7 @@ import algorithms.AlignmentElement
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import models.AppState
 import org.bytedeco.javacv.FFmpegFrameGrabber
@@ -193,5 +194,56 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
      */
     override fun getSizeOfDiff(): Int {
         return diffSequence.size
+    }
+
+    /**
+     * Creates a collage of the 3 videos and saves it to a file.
+     * @param outputPath [String] containing the path to save the collage to.
+     * @param border [Int] containing the width of the border between the videos.
+     * @param titleHeight [Int] containing the height of the title.
+     * @param font [java.awt.Font] containing the font to use for the title.
+     * @return [Unit]
+     */
+    fun createCollage(
+        outputPath: String,
+        border: Int = 20,
+        titleHeight: Int = 100,
+        font: java.awt.Font =
+            java.awt.Font(
+                "Arial",
+                java.awt.Font.BOLD,
+                100,
+            ),
+    ) {
+        val width = video1Grabber.imageWidth
+        var xOffset = 0
+        // create the collage
+        val collage = BufferedImage(width * 3 + border * 2, video1Grabber.imageHeight + titleHeight, BufferedImage.TYPE_INT_RGB)
+        val g = collage.createGraphics()
+        // fill the background with white
+        g.color = java.awt.Color.WHITE
+        g.fillRect(0, 0, collage.width, collage.height)
+
+        // draw the images
+        for (item in listOf(video1Bitmap, diffBitmap, video2Bitmap)) {
+            val img = item.value.toAwtImage()
+            g.drawImage(img, xOffset, titleHeight, null)
+            xOffset += width + border
+        }
+
+        // draw the titles
+        g.color = java.awt.Color.BLACK
+        g.font = font
+        xOffset = 0
+        for (item in listOf("Video 1", "Diff", "Video 2")) {
+            val metrics = g.fontMetrics
+            val x = (width - metrics.stringWidth(item)) / 2
+            g.drawString(item, x + xOffset, titleHeight - 10)
+            xOffset += width + border
+        }
+
+        // save the collage
+        val file = java.io.File("$outputPath.png")
+        javax.imageio.ImageIO.write(collage, "png", file)
     }
 }
