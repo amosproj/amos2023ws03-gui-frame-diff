@@ -1,5 +1,8 @@
 package ui.components
 
+import Screen
+import ScreenDeserializer
+import ScreenSerializer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -9,10 +12,24 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import models.AppState
 import java.io.File
+
+// singleton
+object AppConfig {
+    val mapper: ObjectMapper =
+        ObjectMapper().apply {
+            val module =
+                SimpleModule().apply {
+                    addSerializer(Screen::class.java, ScreenSerializer())
+                    addDeserializer(Screen::class.java, ScreenDeserializer())
+                }
+            registerModule(module)
+        }
+}
 
 @Composable
 fun projectMenu(
@@ -36,13 +53,21 @@ fun projectMenu(
             onDismissRequest = { expanded = false },
         ) {
             DropdownMenuItem(
-                onClick = { openFileChooserAndGetPath()?.let { handleOpenProject(state, it) } },
+                onClick = {
+                    println("clicked")
+                    openFileChooserAndGetPath()?.let { handleOpenProject(state, it) }
+                    expanded = false
+                },
             ) {
                 Text("Open Project", fontSize = MaterialTheme.typography.body2.fontSize)
             }
 
             DropdownMenuItem(
-                onClick = { openFileChooserAndGetPath()?.let { handleSaveProject(state, it) } },
+                onClick = {
+                    openFileChooserAndGetPath()?.let { handleSaveProject(state, it) }
+                    expanded = false
+                },
+                // enabled = state.value.screen == Screen.DiffScreen, TODO: discuss
             ) {
                 Text("Save Project", fontSize = MaterialTheme.typography.body2.fontSize)
             }
@@ -54,16 +79,14 @@ fun handleOpenProject(
     state: MutableState<AppState>,
     path: String,
 ) {
-    val mapper = jacksonObjectMapper()
     val file = File(path).readLines()
-    state.value = mapper.readValue<AppState>(file.joinToString(""))
+    state.value = AppConfig.mapper.readValue<AppState>(file.joinToString(""))
 }
 
 fun handleSaveProject(
     state: MutableState<AppState>,
     path: String,
 ) {
-    val mapper = jacksonObjectMapper()
-    val jsonData = mapper.writeValueAsString(state.value)
-    File(path).writeText(jsonData)
+    val jsonData = AppConfig.mapper.writeValueAsString(state.value)
+    File("$path.json").writeText(jsonData)
 }

@@ -1,3 +1,7 @@
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.*
+
 /**
  * Represents the different screens the GUI application.
  * If a new screen is added, it should be added as a subclass of the Screen class
@@ -28,4 +32,36 @@ sealed class Screen {
      * @extends Screen
      */
     object SettingsScreen : Screen()
+}
+
+class ScreenSerializer : JsonSerializer<Screen>() {
+    override fun serialize(
+        value: Screen,
+        gen: JsonGenerator,
+        serializers: SerializerProvider,
+    ) {
+        when (value) {
+            is Screen.SelectVideoScreen -> gen.writeString("SelectVideoScreen")
+            is Screen.DiffScreen -> gen.writeString("DiffScreen")
+            is Screen.SettingsScreen -> gen.writeString("SettingsScreen")
+            else -> {
+                throw IllegalArgumentException("Unknown Screen type")
+            }
+        }
+    }
+}
+
+class ScreenDeserializer : JsonDeserializer<Screen>() {
+    override fun deserialize(
+        p: JsonParser,
+        ctxt: DeserializationContext,
+    ): Screen {
+        val node: JsonNode = p.codec.readTree(p)
+        return when (node.textValue()) {
+            "SelectVideoScreen" -> Screen.SelectVideoScreen
+            "DiffScreen" -> Screen.DiffScreen
+            "SettingsScreen" -> Screen.SettingsScreen
+            else -> throw IllegalArgumentException("Invalid screen type")
+        }
+    }
 }

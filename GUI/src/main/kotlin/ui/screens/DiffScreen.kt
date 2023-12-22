@@ -45,8 +45,9 @@ fun DiffScreen(state: MutableState<AppState>) {
         // #####   Top Bar   #####
         TopAppBar {
             Row(modifier = Modifier.fillMaxWidth()) {
+                projectMenu(state, Modifier.weight(0.1f))
                 saveCollageButton(navigator, Modifier.weight(0.1f))
-                Spacer(modifier = Modifier.weight(0.8f))
+                Spacer(modifier = Modifier.weight(0.7f))
                 helpMenu(Modifier.weight(0.1f))
             }
         }
