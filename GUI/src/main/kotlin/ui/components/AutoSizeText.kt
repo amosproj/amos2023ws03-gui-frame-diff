@@ -12,10 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -39,6 +41,7 @@ import androidx.compose.ui.unit.TextUnit
  * @param style [TextStyle] to apply to the text.
  * @return [Unit]
  */
+@OptIn(ExperimentalTextApi::class)
 @Composable
 fun AutoSizeText(
     text: String,
@@ -52,16 +55,30 @@ fun AutoSizeText(
     textAlign: TextAlign = TextAlign.Center,
     lineHeight: TextUnit = TextUnit.Unspecified,
     overflow: TextOverflow = TextOverflow.Clip,
-    maxLines: Int = Int.MAX_VALUE,
+    maxLines: Int = 1,
     style: TextStyle = LocalTextStyle.current,
+    minimalFontSize: Int = 1,
 ) {
+    // create a state variable to hold the current text
+    var currentText by remember { mutableStateOf(text) }
+    // create a state variable to hold the original text
+    var originalText by remember { mutableStateOf(text) }
+    // update the visible text if the original text changes
+    if (originalText != text) {
+        currentText = text
+        originalText = text
+    }
     // create a state variable to hold the scaled style
     var scaled by remember { mutableStateOf(style) }
+
+    // create a state variable to hold the text measurement
+    val textMeasurer = rememberTextMeasurer()
+
     // fancy density magic
     val localDensity = LocalDensity.current
     // reapply default parameters
     Text(
-        text = text,
+        text = currentText,
         color = color,
         maxLines = maxLines,
         fontStyle = fontStyle,
@@ -77,16 +94,23 @@ fun AutoSizeText(
         onTextLayout = { result ->
             val height = result.layoutInput.constraints.maxHeight / 2
             val width = result.layoutInput.constraints.maxWidth / result.layoutInput.text.length
-            scaled =
-                scaled.copy(
-                    // fill until the text is too big, then shrink
-                    fontSize =
-                        with(localDensity) {
-                            if (height < width) height.toSp() else width.toSp()
-                        },
-                )
+            // choose limit based on height or width or minimalFontSize
+            scaled = scaled.copy(fontSize = with(localDensity) { maxOf(minOf(height, width), minimalFontSize).toSp() })
+            // on overflow trim start
+            // measure the text with the scaled style
+            var data = textMeasurer.measure(currentText, scaled, overflow = TextOverflow.Visible)
+            // trim the text until it fits
+            while (data.size.width > result.layoutInput.constraints.maxWidth) {
+                currentText = currentText.substring(1, currentText.length)
+                data = textMeasurer.measure(currentText, scaled, overflow = TextOverflow.Visible)
+            }
+            // add ellipsis if the text was trimmed
+            if (currentText.length < text.length) {
+                currentText = "..." + currentText.substring(3, currentText.length)
+            }
         },
         // draw the text with the scaled style
         modifier = modifier.drawWithContent { drawContent() },
+        // a re-compose is forced once on scaling since drawContent does not account for changed text
     )
 }

@@ -1,16 +1,18 @@
 package ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import logic.differenceGeneratorWrapper.DifferenceGeneratorWrapper
 import models.AppState
 import ui.components.AutoSizeText
 import ui.components.FileSelectorButton
+import ui.components.helpMenu
 
 /**
  * A Composable function that creates a screen to select the videos to compare.
@@ -21,6 +23,14 @@ import ui.components.FileSelectorButton
 fun SelectVideoScreen(state: MutableState<AppState>) {
     // column represents the whole screen
     Column(modifier = Modifier.fillMaxSize()) {
+        // menu bar
+        TopAppBar {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Spacer(modifier = Modifier.weight(0.9f))
+                helpMenu(Modifier.weight(0.1f))
+            }
+        }
+
         // video selection
         Row(modifier = Modifier.weight(0.85f)) {
             FileSelectorButton(
@@ -92,5 +102,20 @@ fun RowScope.AdvancedSettingsButton(state: MutableState<AppState>) {
             contentDescription = "settings",
             modifier = Modifier.fillMaxSize().alpha(0.8f).padding(4.dp),
         )
+    }
+}
+
+@Composable
+fun hyperlinkDropdownMenuItem(
+    text: String,
+    uri: String,
+) {
+    val uriHandler = LocalUriHandler.current
+    DropdownMenuItem(
+        onClick = {
+            uriHandler.openUri(uri)
+        },
+    ) {
+        Text(text, fontSize = MaterialTheme.typography.body2.fontSize)
     }
 }
