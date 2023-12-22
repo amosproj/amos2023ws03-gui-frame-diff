@@ -77,7 +77,7 @@ fun AutoSizeText(
         onTextLayout = { result ->
             val height = result.layoutInput.constraints.maxHeight / 2
             val width =
-                if (result.layoutInput.text.isEmpty()){
+                if (result.layoutInput.text.isEmpty()) {
                     0
                 } else {
                     result.layoutInput.constraints.maxWidth / result.layoutInput.text.length
@@ -86,7 +86,7 @@ fun AutoSizeText(
                 scaled.copy(
                     // fill until the text is too big, then shrink
                     fontSize =
-                    with(localDensity) {
+                        with(localDensity) {
                             if (height < width) height.toSp() else width.toSp()
                         },
                 )

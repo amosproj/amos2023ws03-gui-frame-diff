@@ -17,7 +17,7 @@ data class AppState(
     var video2Path: String = getPath("testVideo2.mkv"),
     var outputPath: String = getPath("output.mkv"),
     var sequenceObj: Array<AlignmentElement> = arrayOf(),
-    var maskPath: String = /* getPath("mask.png")*/ "",
+    var maskPath: String = "",
     var gapOpenPenalty: Double = 0.2,
     var gapExtendPenalty: Double = -0.8,
 )
