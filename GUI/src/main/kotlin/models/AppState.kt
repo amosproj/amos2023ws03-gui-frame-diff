@@ -2,7 +2,6 @@ package models
 
 import Screen
 import algorithms.AlignmentElement
-import java.nio.file.FileSystems
 
 /**
  * This data class represents the global state of the application.
@@ -18,7 +17,7 @@ data class AppState(
     var video2Path: String = getPath("testVideo2.mkv"),
     var outputPath: String = getPath("output.mkv"),
     var sequenceObj: Array<AlignmentElement> = arrayOf(),
-    var maskPath: String = getPath("mask.png"),
+    var maskPath: String = /* getPath("mask.png")*/ "",
     var gapOpenPenalty: Double = 0.2,
     var gapExtendPenalty: Double = -0.8,
 )
@@ -30,5 +29,6 @@ data class AppState(
  *  @return [String] the path of the file
  */
 private fun getPath(name: String): String {
-    return FileSystems.getDefault().getPath("src", "test", "resources", name).toString()
+//    return FileSystems.getDefault().getPath("src", "test", "resources", name).toString()
+    return name
 }

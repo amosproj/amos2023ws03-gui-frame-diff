@@ -17,3 +17,6 @@
     - Create an installer for the current operating system
        - `./gradlew packageDistributionForCurrentOS`
        - Installer at `build/compose/binaries/main/{msi|deb|dmg}/`
+    - Create a Fat/Uber Jar
+       - `./gradlew createFatJar`
+       - Executable Jar file at `build/lib/`
