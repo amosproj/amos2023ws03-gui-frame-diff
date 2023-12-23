@@ -67,7 +67,7 @@ fun projectMenu(
                     openFileChooserAndGetPath()?.let { handleSaveProject(state, it) }
                     expanded = false
                 },
-                // enabled = state.value.screen == Screen.DiffScreen, TODO: discuss
+                enabled = state.value.screen == Screen.DiffScreen,
             ) {
                 Text("Save Project", fontSize = MaterialTheme.typography.body2.fontSize)
             }
