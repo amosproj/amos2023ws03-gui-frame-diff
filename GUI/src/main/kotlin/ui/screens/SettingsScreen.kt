@@ -17,7 +17,11 @@ import ui.components.textTitle
  * SettingsScreen is the screen where the user can change the settings of the app.
  *
  * @param state the state of the app
+ * @param oldState the previous state of the app
  */
+
+var oldState = AppState()
+
 @Composable
 fun SettingsScreen(state: MutableState<AppState>) {
     // Contains the whole Screen
@@ -72,13 +76,7 @@ fun RowScope.BackButton(state: MutableState<AppState>) {
         modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxSize(1f),
         onClick = {
             state.value =
-                // set all previus values
-                state.value.copy(
-                    screen = Screen.SelectVideoScreen,
-                    gapOpenPenalty = state.value.prevGapOpenPenalty,
-                    gapExtendPenalty = state.value.prevExtendPenalty,
-                    maskPath = state.value.prevMaskPath,
-                )
+                oldState.copy(screen = Screen.SelectVideoScreen)
         },
     ) {
         Image(
@@ -95,12 +93,10 @@ fun RowScope.SaveButton(state: MutableState<AppState>) {
         // fills all available space
         modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxSize(1f),
         onClick = {
+            oldState = state.value
             state.value =
                 state.value.copy(
                     screen = Screen.SelectVideoScreen,
-                    prevGapOpenPenalty = state.value.gapOpenPenalty,
-                    prevExtendPenalty = state.value.gapExtendPenalty,
-                    prevMaskPath = state.value.maskPath,
                 )
         },
     ) {
