@@ -36,7 +36,9 @@ fun SettingsScreen(state: MutableState<AppState>) {
                 default = state.value.gapOpenPenalty,
                 minValue = -1.0,
                 maxValue = 0.5,
-                onChange = { state.value = state.value.copy(gapOpenPenalty = it) },
+                onChange = {
+                    state.value = state.value.copy(gapOpenPenalty = it)
+                },
             )
         }
         // gap extend penalty
