@@ -14,10 +14,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAwtImage
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import frameNavigation.FrameNavigation
+import java.io.File
+import javax.imageio.ImageIO
 
 /**
  * A Composable function that displays an image wrapped in a row.
@@ -29,8 +33,9 @@ import androidx.compose.ui.unit.dp
 fun wrappedImage(
     bitmap: MutableState<ImageBitmap>,
     modifier: Modifier = Modifier,
+    navigator: FrameNavigation,
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var expanded: MutableState<Boolean> = remember { mutableStateOf(false) }
     Row(
         modifier =
             modifier.background(Color.Gray)
@@ -52,27 +57,36 @@ fun wrappedImage(
                             }
 
                             if (event.buttons.isSecondaryPressed) {
-                                expanded = true
+                                expanded.value = true
                             }
                         }
                     }
                 },
         )
-        DropdownMenu(expanded)
+        DropdownMenu(expanded, bitmap)
     }
 }
 
 @Composable
-private fun DropdownMenu(expanded: Boolean) {
-    var expanded1 = expanded
+private fun DropdownMenu(
+    expanded: MutableState<Boolean>,
+    bitmap: MutableState<ImageBitmap>,
+) {
     CursorDropdownMenu(
-        expanded = expanded1,
-        onDismissRequest = { expanded1 = false },
+        expanded = expanded.value,
+        onDismissRequest = { expanded.value = false },
     ) {
         DropdownMenuItem({
-            println("'Save image as png' was clicked")
+            saveBitmapAsPng(bitmap)
         }) {
             Text("Save image as png")
         }
     }
+}
+
+private fun saveBitmapAsPng(bitmap: MutableState<ImageBitmap>) {
+    val path = openFileChooserAndGetPath()
+    val file = File("$path.png")
+    val awtImage = bitmap.value.asAwtImage()
+    ImageIO.write(awtImage, "PNG", file)
 }
