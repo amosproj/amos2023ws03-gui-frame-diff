@@ -21,9 +21,6 @@ data class AppState(
     var maskPath: String = getPath("mask.png"),
     var gapOpenPenalty: Double = 0.2,
     var gapExtendPenalty: Double = -0.8,
-    var prevGapOpenPenalty: Double = 0.2,
-    var prevExtendPenalty: Double = -0.8,
-    var prevMaskPath: String = getPath("mask.png"),
 )
 
 /**
