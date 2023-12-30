@@ -1,26 +1,20 @@
 package ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.hoverable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.PlainTooltipBox
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Popup
 import models.AppState
 import ui.components.CustomSlider
 import ui.components.FileSelectorButton
@@ -96,10 +90,8 @@ fun SettingsScreen(state: MutableState<AppState>) {
 @Composable
 fun RowScope.SaveButton(state: MutableState<AppState>) {
     Button(
-        // fills all available space
         modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxSize(1f),
         onClick = {
-            // set the screen
             state.value = state.value.copy(screen = Screen.SelectVideoScreen)
         },
     ) {
@@ -111,71 +103,23 @@ fun RowScope.SaveButton(state: MutableState<AppState>) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InfoIconWithHover(text: String) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isHovered by interactionSource.collectIsHoveredAsState()
-
-    // Remember the current hover state to use in DisposableEffect
-    var currentIsHovered by remember { mutableStateOf(isHovered) }
-
-    DisposableEffect(currentIsHovered) {
-        onDispose {
-            // Close the tooltip when the composable is disposed
-            currentIsHovered = false
-        }
-    }
-
-    Box(
-        modifier =
-            Modifier
-                .size(40.dp)
-                .hoverable(
-                    interactionSource = interactionSource,
-                ),
-        contentAlignment = Alignment.Center,
+    PlainTooltipBox(
+        tooltip = {
+            Text(
+                text = text,
+                modifier = Modifier,
+                color = Color.White,
+            )
+        },
     ) {
-        // Info icon
         Icon(
             imageVector = Icons.Default.Info,
             contentDescription = null,
-            tint =
-                if (isHovered) {
-                    MaterialTheme.colors.primary
-                } else {
-                    MaterialTheme.colors.onBackground.copy(
-                        alpha = LocalContentAlpha.current,
-                    )
-                },
-            modifier = Modifier.size(24.dp),
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(24.dp).tooltipAnchor(),
         )
-
-        // Tooltip
-        if (isHovered) {
-            // Set the current hover state to true
-            currentIsHovered = true
-            Tooltip(text = text)
-        }
-    }
-}
-
-@Composable
-fun Tooltip(text: String) {
-    Box {
-        val cornerSize = 16.dp
-
-        Popup(alignment = Alignment.CenterEnd) {
-            // Draw a rectangle shape with rounded corners inside the popup
-            Box(
-                Modifier
-                    .background(Color.DarkGray, RoundedCornerShape(cornerSize)),
-            ) {
-                Text(
-                    text = text,
-                    modifier = Modifier,
-                    color = Color.White,
-                )
-            }
-        }
     }
 }
