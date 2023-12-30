@@ -47,15 +47,15 @@ fun SettingsScreen(state: MutableState<AppState>) {
     // Contains the whole Screen
     Column(modifier = Modifier.fillMaxSize()) {
         // Title
-        Row(modifier = Modifier.weight(0.2f)) {
+        Row(modifier = Modifier.weight(0.15f)) {
             textTitle("Settings")
         }
-        Row(modifier = Modifier.weight(0.15f)) {
+        Row(modifier = Modifier.weight(0.125f)) {
             textTitle("Hyperparameters")
             InfoIconWithHover(textForHyper)
         }
         // gap open penalty
-        Row(modifier = Modifier.weight(0.125f)) {
+        Row(modifier = Modifier.weight(0.2f)) {
             CustomSlider(
                 title = "gapOpenPenalty",
                 default = state.value.gapOpenPenalty,
@@ -66,7 +66,7 @@ fun SettingsScreen(state: MutableState<AppState>) {
             InfoIconWithHover(textForGapOpen)
         }
         // gap extend penalty
-        Row(modifier = Modifier.weight(0.125f)) {
+        Row(modifier = Modifier.weight(0.2f)) {
             CustomSlider(
                 title = "gapExtensionPenalty",
                 default = state.value.gapExtendPenalty,
@@ -77,7 +77,7 @@ fun SettingsScreen(state: MutableState<AppState>) {
             InfoIconWithHover(textForGapExtended)
         }
         // mask
-        Row(modifier = Modifier.weight(0.2f)) {
+        Row(modifier = Modifier.weight(0.175f)) {
             FileSelectorButton(
                 buttonText = "Upload Mask",
                 buttonPath = state.value.maskPath,
@@ -88,7 +88,7 @@ fun SettingsScreen(state: MutableState<AppState>) {
             InfoIconWithHover(textForMask)
         }
         // save
-        Row(modifier = Modifier.weight(0.2f)) {
+        Row(modifier = Modifier.weight(0.15f)) {
             SaveButton(state)
         }
     }
@@ -114,10 +114,7 @@ fun RowScope.SaveButton(state: MutableState<AppState>) {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun InfoIconWithHover(
-    text: String,
-    modifier: Modifier = Modifier,
-) {
+fun InfoIconWithHover(text: String) {
     var isHovered by remember { mutableStateOf(false) }
 
     Box(
@@ -128,9 +125,7 @@ fun InfoIconWithHover(
                 }
                 .onPointerEvent(PointerEventType.Exit) {
                     isHovered = false
-                }
-                .then(modifier),
-        contentAlignment = Alignment.TopEnd,
+                },
     ) {
         Icon(
             imageVector = Icons.Default.Info,
@@ -159,7 +154,7 @@ fun InfoIconWithHover(
 fun Tooltip(text: String) {
     val cornerSize = 16.dp
     Popup(
-        alignment = Alignment.CenterEnd,
+        alignment = Alignment.BottomEnd,
         offset = IntOffset(-24, 0),
     ) {
         // Draw a rectangle shape with rounded corners inside the popup
