@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asAwtImage
+import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
@@ -67,6 +67,11 @@ fun wrappedImage(
     }
 }
 
+/**
+ * a composable function to expand a dropdown menu
+ * @param expanded [Boolean] checks it´s expanded
+ * @param bitmap [MutableState] <[ImageBitmap]> contains the bitmap
+ */
 @Composable
 private fun DropdownMenu(
     expanded: MutableState<Boolean>,
@@ -84,9 +89,13 @@ private fun DropdownMenu(
     }
 }
 
+/**
+ * a composable function to save the choosen bitmap as png
+ * @param bitmap [MutableState] <[ImageBitmap]> contains the bitmap
+ */
 private fun saveBitmapAsPng(bitmap: MutableState<ImageBitmap>) {
     val path = openFileChooserAndGetPath()
     val file = File("$path.png")
-    val awtImage = bitmap.value.asAwtImage()
+    val awtImage = bitmap.value.toAwtImage()
     ImageIO.write(awtImage, "PNG", file)
 }
