@@ -20,10 +20,9 @@ import ui.components.textTitle
  * @param oldState the previous state of the app
  */
 
-var oldState = AppState()
-
 @Composable
 fun SettingsScreen(state: MutableState<AppState>) {
+    val oldState = remember { mutableStateOf(state.value.copy()) }
     // Contains the whole Screen
     Column(modifier = Modifier.fillMaxSize()) {
         // Title
@@ -62,21 +61,24 @@ fun SettingsScreen(state: MutableState<AppState>) {
         }
         Row(modifier = Modifier.weight(0.2f)) {
             // back
-            BackButton(state)
+            BackButton(state, oldState)
             // save
-            SaveButton(state)
+            SaveButton(state, oldState)
         }
     }
 }
 
 @Composable
-fun RowScope.BackButton(state: MutableState<AppState>) {
+fun RowScope.BackButton(
+    state: MutableState<AppState>,
+    oldState: MutableState<AppState>,
+) {
     Button(
         // fills all available space
         modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxSize(1f),
         onClick = {
             state.value =
-                oldState.copy(screen = Screen.SelectVideoScreen)
+                oldState.value.copy(screen = Screen.SelectVideoScreen)
         },
     ) {
         Image(
@@ -88,14 +90,17 @@ fun RowScope.BackButton(state: MutableState<AppState>) {
 }
 
 @Composable
-fun RowScope.SaveButton(state: MutableState<AppState>) {
+fun RowScope.SaveButton(
+    state: MutableState<AppState>,
+    oldState: MutableState<AppState>,
+) {
     Button(
         // fills all available space
         modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxSize(1f),
         onClick = {
-            oldState = state.value
+            oldState.value = state.value
             state.value =
-                oldState.copy(screen = Screen.SelectVideoScreen)
+                oldState.value.copy(screen = Screen.SelectVideoScreen)
         },
     ) {
         Image(
