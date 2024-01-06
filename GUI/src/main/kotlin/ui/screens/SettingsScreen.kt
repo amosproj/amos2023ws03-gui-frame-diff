@@ -95,9 +95,7 @@ fun RowScope.SaveButton(state: MutableState<AppState>) {
         onClick = {
             oldState = state.value
             state.value =
-                state.value.copy(
-                    screen = Screen.SelectVideoScreen,
-                )
+                oldState.copy(screen = Screen.SelectVideoScreen)
         },
     ) {
         Image(
