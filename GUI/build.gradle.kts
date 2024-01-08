@@ -14,7 +14,7 @@ plugins {
 }
 
 group = "com.example"
-version = "1.0-SNAPSHOT"
+version = "1.0.0" // WARNING: If this value is updated, it should be updated in the AppConfig class too
 
 repositories {
     google()
