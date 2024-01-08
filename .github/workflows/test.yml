@@ -51,3 +51,22 @@ jobs:
         run: ./gradlew downloadAndUnzipTestAssets
       - name: Run Tests
         run: ./gradlew test
+  gui:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./GUI
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          cache: 'gradle'
+          cache-dependency-path: |
+            ./GUI/*.gradle*
+            ./GUI/**/gradle-wrapper.properties
+      - name: Download test assets
+        run: ./gradlew downloadAndUnzipTestAssets
+      - name: Run Tests
+        run: ./gradlew test
