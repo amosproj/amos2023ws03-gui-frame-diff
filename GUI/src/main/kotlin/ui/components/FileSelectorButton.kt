@@ -3,13 +3,14 @@ package ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
+import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import javax.swing.JFileChooser
+import models.AppState
 
 /**
 * A Composable function that creates a button with a file selector functionality.
@@ -23,20 +24,14 @@ import javax.swing.JFileChooser
 fun RowScope.FileSelectorButton(
     buttonText: String,
     buttonPath: String,
+    state: MutableState<AppState>,
     onUpdateResult: (String) -> Unit,
     tooltipText: String? = null,
 ) {
     Button(
         modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f),
         onClick = {
-            try {
-                val path = openFileChooserAndGetPath()
-                if (path != null) {
-                    onUpdateResult(path)
-                }
-            } catch (e: Exception) {
-                println("Error updating result: ${e.localizedMessage}")
-            }
+            state.value = state.value.copy(showFilePicker = true, filePickerCallback = onUpdateResult)
         },
     ) {
         // column to display the button text and the selected file path
