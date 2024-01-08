@@ -82,7 +82,7 @@ fun saveCollageButton(
     // #####   Save Collage Button   #####
     Button(
         modifier = modifier.padding(8.dp).fillMaxSize(),
-        onClick = { openFileChooserAndGetPath()?.let { navigator.createCollage(it) } },
+        onClick = { openSaveChooserAndGetPath()?.let { navigator.createCollage(it) } },
     ) {
         Text(text = "Save Collage")
     }
