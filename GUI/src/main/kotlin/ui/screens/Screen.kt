@@ -34,6 +34,11 @@ sealed class Screen {
     object SettingsScreen : Screen()
 }
 
+/**
+ * The ScreenSerializer class is a singleton class that serializes a Screen object.
+ *
+ * @constructor Creates a new ScreenSerializer object.
+ */
 class ScreenSerializer : JsonSerializer<Screen>() {
     override fun serialize(
         value: Screen,
@@ -51,6 +56,10 @@ class ScreenSerializer : JsonSerializer<Screen>() {
     }
 }
 
+/**
+ * The ScreenDeserializer class is a singleton class that deserializes a Screen object.
+ * It is a subclass of the abstract class JsonDeserializer.
+ */
 class ScreenDeserializer : JsonDeserializer<Screen>() {
     override fun deserialize(
         p: JsonParser,

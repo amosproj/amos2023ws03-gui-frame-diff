@@ -18,7 +18,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import models.AppState
 import java.io.File
 
-// singleton
+// singleton Serializer/Deserializer
 object AppConfig {
     val mapper: ObjectMapper =
         ObjectMapper().apply {
@@ -31,6 +31,13 @@ object AppConfig {
         }
 }
 
+/**
+ * Dropdown menu to open and save projects
+ * @param state the current state of the app
+ * @param modifier the modifier to apply to the component
+ *
+ * @return a dropdown menu to open and save projects
+ */
 @Composable
 fun projectMenu(
     state: MutableState<AppState>,
@@ -54,7 +61,6 @@ fun projectMenu(
         ) {
             DropdownMenuItem(
                 onClick = {
-                    println("clicked")
                     openFileChooserAndGetPath()?.let { handleOpenProject(state, it) }
                     expanded = false
                 },
@@ -75,6 +81,11 @@ fun projectMenu(
     }
 }
 
+/**
+ * Reads the given json file and sets the state to the parsed AppState
+ * @param state the current state of the app
+ * @param path the path to the file to open
+ */
 fun handleOpenProject(
     state: MutableState<AppState>,
     path: String,
@@ -83,6 +94,11 @@ fun handleOpenProject(
     state.value = AppConfig.mapper.readValue<AppState>(file.joinToString(""))
 }
 
+/**
+ * Opens the json and writes the current state to the file
+ * @param state the current state of the app
+ * @param path the path to the file to save
+ */
 fun handleSaveProject(
     state: MutableState<AppState>,
     path: String,

@@ -65,7 +65,6 @@ fun DiffScreen(state: MutableState<AppState>) {
             DisplayDifferenceImage(bitmap = navigator.diffBitmap, navigator = navigator, title = "Diff")
             DisplayDifferenceImage(bitmap = navigator.video2Bitmap, navigator = navigator, title = "Video 2")
         }
-
         // #####   Timeline   #####
         Row(modifier = Modifier.fillMaxSize().weight(0.15f)) { timeline(navigator) }
 
