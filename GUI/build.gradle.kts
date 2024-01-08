@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.8.0"
-    id("org.jetbrains.compose")
+    id("org.jetbrains.compose") version "1.5.2"
     id("com.github.jk1.dependency-license-report") version "2.5"
 }
 
@@ -30,6 +30,7 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation("org.bytedeco:javacv-platform:1.5.7")
     implementation(project(path = ":DifferenceGenerator"))
+    implementation("com.darkrockstudios:mpfilepicker:3.1.0")
 }
 
 compose.desktop {

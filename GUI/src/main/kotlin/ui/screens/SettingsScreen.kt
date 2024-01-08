@@ -51,6 +51,7 @@ fun SettingsScreen(state: MutableState<AppState>) {
             FileSelectorButton(
                 buttonText = "Upload Mask",
                 buttonPath = state.value.maskPath,
+                state = state,
                 onUpdateResult = { selectedFilePath ->
                     state.value = state.value.copy(maskPath = selectedFilePath)
                 },

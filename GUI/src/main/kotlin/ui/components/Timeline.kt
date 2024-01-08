@@ -40,6 +40,7 @@ fun timeline(navigator: FrameNavigation) {
     fun jumpPercentageHandler(offset: Offset) {
         cursorOffset = offset
         navigator.jumpToPercentage((cursorOffset.x.toDouble() / componentWidth).coerceIn(0.0, 1.0))
+        println("$currentOffset, $componentWidth, $cursorOffset")
     }
 
     Column(
@@ -66,7 +67,12 @@ fun timeline(navigator: FrameNavigation) {
                         componentWidth = placeable.width.toFloat()
                         layout(placeable.width, placeable.height) { placeable.placeRelative(0, 0) }
                     }
-                    .pointerInput(Unit) { detectTapGestures { offset -> jumpPercentageHandler(offset) } }
+                    .pointerInput(Unit) {
+                        detectTapGestures { offset ->
+                            println("tap $offset")
+                            jumpPercentageHandler(offset)
+                        }
+                    }
                     .pointerInput(Unit) {
                         detectDragGestures(
                             onDragStart = { offset -> jumpPercentageHandler(offset) },

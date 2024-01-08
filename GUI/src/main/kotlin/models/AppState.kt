@@ -21,6 +21,8 @@ data class AppState(
     var maskPath: String = getPath("mask.png"),
     var gapOpenPenalty: Double = 0.2,
     var gapExtendPenalty: Double = -0.8,
+    var showFilePicker: Boolean = false,
+    var filePickerCallback: (String) -> Unit = {},
 )
 
 /**
