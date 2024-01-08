@@ -1,8 +1,8 @@
 import androidx.compose.runtime.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import models.AppState
 import ui.screens.DiffScreen
@@ -19,11 +19,12 @@ fun main(): Unit =
     application {
         // create the global state
         val globalState = remember { mutableStateOf(AppState()) }
+        val windowState = rememberWindowState(width = 1800.dp, height = 1000.dp)
 
         Window(
             title = "GUI Frame Diff v${AppConfig.VERSION}",
             onCloseRequest = ::exitApplication,
-            state = WindowState(width = 1800.dp, height = 1000.dp),
+            state = windowState,
         ) {
             // applies the default Theme to the application
             wrapTheming { App(globalState) }
