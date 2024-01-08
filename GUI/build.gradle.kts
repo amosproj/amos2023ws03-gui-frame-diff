@@ -30,6 +30,13 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation("org.bytedeco:javacv-platform:1.5.7")
     implementation(project(path = ":DifferenceGenerator"))
+    // for ui tests
+    @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+    implementation(compose("org.jetbrains.compose.ui:ui-test-junit4"))
+    implementation("org.junit.jupiter:junit-jupiter:5.7.0")
+    implementation("org.junit.vintage:junit-vintage-engine:5.7.0")
+    implementation(kotlin("test-common"))
+    implementation(kotlin("test-annotations-common"))
 }
 
 compose.desktop {
