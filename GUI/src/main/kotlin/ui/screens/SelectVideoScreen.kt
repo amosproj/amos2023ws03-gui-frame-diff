@@ -13,6 +13,7 @@ import models.AppState
 import ui.components.AutoSizeText
 import ui.components.FileSelectorButton
 import ui.components.helpMenu
+import ui.components.projectMenu
 
 /**
  * A Composable function that creates a screen to select the videos to compare.
@@ -26,7 +27,8 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
         // menu bar
         TopAppBar {
             Row(modifier = Modifier.fillMaxWidth()) {
-                Spacer(modifier = Modifier.weight(0.9f))
+                projectMenu(state, Modifier.weight(0.1f))
+                Spacer(modifier = Modifier.weight(0.8f))
                 helpMenu(Modifier.weight(0.1f))
             }
         }

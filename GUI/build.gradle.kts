@@ -30,6 +30,7 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation("org.bytedeco:javacv-platform:1.5.7")
     implementation(project(path = ":DifferenceGenerator"))
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.3")
 }
 
 compose.desktop {
