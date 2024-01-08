@@ -17,7 +17,7 @@ import ui.themes.wrapTheming
 fun main(): Unit =
     application {
         Window(
-            title = "amos2023ws03-gui-frame-diff",
+            title = "GUI Frame Diff v${AppConfig.VERSION}",
             onCloseRequest = ::exitApplication,
             state = WindowState(width = 1800.dp, height = 1000.dp),
         ) {
@@ -43,4 +43,8 @@ fun App() {
         is Screen.SettingsScreen -> SettingsScreen(globalState)
         else -> throw Exception("Screen not implemented")
     }
+}
+
+object AppConfig {
+    const val VERSION = "1.0.0" // has to be updated manually, when the version in gradle is updated
 }
