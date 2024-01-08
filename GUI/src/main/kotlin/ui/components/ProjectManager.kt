@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import models.AppState
 import java.io.File
+import javax.swing.JFileChooser
 
 // singleton
 object AppConfig {
@@ -64,7 +65,7 @@ fun projectMenu(
 
             DropdownMenuItem(
                 onClick = {
-                    openFileChooserAndGetPath()?.let { handleSaveProject(state, it) }
+                    openSaveChooserAndGetPath()?.let { handleSaveProject(state, it) }
                     expanded = false
                 },
                 enabled = state.value.screen == Screen.DiffScreen,
@@ -72,6 +73,16 @@ fun projectMenu(
                 Text("Save Project", fontSize = MaterialTheme.typography.body2.fontSize)
             }
         }
+    }
+}
+
+fun openSaveChooserAndGetPath(): String? {
+    val fileChooser = JFileChooser()
+    val result = fileChooser.showSaveDialog(null)
+    return if (result == JFileChooser.APPROVE_OPTION) {
+        fileChooser.selectedFile.absolutePath
+    } else {
+        null
     }
 }
 
