@@ -34,10 +34,9 @@ fun SettingsScreen(state: MutableState<AppState>) {
             "If both parameters are equal, the algorithm will behave like the Needleman-Wunsch algorithm,\n" +
             "meaning that new gaps are as likely as extending existing gaps."
     val textForMask =
-        "Upload a png with white and black rectangles" +
-            ".\nThe area marked with white rectangles will be included in the video difference computation " +
-            "and the area with black rectangles will not be included in the computation."
-
+        "Upload a png with a clear background and colored areas.\n" +
+            "The transparent areas will be included in the video difference computation \n" +
+            "while the opaque areas will be excluded."
     // Contains the whole Screen
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         // Title

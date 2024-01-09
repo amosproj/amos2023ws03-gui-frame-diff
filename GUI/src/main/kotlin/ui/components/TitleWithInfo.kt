@@ -19,10 +19,10 @@ fun TitleWithInfo(
     text: String,
     tooltipText: String,
 ) {
-    Row(modifier = modifier.padding(8.dp)) {
+    Row(modifier = modifier.padding(4.dp)) {
         AutoSizeText(
             text = text,
-            modifier = Modifier.padding(0.dp),
+            modifier = Modifier.padding(2.dp),
         )
 
         InfoIconWithHover(tooltipText)
