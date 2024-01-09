@@ -82,6 +82,7 @@ private fun DropdownMenu(
         onDismissRequest = { expanded.value = false },
     ) {
         DropdownMenuItem({
+            expanded.value = false
             saveBitmapAsPng(bitmap)
         }) {
             Text("Save image as png")
