@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
@@ -23,6 +24,7 @@ fun RowScope.FileSelectorButton(
     buttonText: String,
     buttonPath: String,
     onUpdateResult: (String) -> Unit,
+    tooltipText: String? = null,
 ) {
     Button(
         modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f),
@@ -38,14 +40,17 @@ fun RowScope.FileSelectorButton(
         },
     ) {
         // column to display the button text and the selected file path
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
             // row to display the upload icon
             Row(modifier = Modifier.weight(0.75f)) {
                 Image(
                     painter = painterResource("upload.svg"),
                     contentDescription = "Upload",
-                    modifier = Modifier.fillMaxSize().alpha(0.8f),
+                    modifier = Modifier.alpha(0.8f),
                 )
+                if (tooltipText != null) {
+                    InfoIconWithHover(tooltipText)
+                }
             }
             // row to display the button text
             Row(modifier = Modifier.weight(0.15f)) { AutoSizeText(text = buttonText) }
