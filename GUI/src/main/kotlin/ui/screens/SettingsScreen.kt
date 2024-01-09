@@ -36,10 +36,15 @@ import ui.components.textTitle
 @Composable
 fun SettingsScreen(state: MutableState<AppState>) {
     val oldState = remember { mutableStateOf(state.value.copy()) }
-    val textForHyper = "The hyperparameter are settings to adjust the distinction between added and deleted frames and a pixel difference within a frame."
+    val textForHyper =
+        "The hyperparameter are settings to adjust the distinction between added and deleted frames and" +
+            " a pixel difference within a frame."
     val textForGapOpen = "add here explanation for gap open"
     val textForGapExtended = "add here explanation for gap extended"
-    val textForMask = "Upload a png with white and black rectangles.\nEverything that is within white rectangles in video will be considered in the video difference computation and everything that is within black rectangles will be not considered in the video difference computation."
+    val textForMask =
+        "Upload a png with white and black rectangles" +
+            ".\nEverything that is within white rectangles in video will be considered in the video difference computation " +
+            "and everything that is within black rectangles will be not considered in the video difference computation."
 
     // Contains the whole Screen
     Column(modifier = Modifier.fillMaxSize()) {
@@ -200,7 +205,7 @@ fun Tooltip(text: String) {
                 Text(
                     text = text,
                     modifier = Modifier,
-                    color = Color.White
+                    color = Color.White,
                 )
             }
         }
