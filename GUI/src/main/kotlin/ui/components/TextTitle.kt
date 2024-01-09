@@ -18,26 +18,3 @@ fun RowScope.textTitle(text: String) {
         modifier = Modifier.weight(1f).fillMaxSize().padding(20.dp),
     )
 }
-
-/**
- * A Composable function that creates a title text with a tooltip icon next to it.
- * @param modifier [Modifier] containing formatting options from the parent.
- * @param text [String] containing the text to be displayed.
- * @param tooltipText [String] containing the info text for the tooltip.
- * @return [Unit]
- */
-@Composable
-fun TextTitleWithInfo(
-    modifier: Modifier,
-    text: String,
-    tooltipText: String,
-) {
-    Row(modifier = modifier.padding(8.dp)) {
-        AutoSizeText(
-            text = text,
-            modifier = Modifier.padding(0.dp),
-        )
-
-        InfoIconWithHover(tooltipText)
-    }
-}

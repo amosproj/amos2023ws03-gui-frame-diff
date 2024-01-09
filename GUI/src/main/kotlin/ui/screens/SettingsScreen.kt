@@ -35,7 +35,7 @@ fun SettingsScreen(state: MutableState<AppState>) {
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         // Title
         Row(modifier = Modifier.weight(0.2f)) { textTitle("Settings") }
-        TextTitleWithInfo(Modifier.weight(0.15f), "Hyperparameters", textForHyper)
+        TitleWithInfo(Modifier.weight(0.15f), "Hyperparameters", textForHyper)
         // gap open penalty
         Row(modifier = Modifier.weight(0.2f)) {
             CustomSlider(
