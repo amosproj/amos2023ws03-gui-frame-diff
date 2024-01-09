@@ -22,10 +22,17 @@ import ui.components.*
 fun SettingsScreen(state: MutableState<AppState>) {
     val oldState = remember { mutableStateOf(state.value.copy()) }
     val textForHyper =
-        "Settings to adjust the distinction between added/deleted frames and" +
-            " pixel differences within frames."
-    val textForGapOpen = "explanation for gap open"
-    val textForGapExtended = "explanation for gap extended"
+        "Settings to adjust behavior of the Gotoh alignment algorithm,\n" +
+            "which determines the matches between frames from both input videos."
+    val textForGapOpen =
+        "Penalty score for starting a new gap (insertion/deletion) in the alignment.\n" +
+            "Decreasing this value will favor fewer, larger gaps in the alignment."
+    val textForGapExtended =
+        "Penalty score for extending an existing gap (insertion/deletion) in the alignment.\n" +
+            "Increasing this value will favor longer gaps in the alignment.\n" +
+            "The gapOpenPenalty should be smaller than the gapExtensionPenalty.\n" +
+            "If both parameters are equal, the algorithm will behave like the Needleman-Wunsch algorithm,\n" +
+            "meaning that new gaps are as likely as extending existing gaps."
     val textForMask =
         "Upload a png with white and black rectangles" +
             ".\nThe area marked with white rectangles will be included in the video difference computation " +
