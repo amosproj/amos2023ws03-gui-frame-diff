@@ -1,24 +1,33 @@
 package ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.*
-import androidx.compose.material3.Icon
-import androidx.compose.material3.PlainTooltipBox
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import models.AppState
 import ui.components.CustomSlider
 import ui.components.FileSelectorButton
 import ui.components.textTitle
+import androidx.compose.ui.window.Popup
 
 /**
  * SettingsScreen is the screen where the user can change the settings of the app.
@@ -30,14 +39,14 @@ import ui.components.textTitle
 fun SettingsScreen(state: MutableState<AppState>) {
     val oldState = remember { mutableStateOf(state.value.copy()) }
     val textForHyper =
-        "The hyperparameter are settings to adjust the distinction between added and deleted frames and" +
-            " a pixel difference within a frame."
-    val textForGapOpen = "add here explanation for gap open"
-    val textForGapExtended = "add here explanation for gap extended"
+        "Settings to adjust the distinction between added/deleted frames and" +
+            " pixel differences within frames."
+    val textForGapOpen = "explanation for gap open"
+    val textForGapExtended = "explanation for gap extended"
     val textForMask =
         "Upload a png with white and black rectangles" +
-            ".\nEverything that is within white rectangles in video will be considered in the video difference computation " +
-            "and everything that is within black rectangles will be not considered in the video difference computation."
+            ".\nThe area marked with white rectangles will be included in the video difference computation " +
+            "and the area with black rectangles will not be included in the computation."
 
     // Contains the whole Screen
     Column(modifier = Modifier.fillMaxSize()) {
@@ -97,6 +106,7 @@ fun RowScope.BackButton(
     oldState: MutableState<AppState>,
 ) {
     Button(
+        // fills all available space
         modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxSize(1f),
         onClick = { state.value = oldState.value.copy(screen = Screen.SelectVideoScreen) },
     ) {
@@ -129,23 +139,54 @@ fun RowScope.SaveButton(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun InfoIconWithHover(text: String) {
-    PlainTooltipBox(
-        tooltip = {
-            Text(
-                text = text,
-                modifier = Modifier,
-                color = Color.White,
-            )
-        },
+fun InfoIconWithHover(text: String, modifier: Modifier = Modifier) {
+    var isHovered by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .onPointerEvent(PointerEventType.Enter) {
+                isHovered = true
+            }
+            .onPointerEvent(PointerEventType.Exit) {
+                isHovered = false
+            }
+            .then(modifier),
+        contentAlignment = Alignment.TopEnd,
     ) {
         Icon(
             imageVector = Icons.Default.Info,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(24.dp).tooltipAnchor(),
+            tint = MaterialTheme.colors.primary,
+            modifier = Modifier
+                .size(24.dp),
         )
+
+        // Use Popup to show the tooltip
+        if (isHovered) {
+            Tooltip(text = text)
+        }
     }
+}
+
+@Composable
+fun Tooltip(text: String) {
+        val cornerSize = 16.dp
+        Popup(
+            alignment = Alignment.CenterEnd,
+            offset = IntOffset(-24,0)
+        ) {
+            // Draw a rectangle shape with rounded corners inside the popup
+            Box(
+                Modifier
+                    .background(Color.DarkGray, RoundedCornerShape(cornerSize)),
+            ) {
+                Text(
+                    text = text,
+                    modifier = Modifier.padding(8.dp),
+                    color = Color.White
+                )
+            }
+        }
 }
