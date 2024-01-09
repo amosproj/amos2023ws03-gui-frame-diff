@@ -94,7 +94,7 @@ private fun DropdownMenu(
  * @param bitmap [MutableState] <[ImageBitmap]> contains the bitmap
  */
 private fun saveBitmapAsPng(bitmap: MutableState<ImageBitmap>) {
-    val path = openFileChooserAndGetPath()
+    val path = openFileChooserAndGetPath() ?: return
     val file = File("$path.png")
     val awtImage = bitmap.value.toAwtImage()
     ImageIO.write(awtImage, "PNG", file)
