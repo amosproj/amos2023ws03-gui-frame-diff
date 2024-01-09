@@ -21,6 +21,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import java.io.File
 import javax.imageio.ImageIO
+import javax.swing.JOptionPane
 
 /**
  * A Composable function that displays an image wrapped in a row.
@@ -93,8 +94,33 @@ private fun DropdownMenu(
  * @param bitmap [MutableState] <[ImageBitmap]> contains the bitmap
  */
 private fun saveBitmapAsPng(bitmap: MutableState<ImageBitmap>) {
-    val path = openSaveChooserAndGetPath() ?: return
-    val file = File("$path.png")
+    var path = openSaveChooserAndGetPath() ?: return
+    if (!path.endsWith(".png")) {
+        path = "$path.png"
+    }
+    val file = File(path)
+    if (file.exists()) {
+        val overwrite = showOverwriteConfirmation()
+        if (!overwrite) {
+            return
+        }
+    }
     val awtImage = bitmap.value.toAwtImage()
     ImageIO.write(awtImage, "PNG", file)
+}
+
+/**
+ * Displays a confirmation dialog asking the user if they want to overwrite an existing file.
+ *
+ * @return true if the user consents to overwrite the file, otherwise false.
+ */
+fun showOverwriteConfirmation(): Boolean {
+    val confirmation =
+        JOptionPane.showConfirmDialog(
+            null,
+            "The file already exists. Do you want to overwrite it?",
+            "Confirmation",
+            JOptionPane.YES_NO_OPTION,
+        )
+    return confirmation == JOptionPane.YES_OPTION
 }
