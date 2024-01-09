@@ -1,7 +1,5 @@
 package ui.screens
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,11 +21,11 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
 import models.AppState
 import ui.components.CustomSlider
 import ui.components.FileSelectorButton
 import ui.components.textTitle
-import androidx.compose.ui.window.Popup
 
 /**
  * SettingsScreen is the screen where the user can change the settings of the app.
@@ -141,26 +139,38 @@ fun RowScope.SaveButton(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun InfoIconWithHover(text: String, modifier: Modifier = Modifier) {
+fun InfoIconWithHover(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
     var isHovered by remember { mutableStateOf(false) }
 
     Box(
-        modifier = Modifier
-            .onPointerEvent(PointerEventType.Enter) {
-                isHovered = true
-            }
-            .onPointerEvent(PointerEventType.Exit) {
-                isHovered = false
-            }
-            .then(modifier),
+        modifier =
+            Modifier
+                .onPointerEvent(PointerEventType.Enter) {
+                    isHovered = true
+                }
+                .onPointerEvent(PointerEventType.Exit) {
+                    isHovered = false
+                }
+                .then(modifier),
         contentAlignment = Alignment.TopEnd,
     ) {
         Icon(
             imageVector = Icons.Default.Info,
             contentDescription = null,
-            tint = MaterialTheme.colors.primary,
-            modifier = Modifier
-                .size(24.dp),
+            tint =
+                if (isHovered) {
+                    MaterialTheme.colors.primary
+                } else {
+                    MaterialTheme.colors.onBackground.copy(
+                        alpha = LocalContentAlpha.current,
+                    )
+                },
+            modifier =
+                Modifier
+                    .size(24.dp),
         )
 
         // Use Popup to show the tooltip
@@ -172,21 +182,21 @@ fun InfoIconWithHover(text: String, modifier: Modifier = Modifier) {
 
 @Composable
 fun Tooltip(text: String) {
-        val cornerSize = 16.dp
-        Popup(
-            alignment = Alignment.CenterEnd,
-            offset = IntOffset(-24,0)
+    val cornerSize = 16.dp
+    Popup(
+        alignment = Alignment.CenterEnd,
+        offset = IntOffset(-24, 0),
+    ) {
+        // Draw a rectangle shape with rounded corners inside the popup
+        Box(
+            Modifier
+                .background(Color.DarkGray, RoundedCornerShape(cornerSize)),
         ) {
-            // Draw a rectangle shape with rounded corners inside the popup
-            Box(
-                Modifier
-                    .background(Color.DarkGray, RoundedCornerShape(cornerSize)),
-            ) {
-                Text(
-                    text = text,
-                    modifier = Modifier.padding(8.dp),
-                    color = Color.White
-                )
-            }
+            Text(
+                text = text,
+                modifier = Modifier.padding(8.dp),
+                color = Color.White,
+            )
         }
+    }
 }
