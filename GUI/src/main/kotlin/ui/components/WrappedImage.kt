@@ -19,7 +19,6 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import frameNavigation.FrameNavigation
 import java.io.File
 import javax.imageio.ImageIO
 
@@ -33,7 +32,6 @@ import javax.imageio.ImageIO
 fun wrappedImage(
     bitmap: MutableState<ImageBitmap>,
     modifier: Modifier = Modifier,
-    navigator: FrameNavigation,
 ) {
     var expanded: MutableState<Boolean> = remember { mutableStateOf(false) }
     Row(
@@ -95,7 +93,7 @@ private fun DropdownMenu(
  * @param bitmap [MutableState] <[ImageBitmap]> contains the bitmap
  */
 private fun saveBitmapAsPng(bitmap: MutableState<ImageBitmap>) {
-    val path = openFileChooserAndGetPath() ?: return
+    val path = openSaveChooserAndGetPath() ?: return
     val file = File("$path.png")
     val awtImage = bitmap.value.toAwtImage()
     ImageIO.write(awtImage, "PNG", file)

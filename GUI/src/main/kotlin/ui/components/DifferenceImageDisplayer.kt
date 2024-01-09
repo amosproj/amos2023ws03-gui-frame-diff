@@ -40,7 +40,7 @@ fun RowScope.DisplayDifferenceImage(
             window.value = null
             window.value = Unit
         }
-        wrappedImage(bitmap = bitmap, modifier = modifier.weight(0.92f), navigator = navigator)
+        wrappedImage(bitmap = bitmap, modifier = modifier.weight(0.92f))
     }
 }
 
@@ -66,7 +66,7 @@ fun fullScreenContent(
             focusRequester.requestFocus()
         }
         // #####   Difference Videos   #####
-        wrappedImage(bitmap = bitmap, navigator = navigator, modifier = Modifier.weight(0.85f))
+        wrappedImage(bitmap = bitmap, modifier = Modifier.weight(0.85f))
         // #####   Navigation   #####
         NavigationButtons(navigator = navigator, buttonModifier = Modifier.weight(1f), rowModifier = Modifier.weight(0.15f))
     }
