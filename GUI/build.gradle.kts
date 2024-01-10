@@ -6,7 +6,6 @@ import org.jetbrains.compose.compose
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-
 plugins {
     kotlin("jvm") version "1.8.0"
     id("org.jetbrains.compose")
@@ -14,7 +13,9 @@ plugins {
 }
 
 group = "com.example"
-version = "1.0.0" // WARNING: If this value is updated, it should be updated in the AppConfig class too
+
+// WARNING: If this value is updated, it should be updated in the AppConfig class too
+version = "1.0.0"
 
 repositories {
     google()
@@ -28,6 +29,7 @@ dependencies {
     // (in a separate module for demo project and in testMain).
     // With compose.desktop.common you will also lose @Preview functionality
     implementation(compose.desktop.currentOs)
+    implementation(compose.material3)
     implementation("org.bytedeco:javacv-platform:1.5.7")
     implementation(project(path = ":DifferenceGenerator"))
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.3")
@@ -46,15 +48,11 @@ compose.desktop {
     }
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
-}
+tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = "1.8" }
 
 tasks.register<Jar>("createRunnableJar") {
     from(sourceSets.main.get().output)
-    manifest {
-        attributes["Main-Class"] = "MainKt"
-    }
+    manifest { attributes["Main-Class"] = "MainKt" }
     archiveFileName.set("GUI-Runnable.jar")
     destinationDirectory.set(file("$buildDir/libs"))
 }

@@ -9,7 +9,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import java.awt.SystemColor.text
 
 /**
  * Title is a composable that displays a title.
@@ -27,14 +26,21 @@ fun RowScope.CustomSlider(
     minValue: Double,
     maxValue: Double,
     onChange: (Double) -> Unit,
+    tooltipText: String? = null,
 ) {
     // the value of the slider
     var sliderValue = remember { mutableStateOf(default) }
     var textValue = remember { mutableStateOf(default.toString()) }
+
     // Column contains the slider construct
-    Column(modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f)) {
+    Column(modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
         // title
-        AutoSizeText(text = title, modifier = Modifier.weight(0.5f).padding(8.dp).fillMaxHeight(1f).align(Alignment.CenterHorizontally))
+        if (tooltipText != null) {
+            TitleWithInfo(Modifier.weight(0.5f), title, tooltipText)
+        } else {
+            AutoSizeText(modifier = Modifier.weight(0.5f).padding(8.dp), text = title)
+        }
+
         // slider
         Row(modifier = Modifier.weight(0.2f)) {
             // min value
