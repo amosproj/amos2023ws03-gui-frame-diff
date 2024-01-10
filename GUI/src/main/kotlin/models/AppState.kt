@@ -1,7 +1,11 @@
 package models
 
 import Screen
+import ScreenDeserializer
+import ScreenSerializer
 import algorithms.AlignmentElement
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.module.SimpleModule
 import java.nio.file.FileSystems
 
 /**
@@ -22,6 +26,19 @@ data class AppState(
     var gapOpenPenalty: Double = 0.2,
     var gapExtendPenalty: Double = -0.8,
 )
+
+// singleton Serializer/Deserializer
+object JSONmapper {
+    val mapper: ObjectMapper =
+        ObjectMapper().apply {
+            val module =
+                SimpleModule().apply {
+                    addSerializer(Screen::class.java, ScreenSerializer())
+                    addDeserializer(Screen::class.java, ScreenDeserializer())
+                }
+            registerModule(module)
+        }
+}
 
 /**
  *  TODO: remove this function
