@@ -7,10 +7,12 @@ import javax.swing.JFileChooser
  *
  * @return The selected file path, or null if no file was selected.
  */
-fun openFileChooserAndGetPath(): String? {
+fun openFileChooserAndGetPath(onResult: (String) -> Unit) {
     val fileChooser = JFileChooser()
-    val result = fileChooser.showOpenDialog(null)
-    return if (result == JFileChooser.APPROVE_OPTION) fileChooser.selectedFile.absolutePath else null
+    val dialog = fileChooser.showOpenDialog(null)
+    if (dialog == JFileChooser.APPROVE_OPTION) {
+        onResult(fileChooser.selectedFile.absolutePath)
+    }
 }
 
 /**

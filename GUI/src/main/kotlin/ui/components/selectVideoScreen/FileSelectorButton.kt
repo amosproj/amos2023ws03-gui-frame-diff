@@ -4,11 +4,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import ui.components.general.AutoSizeText
 import ui.components.general.InfoIconWithHover
 import ui.components.general.openFileChooserAndGetPath
@@ -28,20 +30,13 @@ fun RowScope.FileSelectorButton(
     onUpdateResult: (String) -> Unit,
     tooltipText: String? = null,
 ) {
+    val scope = rememberCoroutineScope()
     Button(
         modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f),
-        onClick = {
-            try {
-                val path = openFileChooserAndGetPath()
-                if (path != null) {
-                    onUpdateResult(path)
-                }
-            } catch (e: Exception) {
-                println("Error updating result: ${e.localizedMessage}")
-            }
-        },
+        onClick = { scope.launch { openFileChooserAndGetPath(onUpdateResult) } },
     ) {
         // column to display the button text and the selected file path
+
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
             // row to display the upload icon
             Row(modifier = Modifier.weight(0.75f)) {

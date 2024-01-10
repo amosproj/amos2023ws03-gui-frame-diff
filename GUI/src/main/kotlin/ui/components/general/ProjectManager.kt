@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.fasterxml.jackson.module.kotlin.readValue
+import kotlinx.coroutines.launch
 import models.AppState
 import models.JsonMapper
 import java.io.File
@@ -43,9 +44,10 @@ fun projectMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
         ) {
+            val openScope = rememberCoroutineScope()
             DropdownMenuItem(
                 onClick = {
-                    openFileChooserAndGetPath()?.let { handleOpenProject(state, it) }
+                    openScope.launch { openFileChooserAndGetPath { handleOpenProject(state, it) } }
                     expanded = false
                 },
             ) {
