@@ -1,31 +1,16 @@
 package ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.*
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Popup
 import models.AppState
-import ui.components.CustomSlider
-import ui.components.FileSelectorButton
-import ui.components.textTitle
+import ui.components.*
 
 /**
  * SettingsScreen is the screen where the user can change the settings of the app.
@@ -47,13 +32,10 @@ fun SettingsScreen(state: MutableState<AppState>) {
             "and the area with black rectangles will not be included in the computation."
 
     // Contains the whole Screen
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         // Title
         Row(modifier = Modifier.weight(0.2f)) { textTitle("Settings") }
-        Row(modifier = Modifier.weight(0.15f)) {
-            textTitle("Hyperparameters")
-            InfoIconWithHover(textForHyper)
-        }
+        TextTitleWithInfo(Modifier.weight(0.15f), "Hyperparameters", textForHyper)
         // gap open penalty
         Row(modifier = Modifier.weight(0.2f)) {
             CustomSlider(
@@ -61,11 +43,9 @@ fun SettingsScreen(state: MutableState<AppState>) {
                 default = state.value.gapOpenPenalty,
                 minValue = -1.0,
                 maxValue = 0.5,
-                onChange = {
-                    state.value = state.value.copy(gapOpenPenalty = it)
-                },
+                tooltipText = textForGapOpen,
+                onChange = { state.value = state.value.copy(gapOpenPenalty = it) },
             )
-            InfoIconWithHover(textForGapOpen)
         }
         // gap extend penalty
         Row(modifier = Modifier.weight(0.2f)) {
@@ -74,9 +54,9 @@ fun SettingsScreen(state: MutableState<AppState>) {
                 default = state.value.gapExtendPenalty,
                 minValue = -1.0,
                 maxValue = 0.5,
+                tooltipText = textForGapExtended,
                 onChange = { state.value = state.value.copy(gapExtendPenalty = it) },
             )
-            InfoIconWithHover(textForGapExtended)
         }
         // mask
         Row(modifier = Modifier.weight(0.175f)) {
@@ -87,7 +67,6 @@ fun SettingsScreen(state: MutableState<AppState>) {
                     state.value = state.value.copy(maskPath = selectedFilePath)
                 },
             )
-            InfoIconWithHover(textForMask)
         }
         Row(modifier = Modifier.weight(0.2f)) {
             // back
@@ -134,64 +113,5 @@ fun RowScope.SaveButton(
             contentDescription = "save",
             modifier = Modifier.fillMaxSize().alpha(0.8f).padding(4.dp),
         )
-    }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun InfoIconWithHover(text: String) {
-    var isHovered by remember { mutableStateOf(false) }
-
-    Box(
-        modifier =
-            Modifier
-                .onPointerEvent(PointerEventType.Enter) {
-                    isHovered = true
-                }
-                .onPointerEvent(PointerEventType.Exit) {
-                    isHovered = false
-                },
-    ) {
-        Icon(
-            imageVector = Icons.Default.Info,
-            contentDescription = null,
-            tint =
-                if (isHovered) {
-                    MaterialTheme.colors.primary
-                } else {
-                    MaterialTheme.colors.onBackground.copy(
-                        alpha = LocalContentAlpha.current,
-                    )
-                },
-            modifier =
-                Modifier
-                    .size(24.dp),
-        )
-
-        // Use Popup to show the tooltip
-        if (isHovered) {
-            Tooltip(text = text)
-        }
-    }
-}
-
-@Composable
-fun Tooltip(text: String) {
-    val cornerSize = 16.dp
-    Popup(
-        alignment = Alignment.BottomEnd,
-        offset = IntOffset(-24, 0),
-    ) {
-        // Draw a rectangle shape with rounded corners inside the popup
-        Box(
-            Modifier
-                .background(Color.DarkGray, RoundedCornerShape(cornerSize)),
-        ) {
-            Text(
-                text = text,
-                modifier = Modifier.padding(8.dp),
-                color = Color.White,
-            )
-        }
     }
 }
