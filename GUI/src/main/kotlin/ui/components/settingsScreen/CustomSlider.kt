@@ -1,4 +1,4 @@
-package ui.components
+package ui.components.settingsScreen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -9,6 +9,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import ui.components.general.AutoSizeText
+import ui.components.general.TitleWithInfo
 
 /**
  * Title is a composable that displays a title.

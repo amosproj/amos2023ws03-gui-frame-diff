@@ -3,20 +3,18 @@ package ui.screens
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Button
-import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.*
-import androidx.compose.ui.text.font.FontWeight.Companion.Bold
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import frameNavigation.FrameNavigation
 import models.AppState
-import ui.components.*
+import ui.components.diffScreen.*
+import ui.components.general.helpMenu
+import ui.components.general.projectMenu
+import ui.components.general.textTitle
 
 /**
  * A Composable function that creates a screen to display the differences between two videos.
@@ -62,16 +60,7 @@ fun DiffScreen(state: MutableState<AppState>) {
         }
 
         Row(modifier = Modifier.fillMaxWidth().weight(0.1f)) {
-            Row(modifier = Modifier.weight(0.2f).fillMaxHeight().fillMaxWidth()) {
-                Column {
-                    Text("Statistical Information:", fontSize = 12.sp, fontWeight = Bold)
-                    Text("Total Frames Video1: ${navigator.getSizeOfVideo1()}", fontSize = 12.sp)
-                    Text("Total Frames Video2: ${navigator.getSizeOfVideo2()}", fontSize = 12.sp)
-                    Text("Frames with Differences: ${navigator.getFramesWithPixelDifferences()}", fontSize = 12.sp)
-                    Text("added Frames: ${navigator.getInsertions()}", fontSize = 12.sp)
-                    Text("deleted Frames: ${navigator.getDeletions()}", fontSize = 12.sp)
-                }
-            }
+            StatisticalInformation(navigator)
         }
 
         // #####   Difference Videos   #####
@@ -85,19 +74,5 @@ fun DiffScreen(state: MutableState<AppState>) {
 
         // #####   Navigation   #####
         NavigationButtons(navigator, Modifier.weight(1f), Modifier.weight(0.15f))
-    }
-}
-
-@Composable
-fun saveCollageButton(
-    navigator: FrameNavigation,
-    modifier: Modifier,
-) {
-    // #####   Save Collage Button   #####
-    Button(
-        modifier = modifier.padding(8.dp).fillMaxSize(),
-        onClick = { openSaveChooserAndGetPath()?.let { navigator.createCollage(it) } },
-    ) {
-        Text(text = "Save Collage")
     }
 }

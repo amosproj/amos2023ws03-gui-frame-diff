@@ -1,10 +1,11 @@
-package ui.components
+package ui.components.diffScreen
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import frameNavigation.FrameNavigation
+import ui.components.general.svgButton
 
 /**
  * A Composable function that creates a row of navigation buttons.

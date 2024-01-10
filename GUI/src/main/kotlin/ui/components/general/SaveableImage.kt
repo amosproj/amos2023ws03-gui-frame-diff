@@ -1,4 +1,4 @@
-package ui.components
+package ui.components.general
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,7 +30,7 @@ import javax.swing.JOptionPane
  * @return [Unit]
  */
 @Composable
-fun wrappedImage(
+fun saveableImage(
     bitmap: MutableState<ImageBitmap>,
     modifier: Modifier = Modifier,
 ) {

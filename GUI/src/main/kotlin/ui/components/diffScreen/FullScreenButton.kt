@@ -1,10 +1,11 @@
-package ui.components
+package ui.components.diffScreen
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import ui.components.general.svgButton
 
 /**
  * A Composable function that displays a button to open the image in a full screen window.

@@ -1,4 +1,4 @@
-package ui.components
+package ui.components.general
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import ui.screens.hyperlinkDropdownMenuItem
 
 @Composable
 fun helpMenu(modifier: Modifier = Modifier) {

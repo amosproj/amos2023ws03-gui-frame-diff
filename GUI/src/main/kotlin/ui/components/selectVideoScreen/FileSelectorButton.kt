@@ -1,4 +1,4 @@
-package ui.components
+package ui.components.selectVideoScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -9,7 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import javax.swing.JFileChooser
+import ui.components.general.AutoSizeText
+import ui.components.general.InfoIconWithHover
+import ui.components.general.openFileChooserAndGetPath
 
 /**
 * A Composable function that creates a button with a file selector functionality.
@@ -57,31 +59,5 @@ fun RowScope.FileSelectorButton(
             // row to display the selected file path
             Row(modifier = Modifier.weight(0.1f)) { AutoSizeText(text = buttonPath, minimalFontSize = 20) }
         }
-    }
-}
-
-/**
- * Opens a file chooser dialog and returns the selected file path.
- *
- * @return The selected file path, or null if no file was selected.
- */
-fun openFileChooserAndGetPath(): String? {
-    val fileChooser = JFileChooser()
-    val result = fileChooser.showOpenDialog(null)
-    return if (result == JFileChooser.APPROVE_OPTION) fileChooser.selectedFile.absolutePath else null
-}
-
-/**
- * Opens a file chooser dialog and returns the selected file path.
- *
- * @return The selected file path, or null if no file was selected.
- */
-fun openSaveChooserAndGetPath(): String? {
-    val fileChooser = JFileChooser()
-    val result = fileChooser.showSaveDialog(null)
-    return if (result == JFileChooser.APPROVE_OPTION) {
-        fileChooser.selectedFile.absolutePath
-    } else {
-        null
     }
 }

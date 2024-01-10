@@ -28,7 +28,7 @@ data class AppState(
 )
 
 // singleton Serializer/Deserializer
-object JSONmapper {
+object JsonMapper {
     val mapper: ObjectMapper =
         ObjectMapper().apply {
             val module =

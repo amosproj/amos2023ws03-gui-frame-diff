@@ -1,4 +1,4 @@
-package ui.components
+package ui.components.diffScreen
 
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.input.key.*

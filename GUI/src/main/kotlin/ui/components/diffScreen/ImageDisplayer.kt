@@ -1,4 +1,4 @@
-package ui.components
+package ui.components.diffScreen
 
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
@@ -11,6 +11,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.key.onKeyEvent
 import frameNavigation.FrameNavigation
+import ui.components.general.saveableImage
 
 /**
  * A Composable function that displays a differenceImage with a button to open the image in a
@@ -40,7 +41,7 @@ fun RowScope.DisplayDifferenceImage(
             window.value = null
             window.value = Unit
         }
-        wrappedImage(bitmap = bitmap, modifier = modifier.weight(0.92f))
+        saveableImage(bitmap = bitmap, modifier = modifier.weight(0.92f))
     }
 }
 
@@ -66,7 +67,7 @@ fun fullScreenContent(
             focusRequester.requestFocus()
         }
         // #####   Difference Videos   #####
-        wrappedImage(bitmap = bitmap, modifier = Modifier.weight(0.85f))
+        saveableImage(bitmap = bitmap, modifier = Modifier.weight(0.85f))
         // #####   Navigation   #####
         NavigationButtons(navigator = navigator, buttonModifier = Modifier.weight(1f), rowModifier = Modifier.weight(0.15f))
     }

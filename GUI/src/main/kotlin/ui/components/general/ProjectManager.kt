@@ -1,4 +1,4 @@
-package ui.components
+package ui.components.general
 
 import Screen
 import androidx.compose.foundation.layout.Box
@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.fasterxml.jackson.module.kotlin.readValue
 import models.AppState
-import models.JSONmapper
+import models.JsonMapper
 import java.io.File
 
 /**
@@ -75,7 +75,7 @@ fun handleOpenProject(
     path: String,
 ) {
     val file = File(path).readLines()
-    state.value = JSONmapper.mapper.readValue<AppState>(file.joinToString(""))
+    state.value = JsonMapper.mapper.readValue<AppState>(file.joinToString(""))
 }
 
 /**
@@ -87,6 +87,6 @@ fun handleSaveProject(
     state: MutableState<AppState>,
     path: String,
 ) {
-    val jsonData = JSONmapper.mapper.writeValueAsString(state.value)
+    val jsonData = JsonMapper.mapper.writeValueAsString(state.value)
     File("$path.json").writeText(jsonData)
 }

@@ -1,4 +1,4 @@
-package ui.components
+package ui.components.diffScreen
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
+import ui.components.general.AutoSizeText
 
 /**
  * A Composable function that creates a box to display the timeline.

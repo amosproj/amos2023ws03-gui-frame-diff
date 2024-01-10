@@ -1,4 +1,4 @@
-package ui.components
+package ui.components.general
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
