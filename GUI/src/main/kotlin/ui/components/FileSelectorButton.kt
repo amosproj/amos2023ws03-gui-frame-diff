@@ -10,7 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import models.AppState
+import com.darkrockstudios.libraries.mpfilepicker.FilePicker
+import javax.swing.JFileChooser
 
 /**
 * A Composable function that creates a button with a file selector functionality.
@@ -24,15 +25,14 @@ import models.AppState
 fun RowScope.FileSelectorButton(
     buttonText: String,
     buttonPath: String,
-    state: MutableState<AppState>,
     onUpdateResult: (String) -> Unit,
     tooltipText: String? = null,
 ) {
+    var showFilePicker by remember { mutableStateOf(false) }
+
     Button(
         modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f),
-        onClick = {
-            state.value = state.value.copy(showFilePicker = true, filePickerCallback = onUpdateResult)
-        },
+        onClick = { showFilePicker = true },
     ) {
         // column to display the button text and the selected file path
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -51,6 +51,14 @@ fun RowScope.FileSelectorButton(
             Row(modifier = Modifier.weight(0.15f)) { AutoSizeText(text = buttonText) }
             // row to display the selected file path
             Row(modifier = Modifier.weight(0.1f)) { AutoSizeText(text = buttonPath, minimalFontSize = 20) }
+        }
+    }
+
+    FilePicker(show = showFilePicker, fileExtensions = listOf("mov", "mkv")) { file ->
+        showFilePicker = false
+
+        if (file != null) {
+            onUpdateResult(file.path)
         }
     }
 }

@@ -3,7 +3,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import models.AppState
 import ui.screens.DiffScreen
 import ui.screens.SelectVideoScreen
@@ -18,7 +17,6 @@ import ui.themes.wrapTheming
 fun main(): Unit =
     application {
         // create the global state
-        val globalState = remember { mutableStateOf(AppState()) }
         val windowState = rememberWindowState(width = 1800.dp, height = 1000.dp)
 
         Window(
@@ -27,15 +25,7 @@ fun main(): Unit =
             state = windowState,
         ) {
             // applies the default Theme to the application
-            wrapTheming { App(globalState) }
-        }
-
-        FilePicker(show = globalState.value.showFilePicker, fileExtensions = listOf("mov", "mkv")) { file ->
-            globalState.value = globalState.value.copy(showFilePicker = false)
-
-            if (file != null) {
-                globalState.value.filePickerCallback(file.path)
-            }
+            wrapTheming { App() }
         }
     }
 
@@ -45,7 +35,9 @@ fun main(): Unit =
  * @return Unit
  */
 @Composable
-fun App(globalState: MutableState<AppState>) {
+fun App() {
+    val globalState = remember { mutableStateOf(AppState()) }
+
     // pass the global state to the screen, access data using state.value.*
     // to update the global state, use state.value = state.value.copy(...)
     when (globalState.value.screen) {
