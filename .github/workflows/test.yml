@@ -69,4 +69,4 @@ jobs:
       - name: Download test assets
         run: ./gradlew downloadAndUnzipTestAssets
       - name: Run Tests
-        run: ./gradlew test
+        run: ./gradlew :test
