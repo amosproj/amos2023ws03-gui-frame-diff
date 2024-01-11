@@ -10,6 +10,9 @@
       "moduleLicense": "Eclipse Public License - v 2.0"
     },
     {
+      "moduleLicense": "The 2-Clause BSD License"
+    },
+    {
       "moduleLicense": null,
       "moduleName": "org.jetbrains.kotlinx:.*"
     },
@@ -20,6 +23,10 @@
     {
       "moduleLicense": null,
       "moduleName": "org.jetbrains.compose..*"
+    },
+    {
+      "moduleLicense": "Eclipse Public License - v 1.0",
+      "moduleName": "junit:junit"
     }
   ]
 }
