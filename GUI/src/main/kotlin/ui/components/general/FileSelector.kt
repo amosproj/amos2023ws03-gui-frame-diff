@@ -1,5 +1,7 @@
 package ui.components.general
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.swing.JFileChooser
 
 /**
@@ -7,11 +9,15 @@ import javax.swing.JFileChooser
  *
  * @return The selected file path, or null if no file was selected.
  */
-fun openFileChooserAndGetPath(onResult: (String) -> Unit) {
+suspend fun openFileChooserAndGetPath(onResult: (String) -> Unit) {
     val fileChooser = JFileChooser()
     val dialog = fileChooser.showOpenDialog(null)
-    if (dialog == JFileChooser.APPROVE_OPTION) {
-        onResult(fileChooser.selectedFile.absolutePath)
+    if (JFileChooser.APPROVE_OPTION == dialog) {
+        // Force the UI to update on the main thread -> makes it smoother for rendering the selected file path
+        println("opening ${fileChooser.selectedFile.absolutePath}")
+        withContext(Dispatchers.Main) {
+            onResult(fileChooser.selectedFile.absolutePath)
+        }
     }
 }
 
@@ -20,12 +26,10 @@ fun openFileChooserAndGetPath(onResult: (String) -> Unit) {
  *
  * @return The selected file path, or null if no file was selected.
  */
-fun openSaveChooserAndGetPath(): String? {
+fun openSaveChooserAndGetPath(onResult: (String) -> Unit) {
     val fileChooser = JFileChooser()
     val result = fileChooser.showSaveDialog(null)
-    return if (result == JFileChooser.APPROVE_OPTION) {
-        fileChooser.selectedFile.absolutePath
-    } else {
-        null
+    if (result == JFileChooser.APPROVE_OPTION) {
+        onResult(fileChooser.selectedFile.absolutePath)
     }
 }

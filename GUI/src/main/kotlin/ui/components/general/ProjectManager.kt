@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.fasterxml.jackson.module.kotlin.readValue
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import models.AppState
 import models.JsonMapper
@@ -47,16 +48,17 @@ fun projectMenu(
             val openScope = rememberCoroutineScope()
             DropdownMenuItem(
                 onClick = {
-                    openScope.launch { openFileChooserAndGetPath { handleOpenProject(state, it) } }
+                    openScope.launch(Dispatchers.IO) { openFileChooserAndGetPath { path -> handleOpenProject(state, path) } }
                     expanded = false
                 },
             ) {
                 Text("Open Project", fontSize = MaterialTheme.typography.body2.fontSize)
             }
 
+            val saveScope = rememberCoroutineScope()
             DropdownMenuItem(
                 onClick = {
-                    openSaveChooserAndGetPath()?.let { handleSaveProject(state, it) }
+                    saveScope.launch(Dispatchers.IO) { openSaveChooserAndGetPath { path -> handleSaveProject(state, path) } }
                     expanded = false
                 },
                 enabled = state.value.screen == Screen.DiffScreen,

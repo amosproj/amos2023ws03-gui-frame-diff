@@ -19,6 +19,8 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 import javax.imageio.ImageIO
 import javax.swing.JOptionPane
@@ -80,9 +82,10 @@ private fun DropdownMenu(
         expanded = expanded.value,
         onDismissRequest = { expanded.value = false },
     ) {
+        val scope = rememberCoroutineScope()
         DropdownMenuItem({
             expanded.value = false
-            saveBitmapAsPng(bitmap)
+            scope.launch(Dispatchers.IO) { openSaveChooserAndGetPath { path -> saveBitmapAsPng(bitmap, path) } }
         }) {
             Text("Save image as png")
         }
@@ -93,8 +96,12 @@ private fun DropdownMenu(
  * a composable function to save the choosen bitmap as png
  * @param bitmap [MutableState] <[ImageBitmap]> contains the bitmap
  */
-private fun saveBitmapAsPng(bitmap: MutableState<ImageBitmap>) {
-    var path = openSaveChooserAndGetPath() ?: return
+private fun saveBitmapAsPng(
+    bitmap: MutableState<ImageBitmap>,
+    path: String,
+) {
+    var path = path
+    println(path)
     if (!path.endsWith(".png")) {
         path = "$path.png"
     }

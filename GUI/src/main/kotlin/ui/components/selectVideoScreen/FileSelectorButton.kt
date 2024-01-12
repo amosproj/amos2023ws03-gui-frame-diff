@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ui.components.general.AutoSizeText
 import ui.components.general.InfoIconWithHover
@@ -33,10 +34,9 @@ fun RowScope.FileSelectorButton(
     val scope = rememberCoroutineScope()
     Button(
         modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f),
-        onClick = { scope.launch { openFileChooserAndGetPath(onUpdateResult) } },
+        onClick = { scope.launch(Dispatchers.IO) { openFileChooserAndGetPath { path -> onUpdateResult(path) } } },
     ) {
         // column to display the button text and the selected file path
-
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
             // row to display the upload icon
             Row(modifier = Modifier.weight(0.75f)) {
