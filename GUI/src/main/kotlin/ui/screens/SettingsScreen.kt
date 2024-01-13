@@ -7,8 +7,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import models.AppState
 import ui.components.*
+import ui.components.general.TextTitle
 import ui.components.general.TitleWithInfo
-import ui.components.general.textTitle
 import ui.components.selectVideoScreen.FileSelectorButton
 import ui.components.settingsScreen.BackButton
 import ui.components.settingsScreen.CustomSlider
@@ -42,7 +42,7 @@ fun SettingsScreen(state: MutableState<AppState>) {
     // Contains the whole Screen
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         // Title
-        Row(modifier = Modifier.weight(0.2f)) { textTitle("Settings") }
+        Row(modifier = Modifier.weight(0.2f)) { TextTitle("Settings") }
         TitleWithInfo(Modifier.weight(0.15f), "Hyperparameters", textForHyper)
 
         // gap open penalty

@@ -5,12 +5,13 @@ import javax.swing.JFileChooser
 /**
  * Opens a file chooser dialog and returns the selected file path.
  *
+ * @param onResult The callback to be called when a file was selected.
  * @return The selected file path, or null if no file was selected.
  */
 fun openFileChooserAndGetPath(onResult: (String) -> Unit) {
     val fileChooser = JFileChooser()
-    val dialog = fileChooser.showOpenDialog(null)
-    if (JFileChooser.APPROVE_OPTION == dialog) {
+    val result = fileChooser.showOpenDialog(null)
+    if (JFileChooser.APPROVE_OPTION == result) {
         onResult(fileChooser.selectedFile.absolutePath)
     }
 }
@@ -18,6 +19,7 @@ fun openFileChooserAndGetPath(onResult: (String) -> Unit) {
 /**
  * Opens a file chooser dialog and returns the selected file path.
  *
+ * @param onResult The callback to be called when a file was selected.
  * @return The selected file path, or null if no file was selected.
  */
 fun openSaveChooserAndGetPath(onResult: (String) -> Unit) {

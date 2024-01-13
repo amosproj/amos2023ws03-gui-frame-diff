@@ -13,6 +13,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import models.AppState
 
+/**
+ * Back button component
+ *
+ * @param state current app state
+ * @param oldState previous app state
+ */
 @Composable
 fun RowScope.BackButton(
     state: MutableState<AppState>,

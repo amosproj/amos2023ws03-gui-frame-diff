@@ -62,7 +62,7 @@ fun RowScope.CustomSlider(
             // max value
             AutoSizeText(text = maxValue.toString(), modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxHeight(1f))
             // current value
-            currentValueInputField(textValue, minValue, maxValue, sliderValue)
+            CurrentValueInputField(textValue, minValue, maxValue, sliderValue)
         }
     }
 }
@@ -76,7 +76,7 @@ fun RowScope.CustomSlider(
  * @param sliderValue the value of the slider
  */
 @Composable
-private fun currentValueInputField(
+private fun CurrentValueInputField(
     textValue: MutableState<String>,
     minValue: Double,
     maxValue: Double,

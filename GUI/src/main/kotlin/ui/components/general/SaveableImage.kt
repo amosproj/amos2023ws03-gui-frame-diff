@@ -32,7 +32,7 @@ import javax.swing.JOptionPane
  * @return [Unit]
  */
 @Composable
-fun saveableImage(
+fun SaveableImage(
     bitmap: MutableState<ImageBitmap>,
     modifier: Modifier = Modifier,
 ) {

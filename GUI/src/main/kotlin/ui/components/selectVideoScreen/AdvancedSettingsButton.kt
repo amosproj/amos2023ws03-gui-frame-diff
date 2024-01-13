@@ -13,6 +13,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import models.AppState
 
+/**
+ * A button that opens the advanced settings screen.
+ *
+ * @param state The state of the app.
+ */
 @Composable
 fun RowScope.AdvancedSettingsButton(state: MutableState<AppState>) {
     Button(

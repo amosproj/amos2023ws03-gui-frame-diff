@@ -13,8 +13,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ui.components.general.openSaveChooserAndGetPath
 
+/**
+ * Button to save the collage
+ *
+ * @param navigator The navigator to use to create the collage
+ * @param modifier The modifier for the button
+ * @return [Unit]
+ */
 @Composable
-fun saveCollageButton(
+fun SaveCollageButton(
     navigator: FrameNavigation,
     modifier: Modifier,
 ) {

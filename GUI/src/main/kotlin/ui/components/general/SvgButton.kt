@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
  * @return [Unit]
  */
 @Composable
-fun svgButton(
+fun SvgButton(
     onClick: () -> Unit,
     content: String,
     modifier: Modifier = Modifier,

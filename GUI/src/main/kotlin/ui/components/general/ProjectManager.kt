@@ -25,7 +25,7 @@ import java.io.File
  * @return a dropdown menu to open and save projects
  */
 @Composable
-fun projectMenu(
+fun ProjectMenu(
     state: MutableState<AppState>,
     modifier: Modifier = Modifier,
 ) {

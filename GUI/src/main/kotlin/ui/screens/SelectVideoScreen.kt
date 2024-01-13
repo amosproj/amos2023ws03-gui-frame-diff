@@ -4,8 +4,8 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import models.AppState
-import ui.components.general.helpMenu
-import ui.components.general.projectMenu
+import ui.components.general.HelpMenu
+import ui.components.general.ProjectMenu
 import ui.components.selectVideoScreen.AdvancedSettingsButton
 import ui.components.selectVideoScreen.ComputeDifferencesButton
 import ui.components.selectVideoScreen.FileSelectorButton
@@ -22,9 +22,9 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
         // menu bar
         TopAppBar {
             Row(modifier = Modifier.fillMaxWidth()) {
-                projectMenu(state, Modifier.weight(0.1f))
+                ProjectMenu(state, Modifier.weight(0.1f))
                 Spacer(modifier = Modifier.weight(0.8f))
-                helpMenu(Modifier.weight(0.1f))
+                HelpMenu(Modifier.weight(0.1f))
             }
         }
 

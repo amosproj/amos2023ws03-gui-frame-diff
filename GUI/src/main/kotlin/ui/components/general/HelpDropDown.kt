@@ -12,8 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 
+/**
+ * A dropdown menu with links to the project page and the help page.
+ * @param modifier Modifier
+ * @return [Unit]
+ */
 @Composable
-fun helpMenu(modifier: Modifier = Modifier) {
+fun HelpMenu(modifier: Modifier = Modifier) {
     var expanded by remember { mutableStateOf(false) }
     val padding = 8.dp
     Box(modifier = modifier.fillMaxSize()) {
@@ -30,8 +35,8 @@ fun helpMenu(modifier: Modifier = Modifier) {
             expanded = expanded,
             onDismissRequest = { expanded = false },
         ) {
-            hyperlinkDropdownMenuItem("Project Page", "https://github.com/amosproj/amos2023ws03-gui-frame-diff")
-            hyperlinkDropdownMenuItem("Help", "https://github.com/amosproj/amos2023ws03-gui-frame-diff/wiki")
+            HyperlinkDropdownMenuItem("Project Page", "https://github.com/amosproj/amos2023ws03-gui-frame-diff")
+            HyperlinkDropdownMenuItem("Help", "https://github.com/amosproj/amos2023ws03-gui-frame-diff/wiki")
         }
     }
 }

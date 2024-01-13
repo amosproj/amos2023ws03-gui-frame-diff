@@ -6,8 +6,14 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalUriHandler
 
+/**
+ * A dropdown menu item that opens a hyperlink when clicked.
+ * @param text The text to display in the dropdown menu item.
+ * @param uri The URI to open when the dropdown menu item is clicked.
+ * @return [Unit]
+ */
 @Composable
-fun hyperlinkDropdownMenuItem(
+fun HyperlinkDropdownMenuItem(
     text: String,
     uri: String,
 ) {

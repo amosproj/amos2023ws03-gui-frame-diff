@@ -12,9 +12,9 @@ import androidx.compose.ui.input.key.*
 import frameNavigation.FrameNavigation
 import models.AppState
 import ui.components.diffScreen.*
-import ui.components.general.helpMenu
-import ui.components.general.projectMenu
-import ui.components.general.textTitle
+import ui.components.general.HelpMenu
+import ui.components.general.ProjectMenu
+import ui.components.general.TextTitle
 
 /**
  * A Composable function that creates a screen to display the differences between two videos.
@@ -37,7 +37,7 @@ fun DiffScreen(state: MutableState<AppState>) {
         // grab focus, fill all available space, assign key press handler
         modifier =
             Modifier.fillMaxSize().focusRequester(focusRequester).focusable()
-                .onKeyEvent { event -> keyEventHandler(event, navigator) },
+                .onKeyEvent { event -> KeyEventHandler(event, navigator) },
     ) {
         // #####   Focus   #####
         LaunchedEffect(Unit) {
@@ -47,18 +47,18 @@ fun DiffScreen(state: MutableState<AppState>) {
         // #####   Top Bar   #####
         TopAppBar {
             Row(modifier = Modifier.fillMaxWidth()) {
-                projectMenu(state, Modifier.weight(0.1f))
-                saveCollageButton(navigator, Modifier.weight(0.1f))
+                ProjectMenu(state, Modifier.weight(0.1f))
+                SaveCollageButton(navigator, Modifier.weight(0.1f))
                 Spacer(modifier = Modifier.weight(0.7f))
-                helpMenu(Modifier.weight(0.1f))
+                HelpMenu(Modifier.weight(0.1f))
             }
         }
 
         // #####   Titles   #####
         Row(modifier = Modifier.fillMaxWidth().weight(0.1f)) {
-            textTitle(text = "Video 1")
-            textTitle(text = "Diff")
-            textTitle(text = "Video 2")
+            TextTitle(text = "Video 1")
+            TextTitle(text = "Diff")
+            TextTitle(text = "Video 2")
         }
 
         Row(modifier = Modifier.fillMaxWidth().weight(0.1f)) {
@@ -72,7 +72,7 @@ fun DiffScreen(state: MutableState<AppState>) {
             DisplayDifferenceImage(bitmap = navigator.video2Bitmap, navigator = navigator, title = "Video 2")
         }
         // #####   Timeline   #####
-        Row(modifier = Modifier.fillMaxSize().weight(0.15f)) { timeline(navigator) }
+        Row(modifier = Modifier.fillMaxSize().weight(0.15f)) { Timeline(navigator) }
 
         // #####   Navigation   #####
         NavigationButtons(navigator, Modifier.weight(1f), Modifier.weight(0.15f))

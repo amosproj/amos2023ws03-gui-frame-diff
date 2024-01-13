@@ -11,7 +11,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.key.onKeyEvent
 import frameNavigation.FrameNavigation
-import ui.components.general.saveableImage
+import ui.components.general.SaveableImage
 
 /**
  * A Composable function that displays a differenceImage with a button to open the image in a
@@ -33,26 +33,26 @@ fun RowScope.DisplayDifferenceImage(
     val window = remember { mutableStateOf<Unit?>(null) }
 
     // handles the window creation if the window is not null
-    windowCreator(window, title) { fullScreenContent(bitmap = bitmap, navigator = navigator) }
+    WindowCreator(window, title) { FullScreenContent(bitmap = bitmap, navigator = navigator) }
 
     Column(modifier = Modifier.fillMaxSize().weight(1f)) {
         // button sets the window to null and then to not null, which triggers the window render
-        fullScreenButton {
+        FullScreenButton {
             window.value = null
             window.value = Unit
         }
-        saveableImage(bitmap = bitmap, modifier = modifier.weight(0.92f))
+        SaveableImage(bitmap = bitmap, modifier = modifier.weight(0.92f))
     }
 }
 
 /**
- * The Contentent being displayed in the full screen window.
+ * The Content being displayed in the full screen window.
  * @param bitmap [MutableState]<[ImageBitmap]> containing the bitmap to display.
  * @param navigator [FrameNavigation] containing the navigation logic.
  * @return [Unit]
  */
 @Composable
-fun fullScreenContent(
+fun FullScreenContent(
     bitmap: MutableState<ImageBitmap>,
     navigator: FrameNavigation,
 ) {
@@ -60,14 +60,14 @@ fun fullScreenContent(
     Column(
         modifier =
             Modifier.fillMaxSize().focusRequester(focusRequester).focusable()
-                .onKeyEvent { event -> keyEventHandler(event, navigator) },
+                .onKeyEvent { event -> KeyEventHandler(event, navigator) },
     ) {
         // #####   Focus   #####
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
         }
         // #####   Difference Videos   #####
-        saveableImage(bitmap = bitmap, modifier = Modifier.weight(0.85f))
+        SaveableImage(bitmap = bitmap, modifier = Modifier.weight(0.85f))
         // #####   Navigation   #####
         NavigationButtons(navigator = navigator, buttonModifier = Modifier.weight(1f), rowModifier = Modifier.weight(0.15f))
     }

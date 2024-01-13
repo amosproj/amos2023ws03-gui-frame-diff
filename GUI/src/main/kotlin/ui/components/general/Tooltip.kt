@@ -13,6 +13,12 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 
+/**
+ * A tooltip that appears when the user hovers over a component.
+ *
+ * @param text The text to display in the tooltip.
+ * @return A [Popup] composable that displays the tooltip.
+ */
 @Composable
 fun Tooltip(text: String) {
     val cornerSize = 16.dp

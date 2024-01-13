@@ -7,7 +7,7 @@ import models.AppState
 import ui.screens.DiffScreen
 import ui.screens.SelectVideoScreen
 import ui.screens.SettingsScreen
-import ui.themes.wrapTheming
+import ui.themes.WrapTheming
 
 /**
  * The main entry point of the application.
@@ -22,13 +22,13 @@ fun main(): Unit =
             state = WindowState(width = 1800.dp, height = 1000.dp),
         ) {
             // applies the default Theme to the application
-            wrapTheming { App() }
+            WrapTheming { App() }
         }
     }
 
 /**
  * This function is a composable function that defines the UI structure and behavior of the application.
- *
+ * It handles screen switching and passes the global state to the screens.
  * @return Unit
  */
 @Composable

@@ -20,8 +20,9 @@ import ui.components.general.openFileChooserAndGetPath
 * A Composable function that creates a button with a file selector functionality.
 *
 * @param buttonText The text to be displayed on the button.
-* @param onUpdateResult A function that will be called with the selected file path as a parameter.
  * @param buttonPath The path to the selected file.
+* @param onUpdateResult A function that will be called with the selected file path as a parameter.
+ * @param tooltipText The text to be displayed in the tooltip.
  * @return [Unit]
 */
 @Composable

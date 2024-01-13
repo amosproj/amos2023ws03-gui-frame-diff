@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
  */
 
 @Composable
-fun RowScope.textTitle(text: String) {
+fun RowScope.TextTitle(text: String) {
     AutoSizeText(
         text = text,
         modifier = Modifier.weight(1f).fillMaxSize().padding(20.dp),

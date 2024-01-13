@@ -13,6 +13,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import models.AppState
 
+/**
+ * Save button
+ * @param state current state
+ * @param oldState old state
+ */
 @Composable
 fun RowScope.SaveButton(
     state: MutableState<AppState>,

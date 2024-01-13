@@ -26,7 +26,7 @@ import ui.components.general.AutoSizeText
  * @return [Unit]
  */
 @Composable
-fun timeline(navigator: FrameNavigation) {
+fun Timeline(navigator: FrameNavigation) {
     val navigatorUpdated by rememberUpdatedState(navigator)
     // set the width of the timeline-box
     var componentWidth by remember { mutableStateOf(0.8f) }
@@ -49,7 +49,7 @@ fun timeline(navigator: FrameNavigation) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // #### timeline labeling ####
-        timelineTopLabels(currentPercentage, currentOffsetDp, navigatorUpdated)
+        TimelineTopLabels(currentPercentage, currentOffsetDp, navigatorUpdated)
         // #### timeline box ####
         Box(
             modifier =
@@ -76,21 +76,26 @@ fun timeline(navigator: FrameNavigation) {
                         )
                     },
         ) {
-            drawRedLine(currentOffset)
+            DrawRedLine(currentOffset)
             // #### clickable timeline ####
             Box(
                 modifier = Modifier.fillMaxSize(),
             ) {
-                alignedSizedText("0%", Alignment.CenterStart, 20.dp)
-                alignedSizedText("50%", Alignment.Center, 20.dp)
-                alignedSizedText("100%", Alignment.CenterEnd, 20.dp)
+                AlignedSizedText("0%", Alignment.CenterStart, 20.dp)
+                AlignedSizedText("50%", Alignment.Center, 20.dp)
+                AlignedSizedText("100%", Alignment.CenterEnd, 20.dp)
             }
         }
     }
 }
 
+/**
+ * A Composable function that draws a red line on the timeline.
+ * @param currentOffset [Float] containing the current x-offset of the indicator.
+ * @return [Unit]
+ */
 @Composable
-private fun drawRedLine(currentOffset: Float) {
+private fun DrawRedLine(currentOffset: Float) {
     Canvas(modifier = Modifier.fillMaxSize()) {
         drawLine(
             start = Offset(currentOffset, 0f),
@@ -101,8 +106,15 @@ private fun drawRedLine(currentOffset: Float) {
     }
 }
 
+/**
+ * A Composable function that creates labels for the timeline.
+ * @param currentPercentage [Int] containing the current percentage on the cursor as Int between 0 and 100.
+ * @param currentOffsetDp [Dp] containing the current x-offset of the indicator as dp to show current percentage.
+ * @param navigator [FrameNavigation] containing the navigator.
+ * @return [Unit]
+ */
 @Composable
-private fun timelineTopLabels(
+private fun TimelineTopLabels(
     currentPercentage: Int,
     currentOffsetDp: Dp,
     navigator: FrameNavigation,
@@ -113,9 +125,9 @@ private fun timelineTopLabels(
         modifier = Modifier.fillMaxWidth(0.8f).fillMaxHeight(0.3f),
     ) {
         // Starting Label
-        alignedSizedText("0", Alignment.CenterStart, 2.dp)
+        AlignedSizedText("0", Alignment.CenterStart, 2.dp)
         // Current Percentage Label
-        alignedSizedText(
+        AlignedSizedText(
             text = "$currentPercentage%",
             alignment = Alignment.TopStart,
             padding = 2.dp,
@@ -125,12 +137,20 @@ private fun timelineTopLabels(
                 }.offset(x = (currentOffsetDp - (textWidth / 3).dp)),
         )
         // Ending Label
-        alignedSizedText("${navigator.getSizeOfDiff()}", Alignment.CenterEnd, 2.dp)
+        AlignedSizedText("${navigator.getSizeOfDiff()}", Alignment.CenterEnd, 2.dp)
     }
 }
 
+/**
+ * A Composable function that creates a text component with a given alignment and padding.
+ * @param text [String] containing the text to display.
+ * @param alignment [Alignment] containing the alignment of the text.
+ * @param padding [Dp] containing the padding of the text.
+ * @param modifier [Modifier] containing the modifier of the text.
+ * @return [Unit]
+ */
 @Composable
-fun BoxScope.alignedSizedText(
+fun BoxScope.AlignedSizedText(
     text: String,
     alignment: Alignment,
     padding: Dp = 0.dp,
