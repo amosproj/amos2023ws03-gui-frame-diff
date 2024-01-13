@@ -6,9 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.graphics.toComposeImageBitmap
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import models.AppState
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import wrappers.Resettable2DFrameConverter
@@ -143,33 +141,35 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
     override fun jumpToFrame() {
         var coercedIndex = currentIndex.coerceIn(0, diffSequence.size - 1)
         currentRelativePosition.value = coercedIndex.toDouble() / (diffSequence.size - 1).toDouble()
+        if (lock) {
+            return
+        }
+        lock = true
+        var goal = -1
         scope.launch(Dispatchers.IO) {
-            if (lock) {
-                return@launch
-            }
-            lock = true
+            var b1: ImageBitmap? = null
+            var b2: ImageBitmap? = null
+            var b3: ImageBitmap? = null
 
-            var goal = -1
             while (goal != coercedIndex) {
                 goal = coercedIndex
 
-                // jump to the frame in each video by mapping the frame using the generated sequences
-                video1Grabber.setVideoFrameNumber(video1Frames[goal])
-                video2Grabber.setVideoFrameNumber(video2Frames[goal])
-                grabberDiff.setVideoFrameNumber(goal)
-
-                // check if short-circuiting is possible, i.e. if the goal changed
-                // theoretically, this should be checked after each line, that is ugly
-                // practically, this check suffices for a short delay which is not very noticeable
-                coercedIndex = currentIndex.coerceIn(0, diffSequence.size - 1)
-                if (goal != coercedIndex) continue
-
                 // update the bitmaps
-                video1Bitmap.value = getBitmap(video1Grabber)
-                video2Bitmap.value = getBitmap(video2Grabber)
-                diffBitmap.value = getBitmap(grabberDiff)
-                // update the index
+                video1Grabber.setVideoFrameNumber(video1Frames[goal])
+                b1 = getBitmap(video1Grabber)
+
+                video2Grabber.setVideoFrameNumber(video2Frames[goal])
+                b2 = getBitmap(video2Grabber)
+
+                grabberDiff.setVideoFrameNumber(goal)
+                b3 = getBitmap(grabberDiff)
+
                 coercedIndex = currentIndex.coerceIn(0, diffSequence.size - 1)
+            }
+            withContext(Dispatchers.Main) {
+                video1Bitmap.value = b1!!
+                video2Bitmap.value = b2!!
+                diffBitmap.value = b3!!
             }
             currentIndex = coercedIndex
             lock = false
