@@ -37,7 +37,7 @@ fun DiffScreen(state: MutableState<AppState>) {
         // grab focus, fill all available space, assign key press handler
         modifier =
             Modifier.fillMaxSize().focusRequester(focusRequester).focusable()
-                .onKeyEvent { event -> KeyEventHandler(event, navigator) },
+                .onKeyEvent { event -> keyEventHandler(event, navigator) },
     ) {
         // #####   Focus   #####
         LaunchedEffect(Unit) {

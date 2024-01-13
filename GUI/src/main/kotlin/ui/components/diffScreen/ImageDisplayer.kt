@@ -60,7 +60,7 @@ fun FullScreenContent(
     Column(
         modifier =
             Modifier.fillMaxSize().focusRequester(focusRequester).focusable()
-                .onKeyEvent { event -> KeyEventHandler(event, navigator) },
+                .onKeyEvent { event -> keyEventHandler(event, navigator) },
     ) {
         // #####   Focus   #####
         LaunchedEffect(Unit) {

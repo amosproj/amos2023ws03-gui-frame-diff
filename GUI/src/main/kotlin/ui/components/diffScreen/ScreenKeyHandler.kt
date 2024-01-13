@@ -11,7 +11,7 @@ import frameNavigation.FrameNavigation
  * @return [Boolean] true if the key was handled, false otherwise.
  */
 @OptIn(ExperimentalComposeUiApi::class)
-fun KeyEventHandler(
+fun keyEventHandler(
     event: KeyEvent,
     navigator: FrameNavigation,
 ): Boolean {
