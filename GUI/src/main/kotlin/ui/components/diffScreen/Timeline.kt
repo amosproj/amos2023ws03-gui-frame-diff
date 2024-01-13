@@ -5,12 +5,12 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
@@ -85,8 +85,8 @@ fun Timeline(navigator: FrameNavigation) {
             DrawRedLine(currentOffset)
             // #### clickable timeline ####
             Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                TimelineThumbnails(modifier = Modifier.weight(0.5f))
-                TimelineThumbnails(modifier = Modifier.weight(0.5f))
+                TimelineThumbnails(modifier = Modifier.weight(0.5f), bitmaps = navigator.video1Bitmaps)
+                TimelineThumbnails(modifier = Modifier.weight(0.5f), bitmaps = navigator.video2Bitmaps)
             }
         }
 
@@ -109,23 +109,31 @@ fun Timeline(navigator: FrameNavigation) {
 }
 
 @Composable
-private fun TimelineThumbnails(modifier: Modifier) {
+private fun TimelineThumbnails(
+    modifier: Modifier,
+    bitmaps: MutableList<ImageBitmap>,
+) {
     Row(
         modifier =
             modifier
                 .fillMaxWidth()
                 .border(width = 1.dp, color = Color.Black, shape = RectangleShape),
-        horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
-        for (i in 0..12) {
+        for (i in 0 until bitmaps.size) {
             Box(
                 modifier =
                     Modifier
                         .fillMaxHeight()
-                        .width(80.dp)
+                        .weight(1f)
                         .border(width = 1.dp, color = Color.Black, shape = RectangleShape),
             ) {
-                Text("Thumbnail")
+                Image(
+                    bitmap = bitmaps[i],
+                    contentDescription = null,
+                    modifier =
+                        Modifier
+                            .fillMaxSize(),
+                )
             }
         }
     }

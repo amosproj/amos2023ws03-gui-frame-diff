@@ -10,6 +10,7 @@ import kotlinx.coroutines.*
 import models.AppState
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import wrappers.Resettable2DFrameConverter
+import java.awt.Color
 import java.awt.image.BufferedImage
 import kotlin.math.roundToInt
 
@@ -24,7 +25,7 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
     private val grabberDiff: FFmpegFrameGrabber = FFmpegFrameGrabber(state.value.outputPath)
 
     // create the sequences
-    private var diffSequence: Array<AlignmentElement> = state.value.sequenceObj
+    var diffSequence: Array<AlignmentElement> = state.value.sequenceObj
     private var video1Frames: MutableList<Int> = mutableListOf()
     private var video2Frames: MutableList<Int> = mutableListOf()
 
@@ -44,6 +45,10 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
     // 0.0 means the first frame, 1.0 means the last frame
     var currentRelativePosition: MutableState<Double> = mutableStateOf(0.0)
 
+    // containing the bitmaps of video
+    var video1Bitmaps: MutableList<ImageBitmap> = mutableListOf()
+    var video2Bitmaps: MutableList<ImageBitmap> = mutableListOf()
+
     init {
         // start the grabbers
         video1Grabber.start()
@@ -52,6 +57,11 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
         // generate the sequences for video 1 and video 2
         // diffSequence is already generated
         generateSequences()
+
+        // fill the list with bitmaps
+        loadVideoBitmaps(video1Grabber, video1Bitmaps)
+        loadVideoBitmaps(video2Grabber, video2Bitmaps)
+
         // jump to the first frame
         jumpToFrame()
     }
@@ -81,14 +91,17 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
                     video1Frames.add(video1Frames.last() + 1)
                     video2Frames.add(video2Frames.last() + 1)
                 }
+
                 AlignmentElement.INSERTION -> {
                     video1Frames.add(video1Frames.last())
                     video2Frames.add(video2Frames.last() + 1)
                 }
+
                 AlignmentElement.DELETION -> {
                     video1Frames.add(video1Frames.last() + 1)
                     video2Frames.add(video2Frames.last())
                 }
+
                 AlignmentElement.PERFECT -> {
                     video1Frames.add(video1Frames.last() + 1)
                     video2Frames.add(video2Frames.last() + 1)
@@ -294,7 +307,8 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
         val width = video1Grabber.imageWidth
         var xOffset = 0
         // create the collage
-        val collage = BufferedImage(width * 3 + border * 2, video1Grabber.imageHeight + titleHeight, BufferedImage.TYPE_INT_RGB)
+        val collage =
+            BufferedImage(width * 3 + border * 2, video1Grabber.imageHeight + titleHeight, BufferedImage.TYPE_INT_RGB)
         val g = collage.createGraphics()
         // fill the background with white
         g.color = java.awt.Color.WHITE
@@ -321,5 +335,30 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
         // save the collage
         val file = java.io.File("$outputPath.png")
         javax.imageio.ImageIO.write(collage, "png", file)
+    }
+
+    /**
+     * Creates a collage of the 3 videos and saves it to a file.
+     * @param grabber [FFmpegFrameGrabber] containing the grabber to get the bitmap from.
+     * @param bitmapList [MutableList]<[ImageBitmap]> containing the bitmaps of video.
+     */
+    private fun loadVideoBitmaps(
+        grabber: FFmpegFrameGrabber,
+        bitmapList: MutableList<ImageBitmap>,
+    ) {
+        // set the number of frames
+        val numFrames = grabber.lengthInFrames
+
+        // loop through each frame
+        for (i in 0 until numFrames) {
+            // set the current frame
+            grabber.setVideoFrameNumber(i)
+
+            // get the bitmap for this frame
+            val bitmap = getBitmap(grabber)
+
+            // add the bitmap to the list
+            bitmapList.add(bitmap)
+        }
     }
 }
