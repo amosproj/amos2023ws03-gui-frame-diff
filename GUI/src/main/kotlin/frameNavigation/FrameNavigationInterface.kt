@@ -21,7 +21,7 @@ interface FrameNavigationInterface {
     /**
      * Jump to a concretely specified frame
      */
-    fun jumpToFrame(index: Int)
+    fun jumpToFrame()
 
     /**
      * Jump to the next diff

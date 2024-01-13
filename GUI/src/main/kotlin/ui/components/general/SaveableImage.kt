@@ -101,7 +101,6 @@ private fun saveBitmapAsPng(
     path: String,
 ) {
     var path = path
-    println(path)
     if (!path.endsWith(".png")) {
         path = "$path.png"
     }

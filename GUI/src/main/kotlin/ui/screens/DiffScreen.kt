@@ -19,6 +19,7 @@ import ui.components.general.textTitle
 /**
  * A Composable function that creates a screen to display the differences between two videos.
  * Shows 3 videos: the first video, the difference between the two videos, and the second video.
+ * Gets recomposed when the state object changes, not when state properties change.
  * @param state [MutableState]<[AppState]> containing the global state.
  * @return [Unit]
  */
@@ -26,9 +27,10 @@ import ui.components.general.textTitle
 @Composable
 fun DiffScreen(state: MutableState<AppState>) {
     // create the navigator, which implements the jumping logic
-    val navigator = FrameNavigation(state)
+    val scope = rememberCoroutineScope()
+    val navigator = FrameNavigation(state, scope)
     // force into focus to intercept key presses
-    val focusRequester = remember { FocusRequester() }
+    val focusRequester = FocusRequester()
 
     // ################################   Complete Screen   ################################
     Column(
