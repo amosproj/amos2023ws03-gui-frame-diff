@@ -62,12 +62,14 @@ fun Timeline(navigator: FrameNavigation) {
                         width = 2.dp,
                         color = Color.Black,
                     )
+                    // calculate the width of the timeline-box
                     .layout { measurable, constraints ->
                         val placeable = measurable.measure(constraints)
                         // Store the width
                         componentWidth = placeable.width.toFloat()
                         layout(placeable.width, placeable.height) { placeable.placeRelative(0, 0) }
                     }
+                    // handle clicks and drags on the timeline
                     .pointerInput(Unit) { detectTapGestures { offset -> jumpPercentageHandler(offset) } }
                     .pointerInput(Unit) {
                         detectDragGestures(
@@ -76,6 +78,7 @@ fun Timeline(navigator: FrameNavigation) {
                         )
                     },
         ) {
+            // #### red line ####
             DrawRedLine(currentOffset)
             // #### clickable timeline ####
             Box(
