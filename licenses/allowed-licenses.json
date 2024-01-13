@@ -20,6 +20,10 @@
     {
       "moduleLicense": null,
       "moduleName": "org.jetbrains.compose..*"
+    },
+    {
+      "moduleLicense": null,
+      "moduleName": "org.jetbrains.kotlin:.*"
     }
   ]
 }
