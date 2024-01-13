@@ -27,12 +27,13 @@ import ui.components.general.AutoSizeText
  */
 @Composable
 fun timeline(navigator: FrameNavigation) {
-    // set the width of the timelinebox
+    val navigatorUpdated by rememberUpdatedState(navigator)
+    // set the width of the timeline-box
     var componentWidth by remember { mutableStateOf(0.8f) }
     // current percentage on the cursor as Int between 0 and 100
-    val currentPercentage = (navigator.currentRelativePosition.value * 100).toInt()
+    val currentPercentage = (navigatorUpdated.currentRelativePosition.value * 100).toInt()
     // current x-offset of the indicator
-    val currentOffset = (navigator.currentRelativePosition.value * componentWidth).toFloat()
+    val currentOffset = (navigatorUpdated.currentRelativePosition.value * componentWidth).toFloat()
     // current x-offset of the indicator as dp to show current percentage
     val currentOffsetDp = with(LocalDensity.current) { currentOffset.toDp() }
     // width of text component to center the current percentage over the cursor
@@ -40,7 +41,7 @@ fun timeline(navigator: FrameNavigation) {
 
     fun jumpPercentageHandler(offset: Offset) {
         cursorOffset = offset
-        navigator.jumpToPercentage((cursorOffset.x.toDouble() / componentWidth).coerceIn(0.0, 1.0))
+        navigatorUpdated.jumpToPercentage((cursorOffset.x.toDouble() / componentWidth).coerceIn(0.0, 1.0))
     }
 
     Column(
@@ -48,7 +49,7 @@ fun timeline(navigator: FrameNavigation) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // #### timeline labeling ####
-        timelineTopLabels(currentPercentage, currentOffsetDp, navigator)
+        timelineTopLabels(currentPercentage, currentOffsetDp, navigatorUpdated)
         // #### timeline box ####
         Box(
             modifier =
