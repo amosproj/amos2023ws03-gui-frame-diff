@@ -148,8 +148,8 @@ fun getCenteredThumbnailOffset(
     thumbnailWidth: Float,
 ): Float {
     return (
-        (thumbnailIndex - scrollState.firstVisibleItemIndex) *
-            thumbnailWidth + thumbnailWidth / 2 - scrollState.firstVisibleItemScrollOffset
+        (thumbnailIndex - scrollState.firstVisibleItemIndex + 0.5f) *
+            thumbnailWidth - scrollState.firstVisibleItemScrollOffset
     )
 }
 
@@ -249,8 +249,9 @@ private fun TimelineTopLabels(
             }
 
             // draw label with diff index
-            AlignedSizedText(
+            AutoSizeText(
                 text = i.toString(),
+                color = Color.Black,
                 modifier =
                     Modifier
                         .onGloballyPositioned { coordinates ->
@@ -272,24 +273,4 @@ private fun TimelineTopLabels(
             }
         }
     }
-}
-
-/**
- * A Composable function that creates a text component with a given alignment and padding.
- * @param text [String] containing the text to display.
- * @param alignment [Alignment] containing the alignment of the text.
- * @param padding [Dp] containing the padding of the text.
- * @param modifier [Modifier] containing the modifier of the text.
- * @return [Unit]
- */
-@Composable
-fun AlignedSizedText(
-    text: String,
-    modifier: Modifier = Modifier,
-) {
-    AutoSizeText(
-        text = text,
-        color = Color.Black,
-        modifier = modifier,
-    )
 }
