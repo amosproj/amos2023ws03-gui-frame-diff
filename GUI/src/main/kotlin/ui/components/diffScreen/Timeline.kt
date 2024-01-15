@@ -1,16 +1,17 @@
 package ui.components.diffScreen
 
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -39,6 +40,8 @@ fun Timeline(navigator: FrameNavigation) {
     // width of text component to center the current percentage over the cursor
     var cursorOffset = Offset.Zero
 
+    var stateHorizontal = rememberScrollState(0)
+
     fun jumpPercentageHandler(offset: Offset) {
         cursorOffset = offset
         navigatorUpdated.jumpToPercentage((cursorOffset.x.toDouble() / componentWidth).coerceIn(0.0, 1.0))
@@ -56,7 +59,7 @@ fun Timeline(navigator: FrameNavigation) {
                 Modifier
                     .background(color = Color.LightGray)
                     .fillMaxWidth(0.8f)
-                    .height(100.dp)
+                    .height(200.dp)
                     .weight(1f)
                     .border(
                         width = 2.dp,
@@ -81,12 +84,48 @@ fun Timeline(navigator: FrameNavigation) {
             // #### red line ####
             DrawRedLine(currentOffset)
             // #### clickable timeline ####
+            Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                TimelineThumbnails(modifier = Modifier.weight(0.5f))
+                TimelineThumbnails(modifier = Modifier.weight(0.5f))
+            }
+        }
+
+        HorizontalScrollbar(
+            modifier = Modifier.fillMaxWidth(0.8f).padding(top = 5.dp).border(width = 1.dp, color = Color.LightGray, shape = CircleShape),
+            adapter = rememberScrollbarAdapter(stateHorizontal),
+            style =
+                ScrollbarStyle(
+                    // width of the scrollbar (horizontal scrollbar)
+                    minimalHeight = 80.dp,
+                    // height of the scrollbar (horizontal scrollbar)
+                    thickness = 15.dp,
+                    shape = CircleShape,
+                    hoverDurationMillis = 0,
+                    hoverColor = Color.LightGray,
+                    unhoverColor = Color.LightGray,
+                ),
+        )
+    }
+}
+
+@Composable
+private fun TimelineThumbnails(modifier: Modifier) {
+    Row(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .border(width = 1.dp, color = Color.Black, shape = RectangleShape),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+    ) {
+        for (i in 0..12) {
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier =
+                    Modifier
+                        .fillMaxHeight()
+                        .width(80.dp)
+                        .border(width = 1.dp, color = Color.Black, shape = RectangleShape),
             ) {
-                AlignedSizedText("0%", Alignment.CenterStart, 20.dp)
-                AlignedSizedText("50%", Alignment.Center, 20.dp)
-                AlignedSizedText("100%", Alignment.CenterEnd, 20.dp)
+                Text("Thumbnail")
             }
         }
     }
@@ -125,7 +164,7 @@ private fun TimelineTopLabels(
     var textWidth by remember { mutableStateOf(0f) }
     // Labels Container
     Box(
-        modifier = Modifier.fillMaxWidth(0.8f).fillMaxHeight(0.3f),
+        modifier = Modifier.fillMaxWidth(0.8f).fillMaxHeight(0.2f),
     ) {
         // Starting Label
         AlignedSizedText("0", Alignment.CenterStart, 2.dp)
