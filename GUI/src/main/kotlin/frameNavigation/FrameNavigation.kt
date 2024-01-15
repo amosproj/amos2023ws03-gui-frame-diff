@@ -38,7 +38,7 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
 
     // state variables for the current frame index
     var currentIndex: Int = 0
-    var lock = false
+    var jumpLock = false
 
     // holds the relative position of the current frame in the diff video
     // 0.0 means the first frame, 1.0 means the last frame
@@ -139,19 +139,28 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
      * @return [Unit]
      */
     override fun jumpToFrame() {
+        // calculate the index to jump to; round to the nearest whole integer
         var coercedIndex = currentIndex.coerceIn(0, diffSequence.size - 1)
+        // update the percentage used for rendering the timeline position
         currentRelativePosition.value = coercedIndex.toDouble() / (diffSequence.size - 1).toDouble()
-        if (lock) {
+        // do nothing if locked
+        if (jumpLock) {
             return
         }
-        lock = true
+        // lock the jump to prevent multiple updates from running at the same time
+        jumpLock = true
+        // set unrealistic goal to force an update
         var goal = -1
+        // launch a coroutine to update the bitmaps
         scope.launch(Dispatchers.IO) {
+            // temp variables to hold the bitmaps and update all at once
             var b1: ImageBitmap? = null
             var b2: ImageBitmap? = null
             var b3: ImageBitmap? = null
 
+            // coercedIndex can be updated outside of the coroutine, so check it every iteration
             while (goal != coercedIndex) {
+                // if current rendering does not match the selected frame, update the rendering
                 goal = coercedIndex
 
                 // update the bitmaps
@@ -164,15 +173,17 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
                 grabberDiff.setVideoFrameNumber(goal)
                 b3 = getBitmap(grabberDiff)
 
+                // update the selected frame in case it changed while the coroutine was running
                 coercedIndex = currentIndex.coerceIn(0, diffSequence.size - 1)
             }
+            // after goal was met update the rendered bitmaps in UI thread and unlock the jump
             withContext(Dispatchers.Main) {
                 video1Bitmap.value = b1!!
                 video2Bitmap.value = b2!!
                 diffBitmap.value = b3!!
             }
             currentIndex = coercedIndex
-            lock = false
+            jumpLock = false
         }
     }
 

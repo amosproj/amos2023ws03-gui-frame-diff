@@ -19,8 +19,6 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.File
 import javax.imageio.ImageIO
 import javax.swing.JOptionPane
@@ -82,10 +80,9 @@ private fun DropdownMenu(
         expanded = expanded.value,
         onDismissRequest = { expanded.value = false },
     ) {
-        val scope = rememberCoroutineScope()
         DropdownMenuItem({
             expanded.value = false
-            scope.launch(Dispatchers.IO) { openFileSaverAndGetPath { path -> saveBitmapAsPng(bitmap, path) } }
+            openFileSaverAndGetPath { path -> saveBitmapAsPng(bitmap, path) }
         }) {
             Text("Save image as png")
         }
