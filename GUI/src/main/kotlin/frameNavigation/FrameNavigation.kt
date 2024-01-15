@@ -53,6 +53,8 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
     private var insertionBitmap: ImageBitmap
     private var deletionBitmap: ImageBitmap
 
+    private var onNavigateCallback: () -> Unit = {}
+
     init {
         // start the grabbers
         video1Grabber.start()
@@ -213,6 +215,8 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
             currentIndex = coercedIndex
             currentDiffIndex.value = currentIndex
             jumpLock = false
+        }.invokeOnCompletion {
+            onNavigateCallback()
         }
     }
 
@@ -379,5 +383,9 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
                 getBitmap(video1Grabber)
             }
         return listOf(video1Bitmap, video2Bitmap)
+    }
+
+    fun setOnNavigateCallback(callback: () -> Unit) {
+        onNavigateCallback = callback
     }
 }

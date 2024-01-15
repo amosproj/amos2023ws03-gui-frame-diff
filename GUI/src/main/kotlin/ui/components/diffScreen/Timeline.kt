@@ -18,6 +18,7 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
+import kotlinx.coroutines.launch
 import ui.components.general.AutoSizeText
 
 /**
@@ -64,6 +65,7 @@ class ThumbnailCache(val maxCacheSize: Int, val getImages: (Int) -> List<ImageBi
 @Composable
 fun Timeline(navigator: FrameNavigation) {
     val navigatorUpdated by rememberUpdatedState(navigator)
+    val scope = rememberCoroutineScope()
     // set the width of the timeline box
     var componentWidth by remember { mutableStateOf(0.0f) }
     var componentHeight by remember { mutableStateOf(0.0f) }
@@ -102,6 +104,17 @@ fun Timeline(navigator: FrameNavigation) {
 
     // set the modifier applied to all timeline components
     val generalModifier = Modifier.fillMaxWidth(0.8f)
+
+    navigator.setOnNavigateCallback {
+        indicatorOffset = getCenteredThumbnailOffset(scrollState, navigator.currentDiffIndex.value, thumbnailWidth)
+
+        if (indicatorOffset < 0 || indicatorOffset > componentWidth) {
+            scope.launch {
+                val thumbnailsInView = (componentWidth / thumbnailWidth).toInt()
+                scrollState.animateScrollToItem((navigator.currentDiffIndex.value - thumbnailsInView / 2).coerceIn(0, totalDiffFrames - 1))
+            }
+        }
+    }
 
     Column(
         modifier = Modifier.background(color = Color.Gray).fillMaxSize(),
