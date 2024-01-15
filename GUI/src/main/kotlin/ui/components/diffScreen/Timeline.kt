@@ -38,10 +38,8 @@ fun Timeline(navigator: FrameNavigation) {
     val scrollState = rememberLazyListState()
     var thumbnailWidth by remember { mutableStateOf(0.0f) }
 
-    val frameSize: Pair<Int, Int> = navigatorUpdated.getFrameSize()
-    val totalDiffFrames = navigatorUpdated.getSizeOfDiff()
-
     var indicatorOffset by remember { mutableStateOf(0.0f) }
+    val totalDiffFrames = navigator.getSizeOfDiff()
 
     fun jumpOffsetHandler(offset: Offset) {
         cursorOffset = offset
@@ -62,7 +60,7 @@ fun Timeline(navigator: FrameNavigation) {
     }
 
     fun getThumbnailWidth(): Float {
-        return frameSize.first.toFloat() / frameSize.second * componentHeight * 0.5f
+        return navigator.width.toFloat() / navigator.height * componentHeight * 0.5f
     }
 
     indicatorOffset = getIndicatorOffset()

@@ -50,6 +50,9 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
     var video1Bitmaps: MutableList<ImageBitmap> = mutableListOf()
     var video2Bitmaps: MutableList<ImageBitmap> = mutableListOf()
 
+    var width: Int = 0
+    var height: Int = 0
+
     var insertionBitmap: ImageBitmap
     var deletionBitmap: ImageBitmap
 
@@ -61,6 +64,9 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
         // generate the sequences for video 1 and video 2
         // diffSequence is already generated
         generateSequences()
+
+        width = grabberDiff.imageWidth
+        height = grabberDiff.imageHeight
 
         // fill the list with bitmaps
         loadVideoBitmaps(video1Grabber, video1Bitmaps)
@@ -388,10 +394,6 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
             // add the bitmap to the list
             bitmapList.add(bitmap)
         }
-    }
-
-    fun getFrameSize(): Pair<Int, Int> {
-        return Pair(grabberDiff.imageWidth, grabberDiff.imageHeight)
     }
 
     fun getImagesAtDiff(diffIndex: Int): List<ImageBitmap> {
