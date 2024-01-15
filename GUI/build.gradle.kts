@@ -33,6 +33,11 @@ dependencies {
     implementation("org.bytedeco:javacv-platform:1.5.7")
     implementation(project(path = ":DifferenceGenerator"))
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.3")
+    // for ui tests
+    @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+    testImplementation(compose("org.jetbrains.compose.ui:ui-test-junit4"))
+    testImplementation(kotlin("test-common"))
+    testImplementation(kotlin("test-annotations-common"))
 }
 
 compose.desktop {
