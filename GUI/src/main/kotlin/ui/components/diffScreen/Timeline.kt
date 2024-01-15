@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
 import ui.components.general.AutoSizeText
+import kotlin.math.min
 
 /**
  * A Composable function that creates a box to display the timeline.
@@ -29,8 +30,10 @@ import ui.components.general.AutoSizeText
 @Composable
 fun Timeline(navigator: FrameNavigation) {
     val navigatorUpdated by rememberUpdatedState(navigator)
-    // set the width of the timeline-box
-    var componentWidth by remember { mutableStateOf(0.8f) }
+    // set the width of the timelinebox
+    var componentWidth by remember { mutableStateOf(0.0f) }
+    var componentHeight by remember { mutableStateOf(0.0f) }
+
     // current percentage on the cursor as Int between 0 and 100
     val currentPercentage = (navigatorUpdated.currentRelativePosition.value * 100).toInt()
     // current x-offset of the indicator
@@ -41,10 +44,21 @@ fun Timeline(navigator: FrameNavigation) {
     var cursorOffset = Offset.Zero
 
     var stateHorizontal = rememberScrollState(0)
+    var framesPerView by remember { mutableStateOf(1) }
+
+    val frameSize: Pair<Int, Int> = navigator.getFrameSize()
 
     fun jumpPercentageHandler(offset: Offset) {
         cursorOffset = offset
         navigatorUpdated.jumpToPercentage((cursorOffset.x.toDouble() / componentWidth).coerceIn(0.0, 1.0))
+    }
+
+    fun determineFramesPerView(): Int {
+        val relativeHeightOfTimeLineRow = 0.6
+        val aspectRatioTimeline = componentWidth / (componentHeight * relativeHeightOfTimeLineRow)
+        val aspectRatioFrame = frameSize.first / frameSize.second
+        val framesPerView = (aspectRatioTimeline / aspectRatioFrame).toInt()
+        return if (framesPerView == 0) 1 else framesPerView
     }
 
     Column(
@@ -70,6 +84,10 @@ fun Timeline(navigator: FrameNavigation) {
                         val placeable = measurable.measure(constraints)
                         // Store the width
                         componentWidth = placeable.width.toFloat()
+                        componentHeight = placeable.height.toFloat()
+
+                        // compute how many frame thumbnails fit into the timeline
+                        framesPerView = determineFramesPerView()
                         layout(placeable.width, placeable.height) { placeable.placeRelative(0, 0) }
                     }
                     // handle clicks and drags on the timeline
@@ -81,13 +99,12 @@ fun Timeline(navigator: FrameNavigation) {
                         )
                     },
         ) {
-            // #### red line ####
-            DrawRedLine(currentOffset)
             // #### clickable timeline ####
             Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                TimelineThumbnails(modifier = Modifier.weight(0.5f), bitmaps = navigator.video1Bitmaps)
-                TimelineThumbnails(modifier = Modifier.weight(0.5f), bitmaps = navigator.video2Bitmaps)
+                TimelineThumbnails(modifier = Modifier.weight(0.5f), bitmaps = navigator.video1Bitmaps, nFrames = framesPerView)
+                TimelineThumbnails(modifier = Modifier.weight(0.5f), bitmaps = navigator.video2Bitmaps, nFrames = framesPerView)
             }
+            drawRedLine(currentOffset)
         }
 
         HorizontalScrollbar(
@@ -112,19 +129,22 @@ fun Timeline(navigator: FrameNavigation) {
 private fun TimelineThumbnails(
     modifier: Modifier,
     bitmaps: MutableList<ImageBitmap>,
+    nFrames: Int,
 ) {
+    val maxBoxes = min(nFrames, bitmaps.size)
     Row(
         modifier =
             modifier
                 .fillMaxWidth()
                 .border(width = 1.dp, color = Color.Black, shape = RectangleShape),
+        horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
-        for (i in 0 until bitmaps.size) {
+        for (i in 0 until maxBoxes) {
             Box(
                 modifier =
                     Modifier
                         .fillMaxHeight()
-                        .weight(1f)
+                        .weight(1 / maxBoxes.toFloat())
                         .border(width = 1.dp, color = Color.Black, shape = RectangleShape),
             ) {
                 Image(

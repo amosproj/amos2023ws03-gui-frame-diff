@@ -361,4 +361,8 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
             bitmapList.add(bitmap)
         }
     }
+
+    fun getFrameSize(): Pair<Int, Int> {
+        return Pair(grabberDiff.imageWidth, grabberDiff.imageHeight)
+    }
 }
