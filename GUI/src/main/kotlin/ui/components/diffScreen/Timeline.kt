@@ -1,16 +1,17 @@
 package ui.components.diffScreen
 
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
@@ -20,7 +21,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
 import ui.components.general.AutoSizeText
-import kotlin.math.min
+import kotlin.math.max
 
 /**
  * A Composable function that creates a box to display the timeline.
@@ -43,10 +44,11 @@ fun Timeline(navigator: FrameNavigation) {
     // width of text component to center the current percentage over the cursor
     var cursorOffset = Offset.Zero
 
-    var stateHorizontal = rememberScrollState(0)
+    val stateHorizontal = rememberLazyListState()
     var framesPerView by remember { mutableStateOf(1) }
 
     val frameSize: Pair<Int, Int> = navigator.getFrameSize()
+    val totalDiffFrames = navigator.getSizeOfDiff()
 
     fun jumpPercentageHandler(offset: Offset) {
         cursorOffset = offset
@@ -59,6 +61,10 @@ fun Timeline(navigator: FrameNavigation) {
         val aspectRatioFrame = frameSize.first / frameSize.second
         val framesPerView = (aspectRatioTimeline / aspectRatioFrame).toInt()
         return if (framesPerView == 0) 1 else framesPerView
+    }
+
+    fun determineNumSlidingWindows(): Int {
+        return max(1, totalDiffFrames - framesPerView + 1)
     }
 
     Column(
@@ -88,6 +94,7 @@ fun Timeline(navigator: FrameNavigation) {
 
                         // compute how many frame thumbnails fit into the timeline
                         framesPerView = determineFramesPerView()
+                        // stateHorizontal.maxValue = determineNumSlidingWindows() - 1
                         layout(placeable.width, placeable.height) { placeable.placeRelative(0, 0) }
                     }
                     // handle clicks and drags on the timeline
@@ -100,27 +107,22 @@ fun Timeline(navigator: FrameNavigation) {
                     },
         ) {
             // #### clickable timeline ####
-            Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                TimelineThumbnails(modifier = Modifier.weight(0.5f), bitmaps = navigator.video1Bitmaps, nFrames = framesPerView)
-                TimelineThumbnails(modifier = Modifier.weight(0.5f), bitmaps = navigator.video2Bitmaps, nFrames = framesPerView)
-            }
+            TimelineThumbnails(
+                modifier = Modifier,
+                navigator = navigator,
+                nFrames = totalDiffFrames,
+                scrollState = stateHorizontal,
+            )
             drawRedLine(currentOffset)
         }
 
         HorizontalScrollbar(
-            modifier = Modifier.fillMaxWidth(0.8f).padding(top = 5.dp).border(width = 1.dp, color = Color.LightGray, shape = CircleShape),
-            adapter = rememberScrollbarAdapter(stateHorizontal),
-            style =
-                ScrollbarStyle(
-                    // width of the scrollbar (horizontal scrollbar)
-                    minimalHeight = 80.dp,
-                    // height of the scrollbar (horizontal scrollbar)
-                    thickness = 15.dp,
-                    shape = CircleShape,
-                    hoverDurationMillis = 0,
-                    hoverColor = Color.LightGray,
-                    unhoverColor = Color.LightGray,
-                ),
+            modifier =
+                Modifier
+                    .fillMaxWidth(0.8f)
+                    .padding(top = 5.dp)
+                    .border(width = 1.dp, color = Color.LightGray, shape = CircleShape),
+            adapter = rememberScrollbarAdapter(scrollState = stateHorizontal),
         )
     }
 }
@@ -128,32 +130,45 @@ fun Timeline(navigator: FrameNavigation) {
 @Composable
 private fun TimelineThumbnails(
     modifier: Modifier,
-    bitmaps: MutableList<ImageBitmap>,
+    navigator: FrameNavigation,
     nFrames: Int,
+    scrollState: LazyListState,
 ) {
-    val maxBoxes = min(nFrames, bitmaps.size)
-    Row(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .border(width = 1.dp, color = Color.Black, shape = RectangleShape),
+    println(scrollState.firstVisibleItemIndex)
+    println(scrollState.firstVisibleItemScrollOffset)
+    LazyRow(
+        state = scrollState,
+        modifier = modifier.fillMaxSize(),
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
-        for (i in 0 until maxBoxes) {
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxHeight()
-                        .weight(1 / maxBoxes.toFloat())
-                        .border(width = 1.dp, color = Color.Black, shape = RectangleShape),
-            ) {
-                Image(
-                    bitmap = bitmaps[i],
-                    contentDescription = null,
+        items(nFrames) { i ->
+            val images = navigator.getImagesAtDiff(i)
+            Column(modifier = Modifier) {
+                Box(
                     modifier =
                         Modifier
-                            .fillMaxSize(),
-                )
+                            .weight(0.5f)
+                            .border(width = 1.dp, color = Color.Black, shape = RectangleShape),
+                ) {
+                    Image(
+                        bitmap = images[0],
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxHeight(),
+                    )
+                }
+
+                Box(
+                    modifier =
+                        Modifier
+                            .weight(0.5f)
+                            .border(width = 1.dp, color = Color.Black, shape = RectangleShape),
+                ) {
+                    Image(
+                        bitmap = images[1],
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxHeight(),
+                    )
+                }
             }
         }
     }

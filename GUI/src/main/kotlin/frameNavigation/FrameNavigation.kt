@@ -49,6 +49,9 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
     var video1Bitmaps: MutableList<ImageBitmap> = mutableListOf()
     var video2Bitmaps: MutableList<ImageBitmap> = mutableListOf()
 
+    var insertionBitmap: ImageBitmap
+    var deletionBitmap: ImageBitmap
+
     init {
         // start the grabbers
         video1Grabber.start()
@@ -61,6 +64,22 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
         // fill the list with bitmaps
         loadVideoBitmaps(video1Grabber, video1Bitmaps)
         loadVideoBitmaps(video2Grabber, video2Bitmaps)
+
+        insertionBitmap =
+            BufferedImage(video1Grabber.imageWidth, video1Grabber.imageHeight, BufferedImage.TYPE_INT_RGB).apply {
+                createGraphics().apply {
+                    color = Color.GREEN
+                    fillRect(0, 0, video1Grabber.imageWidth, video1Grabber.imageHeight)
+                }
+            }.toComposeImageBitmap()
+
+        deletionBitmap =
+            BufferedImage(video1Grabber.imageWidth, video1Grabber.imageHeight, BufferedImage.TYPE_INT_RGB).apply {
+                createGraphics().apply {
+                    color = Color.BLUE
+                    fillRect(0, 0, video1Grabber.imageWidth, video1Grabber.imageHeight)
+                }
+            }.toComposeImageBitmap()
 
         // jump to the first frame
         jumpToFrame()
@@ -80,37 +99,37 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
 
     /**
      * Generate the sequences for video 1 and video 2.
+     *
+     * If there is no image for one of the sequences (because of insertions/deletions),
+     * the index will be -1. This has to be handled when accessing a certain position in the alignment.
      */
     private fun generateSequences() {
-        // init with -1 to account for deletions/insertions on the first frame
-        video1Frames.add(-1)
-        video2Frames.add(-1)
+        // running indices for both videos
+        var video1Index = 0
+        var video2Index = 0
         for (i in diffSequence) {
             when (i) {
                 AlignmentElement.MATCH -> {
-                    video1Frames.add(video1Frames.last() + 1)
-                    video2Frames.add(video2Frames.last() + 1)
+                    video1Frames.add(video1Index++)
+                    video2Frames.add(video2Index++)
                 }
 
                 AlignmentElement.INSERTION -> {
-                    video1Frames.add(video1Frames.last())
-                    video2Frames.add(video2Frames.last() + 1)
+                    video1Frames.add(-1)
+                    video2Frames.add(video2Index++)
                 }
 
                 AlignmentElement.DELETION -> {
-                    video1Frames.add(video1Frames.last() + 1)
-                    video2Frames.add(video2Frames.last())
+                    video1Frames.add(video1Index++)
+                    video2Frames.add(-1)
                 }
 
                 AlignmentElement.PERFECT -> {
-                    video1Frames.add(video1Frames.last() + 1)
-                    video2Frames.add(video2Frames.last() + 1)
+                    video1Frames.add(video1Index++)
+                    video2Frames.add(video2Index++)
                 }
             }
         }
-        // remove the initial -1
-        video1Frames.removeAt(0)
-        video2Frames.removeAt(0)
     }
 
     /**
@@ -177,11 +196,18 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
                 goal = coercedIndex
 
                 // update the bitmaps
-                video1Grabber.setVideoFrameNumber(video1Frames[goal])
-                b1 = getBitmap(video1Grabber)
-
-                video2Grabber.setVideoFrameNumber(video2Frames[goal])
-                b2 = getBitmap(video2Grabber)
+                if (video1Frames[goal] != -1) {
+                    video1Grabber.setVideoFrameNumber(video1Frames[goal])
+                    b1 = getBitmap(video1Grabber)
+                } else {
+                    b1 = insertionBitmap
+                }
+                if (video2Frames[goal] != -1) {
+                    video2Grabber.setVideoFrameNumber(video2Frames[goal])
+                    b2 = getBitmap(video2Grabber)
+                } else {
+                    b2 = deletionBitmap
+                }
 
                 grabberDiff.setVideoFrameNumber(goal)
                 b3 = getBitmap(grabberDiff)
@@ -364,5 +390,13 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
 
     fun getFrameSize(): Pair<Int, Int> {
         return Pair(grabberDiff.imageWidth, grabberDiff.imageHeight)
+    }
+
+    fun getImagesAtDiff(diffIndex: Int): List<ImageBitmap> {
+        val video1Index = video1Frames[diffIndex]
+        val video2Index = video2Frames[diffIndex]
+        val video1Bitmap = if (video1Index == -1) insertionBitmap else video1Bitmaps[video1Index]
+        val video2Bitmap = if (video2Index == -1) deletionBitmap else video2Bitmaps[video2Index]
+        return listOf(video1Bitmap, video2Bitmap)
     }
 }
