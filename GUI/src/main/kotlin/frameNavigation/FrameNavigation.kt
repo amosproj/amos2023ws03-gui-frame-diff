@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.toComposeImageBitmap
 import kotlinx.coroutines.*
 import models.AppState
 import org.bytedeco.javacv.FFmpegFrameGrabber
+import util.ColoredFrameGenerator
 import wrappers.Resettable2DFrameConverter
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -47,14 +48,14 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
     var currentRelativePosition: MutableState<Double> = mutableStateOf(0.0)
 
     // containing the bitmaps of video
-    var video1Bitmaps: MutableList<ImageBitmap> = mutableListOf()
-    var video2Bitmaps: MutableList<ImageBitmap> = mutableListOf()
+    private var video1Bitmaps: MutableList<ImageBitmap> = mutableListOf()
+    private var video2Bitmaps: MutableList<ImageBitmap> = mutableListOf()
 
     var width: Int = 0
     var height: Int = 0
 
-    var insertionBitmap: ImageBitmap
-    var deletionBitmap: ImageBitmap
+    private var insertionBitmap: ImageBitmap
+    private var deletionBitmap: ImageBitmap
 
     init {
         // start the grabbers
@@ -72,21 +73,9 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
         loadVideoBitmaps(video1Grabber, video1Bitmaps)
         loadVideoBitmaps(video2Grabber, video2Bitmaps)
 
-        insertionBitmap =
-            BufferedImage(video1Grabber.imageWidth, video1Grabber.imageHeight, BufferedImage.TYPE_INT_RGB).apply {
-                createGraphics().apply {
-                    color = Color.GREEN
-                    fillRect(0, 0, video1Grabber.imageWidth, video1Grabber.imageHeight)
-                }
-            }.toComposeImageBitmap()
-
-        deletionBitmap =
-            BufferedImage(video1Grabber.imageWidth, video1Grabber.imageHeight, BufferedImage.TYPE_INT_RGB).apply {
-                createGraphics().apply {
-                    color = Color.BLUE
-                    fillRect(0, 0, video1Grabber.imageWidth, video1Grabber.imageHeight)
-                }
-            }.toComposeImageBitmap()
+        val coloredFrameGenerator = ColoredFrameGenerator(width, height)
+        insertionBitmap = coloredFrameGenerator.getColoredBufferedImage(Color.GREEN).toComposeImageBitmap()
+        deletionBitmap = coloredFrameGenerator.getColoredBufferedImage(Color.BLUE).toComposeImageBitmap()
 
         // jump to the first frame
         jumpToFrame()
