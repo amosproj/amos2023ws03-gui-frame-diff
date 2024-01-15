@@ -121,6 +121,12 @@ fun Timeline(navigator: FrameNavigation) {
                     .padding(top = 5.dp)
                     .border(width = 1.dp, color = Color.LightGray, shape = CircleShape),
             adapter = rememberScrollbarAdapter(scrollState = scrollState),
+            style =
+                LocalScrollbarStyle.current.copy(
+                    hoverDurationMillis = 500,
+                    unhoverColor = Color.LightGray,
+                    hoverColor = Color.White,
+                ),
         )
     }
 }
