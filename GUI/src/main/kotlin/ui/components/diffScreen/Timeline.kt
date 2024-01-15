@@ -15,7 +15,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
 import ui.components.general.AutoSizeText
@@ -52,32 +51,32 @@ fun Timeline(navigator: FrameNavigation) {
         navigatorUpdated.jumpToFrame()
     }
 
-    fun getIndicatorOffset(): Float {
-        return (
-            (navigatorUpdated.currentDiffIndex.value - scrollState.firstVisibleItemIndex) *
-                thumbnailWidth + thumbnailWidth / 2 - scrollState.firstVisibleItemScrollOffset
-        )
-    }
-
     fun getThumbnailWidth(): Float {
         return navigator.width.toFloat() / navigator.height * componentHeight * 0.5f
     }
 
-    indicatorOffset = getIndicatorOffset()
+    indicatorOffset = getCenteredThumbnailOffset(scrollState, navigatorUpdated.currentDiffIndex.value, thumbnailWidth)
+
+    // set the modifier applied to all timeline components
+    val generalModifier = Modifier.fillMaxWidth(0.8f)
 
     Column(
         modifier = Modifier.background(color = Color.Gray).fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // #### timeline labeling ####
+        TimelineTopLabels(
+            scrollState,
+            thumbnailWidth,
+            componentWidth,
+            modifier = generalModifier.fillMaxHeight(0.15f),
+        )
 
         // #### timeline box ####
         Box(
             modifier =
-                Modifier
-                    .background(color = Color.LightGray)
-                    .fillMaxWidth(0.8f)
-                    .height(200.dp)
+                generalModifier
+                    .fillMaxHeight(0.75f)
                     .weight(1f)
                     .border(
                         width = 2.dp,
@@ -110,14 +109,14 @@ fun Timeline(navigator: FrameNavigation) {
                 scrollState = scrollState,
             )
             if (indicatorOffset > 0 && indicatorOffset < componentWidth) {
-                DrawRedLine(indicatorOffset)
+                PositionIndicator(indicatorOffset)
             }
         }
 
         HorizontalScrollbar(
             modifier =
-                Modifier
-                    .fillMaxWidth(0.8f)
+                generalModifier
+                    .fillMaxHeight(0.1f)
                     .padding(top = 5.dp)
                     .border(width = 1.dp, color = Color.LightGray, shape = CircleShape),
             adapter = rememberScrollbarAdapter(scrollState = scrollState),
@@ -126,9 +125,21 @@ fun Timeline(navigator: FrameNavigation) {
                     hoverDurationMillis = 500,
                     unhoverColor = Color.LightGray,
                     hoverColor = Color.White,
+                    shape = CircleShape,
                 ),
         )
     }
+}
+
+fun getCenteredThumbnailOffset(
+    scrollState: LazyListState,
+    thumbnailIndex: Int,
+    thumbnailWidth: Float,
+): Float {
+    return (
+        (thumbnailIndex - scrollState.firstVisibleItemIndex) *
+            thumbnailWidth + thumbnailWidth / 2 - scrollState.firstVisibleItemScrollOffset
+    )
 }
 
 @Composable
@@ -165,13 +176,8 @@ private fun TimelineThumbnails(
     }
 }
 
-/**
- * A Composable function that draws a red line on the timeline.
- * @param currentOffset [Float] containing the current x-offset of the indicator.
- * @return [Unit]
- */
 @Composable
-private fun DrawRedLine(offset: Float) {
+private fun PositionIndicator(offset: Float) {
     Canvas(modifier = Modifier.fillMaxSize()) {
         drawLine(
             start = Offset(offset, 0f),
@@ -182,38 +188,52 @@ private fun DrawRedLine(offset: Float) {
     }
 }
 
-/**
- * A Composable function that creates labels for the timeline.
- * @param currentPercentage [Int] containing the current percentage on the cursor as Int between 0 and 100.
- * @param currentOffsetDp [Dp] containing the current x-offset of the indicator as dp to show current percentage.
- * @param navigator [FrameNavigation] containing the navigator.
- * @return [Unit]
- */
 @Composable
 private fun TimelineTopLabels(
-    currentPercentage: Int,
-    currentOffsetDp: Dp,
-    navigator: FrameNavigation,
+    scrollState: LazyListState,
+    thumbnailWidth: Float,
+    componentWidth: Float,
+    modifier: Modifier,
 ) {
     var textWidth by remember { mutableStateOf(0f) }
+    var textHeight by remember { mutableStateOf(0f) }
+
     // Labels Container
-    Box(
-        modifier = Modifier.fillMaxWidth(0.8f).fillMaxHeight(0.2f),
-    ) {
-        // Starting Label
-        AlignedSizedText("0", Alignment.CenterStart, 2.dp)
-        // Current Percentage Label
-        AlignedSizedText(
-            text = "$currentPercentage%",
-            alignment = Alignment.TopStart,
-            padding = 2.dp,
-            modifier =
-                Modifier.onGloballyPositioned { coordinates ->
-                    textWidth = coordinates.size.width.toFloat()
-                }.offset(x = (currentOffsetDp - (textWidth / 3).dp)),
-        )
-        // Ending Label
-        AlignedSizedText("${navigator.getSizeOfDiff()}", Alignment.CenterEnd, 2.dp)
+    Box(modifier = modifier) {
+        val lastVisibleIndex = scrollState.firstVisibleItemIndex + scrollState.layoutInfo.visibleItemsInfo.size
+
+        // thumbnail labels with ticks over thumbnail centers
+        for (i in scrollState.firstVisibleItemIndex..lastVisibleIndex) {
+            val offset = getCenteredThumbnailOffset(scrollState, i, thumbnailWidth)
+
+            // don't draw a label if thumbnail center outside of timeline
+            if (offset < 0 || offset > componentWidth) {
+                continue
+            }
+
+            // draw label with diff index
+            AlignedSizedText(
+                text = i.toString(),
+                modifier =
+                    Modifier
+                        .onGloballyPositioned { coordinates ->
+                            textWidth = coordinates.size.width.toFloat()
+                            textHeight = coordinates.size.height.toFloat()
+                        }
+                        .offset(x = (offset - textWidth / 2).dp)
+                        .align(Alignment.TopStart),
+            )
+
+            // draw a tick for the text
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                drawLine(
+                    start = Offset(offset, textHeight),
+                    end = Offset(offset, size.height),
+                    color = Color.Black,
+                    strokeWidth = 1f,
+                )
+            }
+        }
     }
 }
 
@@ -226,15 +246,13 @@ private fun TimelineTopLabels(
  * @return [Unit]
  */
 @Composable
-fun BoxScope.AlignedSizedText(
+fun AlignedSizedText(
     text: String,
-    alignment: Alignment,
-    padding: Dp = 0.dp,
     modifier: Modifier = Modifier,
 ) {
     AutoSizeText(
         text = text,
         color = Color.Black,
-        modifier = modifier.align(alignment).padding(padding),
+        modifier = modifier,
     )
 }
