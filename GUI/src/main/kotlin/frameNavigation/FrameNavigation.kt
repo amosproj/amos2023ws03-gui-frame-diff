@@ -201,7 +201,7 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
      * @return [Int] containing the number of frames in the first video.
      */
     fun getSizeOfVideo1(): Int {
-        return video1Frames.size
+        return video1Grabber.lengthInFrames
     }
 
     /**
@@ -209,7 +209,7 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
      * @return [Int] containing the number of frames in the second video.
      */
     fun getSizeOfVideo2(): Int {
-        return video2Frames.size
+        return video2Grabber.lengthInFrames
     }
 
     /**
