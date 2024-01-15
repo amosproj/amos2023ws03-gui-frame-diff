@@ -29,8 +29,8 @@ import ui.components.general.AutoSizeText
 class ThumbnailCache(val maxCacheSize: Int, val getImages: (Int) -> List<ImageBitmap>) {
     private val cache = mutableMapOf<Int, List<ImageBitmap>>()
 
-    // queue of diff indices ordered by most recently used
-    private val usageQueue = mutableListOf<Int>()
+    // kind of a queue of diff indices ordered by most recently used
+    private val recentlyUsed = mutableListOf<Int>()
 
     /**
      * Returns the thumbnails for a given diff index.
@@ -41,18 +41,18 @@ class ThumbnailCache(val maxCacheSize: Int, val getImages: (Int) -> List<ImageBi
      * @return [List]<[ImageBitmap]> containing the thumbnails for the given diff index.
      */
     fun get(index: Int): List<ImageBitmap> {
-        usageQueue.remove(index)
+        recentlyUsed.remove(index)
 
         if (!cache.containsKey(index)) {
             cache[index] = getImages(index)
         }
 
         // if the queue is full, remove the least recently used item
-        if (usageQueue.size >= maxCacheSize) {
-            cache.remove(usageQueue.removeAt(0))
+        if (recentlyUsed.size >= maxCacheSize) {
+            cache.remove(recentlyUsed.removeAt(0))
         }
 
-        usageQueue.add(index)
+        recentlyUsed.add(index)
         return cache[index]!!
     }
 }
