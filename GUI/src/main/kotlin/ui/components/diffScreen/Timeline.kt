@@ -290,7 +290,7 @@ private fun TimelineTopLabels(
 
     // Labels Container
     Box(modifier = modifier) {
-        val lastVisibleIndex = scrollState.firstVisibleItemIndex + scrollState.layoutInfo.visibleItemsInfo.size
+        val lastVisibleIndex = scrollState.firstVisibleItemIndex + scrollState.layoutInfo.visibleItemsInfo.size - 1
 
         // thumbnail labels with ticks over thumbnail centers
         for (i in scrollState.firstVisibleItemIndex..lastVisibleIndex) {
