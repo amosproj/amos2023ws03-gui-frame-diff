@@ -21,20 +21,23 @@ import ui.components.general.AutoSizeText
 
 /**
  * A Composable function that creates a box to display the timeline.
- * @param navigator [FrameNavigation] containing the navigator.
+ * @param navigator [FrameNavigation] containing the navigation logic.
  * @return [Unit]
  */
 @Composable
 fun Timeline(navigator: FrameNavigation) {
     val navigatorUpdated by rememberUpdatedState(navigator)
-    // set the width of the timelinebox
+    // set the width of the timeline box
     var componentWidth by remember { mutableStateOf(0.0f) }
     var componentHeight by remember { mutableStateOf(0.0f) }
 
     // width of text component to center the current percentage over the cursor
     var cursorOffset = Offset.Zero
 
+    // scroll state of the timeline
     val scrollState = rememberLazyListState()
+
+    // display width of a single thumbnail in the timeline (2 thumbnails are stacked)
     var thumbnailWidth by remember { mutableStateOf(0.0f) }
 
     var indicatorOffset by remember { mutableStateOf(0.0f) }
@@ -131,6 +134,14 @@ fun Timeline(navigator: FrameNavigation) {
     }
 }
 
+/**
+ * Calculates the offset of the thumbnail center from the left side of the timeline.
+ *
+ * @param scrollState [LazyListState] containing the scroll state of the timeline.
+ * @param thumbnailIndex [Int] containing the index of the thumbnail in the diff sequence.
+ * @param thumbnailWidth [Float] containing the width of all thumbnails.
+ * @return [Float] containing the offset of the thumbnail center from the left side of the timeline.
+ */
 fun getCenteredThumbnailOffset(
     scrollState: LazyListState,
     thumbnailIndex: Int,
@@ -142,6 +153,17 @@ fun getCenteredThumbnailOffset(
     )
 }
 
+/**
+ * A [LazyRow] that displays the thumbnails of the aligned input videos.
+ *
+ * Thumbnails are only loaded when they are visible.
+ *
+ * @param modifier [Modifier] to apply to the [LazyRow].
+ * @param navigator [FrameNavigation] object that contains the navigation logic.
+ * @param nFrames [Int] The number of frames in the diff sequence.
+ * @param scrollState [LazyListState] containing the scroll state of the timeline.
+ * @return [Unit]
+ */
 @Composable
 private fun TimelineThumbnails(
     modifier: Modifier,
@@ -176,6 +198,12 @@ private fun TimelineThumbnails(
     }
 }
 
+/**
+ * A vertical line that indicates the current position in the timeline.
+ *
+ * @param offset [Float] The offset of the line from the left side of the timeline.
+ * @return [Unit]
+ */
 @Composable
 private fun PositionIndicator(offset: Float) {
     Canvas(modifier = Modifier.fillMaxSize()) {
@@ -188,6 +216,15 @@ private fun PositionIndicator(offset: Float) {
     }
 }
 
+/**
+ * Labels that are drawn above the center points of timeline thumbnails.
+ *
+ * @param scrollState [LazyListState] containing the scroll state of the timeline.
+ * @param thumbnailWidth [Float] containing the width of all thumbnails.
+ * @param componentWidth [Float] containing the width of the timeline component.
+ * @param modifier [Modifier] to apply to the element.
+ * @return [Unit]
+ */
 @Composable
 private fun TimelineTopLabels(
     scrollState: LazyListState,

@@ -62,6 +62,7 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
         video1Grabber.start()
         video2Grabber.start()
         grabberDiff.start()
+
         // generate the sequences for video 1 and video 2
         // diffSequence is already generated
         generateSequences()
@@ -385,6 +386,14 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
         }
     }
 
+    /**
+     * Get the images at a certain diff index.
+     *
+     * If the index is an insertion or deletion, the corresponding bitmap will be returned.
+     *
+     * @param diffIndex [Int] containing the index of the diff.
+     * @return [List]<[ImageBitmap]> containing the bitmaps of the images.
+     */
     fun getImagesAtDiff(diffIndex: Int): List<ImageBitmap> {
         val video1Index = video1Frames[diffIndex]
         val video2Index = video2Frames[diffIndex]
