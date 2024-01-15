@@ -47,10 +47,6 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
     // 0.0 means the first frame, 1.0 means the last frame
     var currentRelativePosition: MutableState<Double> = mutableStateOf(0.0)
 
-    // containing the bitmaps of video
-    private var video1Bitmaps: MutableList<ImageBitmap> = mutableListOf()
-    private var video2Bitmaps: MutableList<ImageBitmap> = mutableListOf()
-
     var width: Int = 0
     var height: Int = 0
 
@@ -69,10 +65,6 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
 
         width = grabberDiff.imageWidth
         height = grabberDiff.imageHeight
-
-        // fill the list with bitmaps
-        loadVideoBitmaps(video1Grabber, video1Bitmaps)
-        loadVideoBitmaps(video2Grabber, video2Bitmaps)
 
         val coloredFrameGenerator = ColoredFrameGenerator(width, height)
         insertionBitmap = coloredFrameGenerator.getColoredBufferedImage(Color.GREEN).toComposeImageBitmap()
@@ -362,31 +354,6 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
     }
 
     /**
-     * Creates a collage of the 3 videos and saves it to a file.
-     * @param grabber [FFmpegFrameGrabber] containing the grabber to get the bitmap from.
-     * @param bitmapList [MutableList]<[ImageBitmap]> containing the bitmaps of video.
-     */
-    private fun loadVideoBitmaps(
-        grabber: FFmpegFrameGrabber,
-        bitmapList: MutableList<ImageBitmap>,
-    ) {
-        // set the number of frames
-        val numFrames = grabber.lengthInFrames
-
-        // loop through each frame
-        for (i in 0 until numFrames) {
-            // set the current frame
-            grabber.setVideoFrameNumber(i)
-
-            // get the bitmap for this frame
-            val bitmap = getBitmap(grabber)
-
-            // add the bitmap to the list
-            bitmapList.add(bitmap)
-        }
-    }
-
-    /**
      * Get the images at a certain diff index.
      *
      * If the index is an insertion or deletion, the corresponding bitmap will be returned.
@@ -397,8 +364,20 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
     fun getImagesAtDiff(diffIndex: Int): List<ImageBitmap> {
         val video1Index = video1Frames[diffIndex]
         val video2Index = video2Frames[diffIndex]
-        val video1Bitmap = if (video1Index == -1) insertionBitmap else video1Bitmaps[video1Index]
-        val video2Bitmap = if (video2Index == -1) deletionBitmap else video2Bitmaps[video2Index]
+        val video1Bitmap =
+            if (video1Index == -1) {
+                insertionBitmap
+            } else {
+                video1Grabber.setVideoFrameNumber(video1Index)
+                getBitmap(video1Grabber)
+            }
+        val video2Bitmap =
+            if (video2Index == -1) {
+                deletionBitmap
+            } else {
+                video1Grabber.setVideoFrameNumber(video2Index)
+                getBitmap(video1Grabber)
+            }
         return listOf(video1Bitmap, video2Bitmap)
     }
 }

@@ -12,12 +12,49 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
 import ui.components.general.AutoSizeText
+
+/**
+ * A class that caches thumbnails for the timeline.
+ *
+ * @param getImages A function that returns the thumbnails for a given diff index.
+ */
+class ThumbnailCache(val maxCacheSize: Int, val getImages: (Int) -> List<ImageBitmap>) {
+    private val cache = mutableMapOf<Int, List<ImageBitmap>>()
+
+    // queue of diff indices ordered by most recently used
+    private val usageQueue = mutableListOf<Int>()
+
+    /**
+     * Returns the thumbnails for a given diff index.
+     *
+     * If the thumbnails are not already cached, they are loaded via the `getImages` function and cached.
+     *
+     * @param index [Int] containing the index of the diff.
+     * @return [List]<[ImageBitmap]> containing the thumbnails for the given diff index.
+     */
+    fun get(index: Int): List<ImageBitmap> {
+        usageQueue.remove(index)
+
+        if (!cache.containsKey(index)) {
+            cache[index] = getImages(index)
+        }
+
+        // if the queue is full, remove the least recently used item
+        if (usageQueue.size >= maxCacheSize) {
+            cache.remove(usageQueue.removeAt(0))
+        }
+
+        usageQueue.add(index)
+        return cache[index]!!
+    }
+}
 
 /**
  * A Composable function that creates a box to display the timeline.
@@ -36,6 +73,9 @@ fun Timeline(navigator: FrameNavigation) {
 
     // scroll state of the timeline
     val scrollState = rememberLazyListState()
+
+    // thumbnail cache
+    val thumbnailCache = remember { ThumbnailCache(maxCacheSize = 30, navigatorUpdated::getImagesAtDiff) }
 
     // display width of a single thumbnail in the timeline (2 thumbnails are stacked)
     var thumbnailWidth by remember { mutableStateOf(0.0f) }
@@ -107,7 +147,7 @@ fun Timeline(navigator: FrameNavigation) {
             // #### clickable timeline ####
             TimelineThumbnails(
                 modifier = Modifier,
-                navigator = navigatorUpdated,
+                thumbnailCache = thumbnailCache,
                 nFrames = totalDiffFrames,
                 scrollState = scrollState,
             )
@@ -167,7 +207,7 @@ fun getCenteredThumbnailOffset(
 @Composable
 private fun TimelineThumbnails(
     modifier: Modifier,
-    navigator: FrameNavigation,
+    thumbnailCache: ThumbnailCache,
     nFrames: Int,
     scrollState: LazyListState,
 ) {
@@ -176,7 +216,7 @@ private fun TimelineThumbnails(
         modifier = modifier.fillMaxSize(),
     ) {
         items(nFrames) { i ->
-            val images = navigator.getImagesAtDiff(i)
+            val images = thumbnailCache.get(i)
             Column {
                 Box(modifier = Modifier.weight(0.5f)) {
                     Image(
