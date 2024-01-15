@@ -39,6 +39,7 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
 
     // state variables for the current frame index
     var currentIndex: Int = 0
+    var currentDiffIndex: MutableState<Int> = mutableStateOf(0)
     var jumpLock = false
 
     // holds the relative position of the current frame in the diff video
@@ -222,6 +223,7 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
                 diffBitmap.value = b3!!
             }
             currentIndex = coercedIndex
+            currentDiffIndex.value = currentIndex
             jumpLock = false
         }
     }

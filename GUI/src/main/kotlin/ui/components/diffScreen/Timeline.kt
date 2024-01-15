@@ -12,16 +12,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
 import ui.components.general.AutoSizeText
-import kotlin.math.max
 
 /**
  * A Composable function that creates a box to display the timeline.
@@ -35,44 +32,47 @@ fun Timeline(navigator: FrameNavigation) {
     var componentWidth by remember { mutableStateOf(0.0f) }
     var componentHeight by remember { mutableStateOf(0.0f) }
 
-    // current percentage on the cursor as Int between 0 and 100
-    val currentPercentage = (navigatorUpdated.currentRelativePosition.value * 100).toInt()
-    // current x-offset of the indicator
-    val currentOffset = (navigatorUpdated.currentRelativePosition.value * componentWidth).toFloat()
-    // current x-offset of the indicator as dp to show current percentage
-    val currentOffsetDp = with(LocalDensity.current) { currentOffset.toDp() }
     // width of text component to center the current percentage over the cursor
     var cursorOffset = Offset.Zero
 
-    val stateHorizontal = rememberLazyListState()
-    var framesPerView by remember { mutableStateOf(1) }
+    val scrollState = rememberLazyListState()
+    var thumbnailWidth by remember { mutableStateOf(0.0f) }
 
-    val frameSize: Pair<Int, Int> = navigator.getFrameSize()
-    val totalDiffFrames = navigator.getSizeOfDiff()
+    val frameSize: Pair<Int, Int> = navigatorUpdated.getFrameSize()
+    val totalDiffFrames = navigatorUpdated.getSizeOfDiff()
 
-    fun jumpPercentageHandler(offset: Offset) {
+    var indicatorOffset by remember { mutableStateOf(0.0f) }
+
+    fun jumpOffsetHandler(offset: Offset) {
         cursorOffset = offset
-        navigatorUpdated.jumpToPercentage((cursorOffset.x.toDouble() / componentWidth).coerceIn(0.0, 1.0))
+        val clickedFrame =
+            (
+                (offset.x + scrollState.firstVisibleItemScrollOffset) / thumbnailWidth
+            ).toInt() + scrollState.firstVisibleItemIndex
+        navigatorUpdated.currentIndex = clickedFrame
+        navigatorUpdated.currentDiffIndex.value = clickedFrame
+        navigatorUpdated.jumpToFrame()
     }
 
-    fun determineFramesPerView(): Int {
-        val relativeHeightOfTimeLineRow = 0.6
-        val aspectRatioTimeline = componentWidth / (componentHeight * relativeHeightOfTimeLineRow)
-        val aspectRatioFrame = frameSize.first / frameSize.second
-        val framesPerView = (aspectRatioTimeline / aspectRatioFrame).toInt()
-        return if (framesPerView == 0) 1 else framesPerView
+    fun getIndicatorOffset(): Float {
+        return (
+            (navigatorUpdated.currentDiffIndex.value - scrollState.firstVisibleItemIndex) *
+                thumbnailWidth + thumbnailWidth / 2 - scrollState.firstVisibleItemScrollOffset
+        )
     }
 
-    fun determineNumSlidingWindows(): Int {
-        return max(1, totalDiffFrames - framesPerView + 1)
+    fun getThumbnailWidth(): Float {
+        return frameSize.first.toFloat() / frameSize.second * componentHeight * 0.5f
     }
+
+    indicatorOffset = getIndicatorOffset()
 
     Column(
         modifier = Modifier.background(color = Color.Gray).fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // #### timeline labeling ####
-        TimelineTopLabels(currentPercentage, currentOffsetDp, navigatorUpdated)
+
         // #### timeline box ####
         Box(
             modifier =
@@ -92,28 +92,28 @@ fun Timeline(navigator: FrameNavigation) {
                         componentWidth = placeable.width.toFloat()
                         componentHeight = placeable.height.toFloat()
 
-                        // compute how many frame thumbnails fit into the timeline
-                        framesPerView = determineFramesPerView()
-                        // stateHorizontal.maxValue = determineNumSlidingWindows() - 1
+                        thumbnailWidth = getThumbnailWidth()
                         layout(placeable.width, placeable.height) { placeable.placeRelative(0, 0) }
                     }
                     // handle clicks and drags on the timeline
-                    .pointerInput(Unit) { detectTapGestures { offset -> jumpPercentageHandler(offset) } }
+                    .pointerInput(Unit) { detectTapGestures { offset -> jumpOffsetHandler(offset) } }
                     .pointerInput(Unit) {
                         detectDragGestures(
-                            onDragStart = { offset -> jumpPercentageHandler(offset) },
-                            onDrag = { _, dragAmount -> jumpPercentageHandler(cursorOffset + dragAmount) },
+                            onDragStart = { offset -> jumpOffsetHandler(offset) },
+                            onDrag = { _, dragAmount -> jumpOffsetHandler(cursorOffset + dragAmount) },
                         )
                     },
         ) {
             // #### clickable timeline ####
             TimelineThumbnails(
                 modifier = Modifier,
-                navigator = navigator,
+                navigator = navigatorUpdated,
                 nFrames = totalDiffFrames,
-                scrollState = stateHorizontal,
+                scrollState = scrollState,
             )
-            drawRedLine(currentOffset)
+            if (indicatorOffset > 0 && indicatorOffset < componentWidth) {
+                DrawRedLine(indicatorOffset)
+            }
         }
 
         HorizontalScrollbar(
@@ -122,7 +122,7 @@ fun Timeline(navigator: FrameNavigation) {
                     .fillMaxWidth(0.8f)
                     .padding(top = 5.dp)
                     .border(width = 1.dp, color = Color.LightGray, shape = CircleShape),
-            adapter = rememberScrollbarAdapter(scrollState = stateHorizontal),
+            adapter = rememberScrollbarAdapter(scrollState = scrollState),
         )
     }
 }
@@ -134,22 +134,14 @@ private fun TimelineThumbnails(
     nFrames: Int,
     scrollState: LazyListState,
 ) {
-    println(scrollState.firstVisibleItemIndex)
-    println(scrollState.firstVisibleItemScrollOffset)
     LazyRow(
         state = scrollState,
         modifier = modifier.fillMaxSize(),
-        horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
         items(nFrames) { i ->
             val images = navigator.getImagesAtDiff(i)
-            Column(modifier = Modifier) {
-                Box(
-                    modifier =
-                        Modifier
-                            .weight(0.5f)
-                            .border(width = 1.dp, color = Color.Black, shape = RectangleShape),
-                ) {
+            Column {
+                Box(modifier = Modifier.weight(0.5f)) {
                     Image(
                         bitmap = images[0],
                         contentDescription = null,
@@ -157,12 +149,7 @@ private fun TimelineThumbnails(
                     )
                 }
 
-                Box(
-                    modifier =
-                        Modifier
-                            .weight(0.5f)
-                            .border(width = 1.dp, color = Color.Black, shape = RectangleShape),
-                ) {
+                Box(modifier = Modifier.weight(0.5f)) {
                     Image(
                         bitmap = images[1],
                         contentDescription = null,
@@ -180,11 +167,11 @@ private fun TimelineThumbnails(
  * @return [Unit]
  */
 @Composable
-private fun DrawRedLine(currentOffset: Float) {
+private fun DrawRedLine(offset: Float) {
     Canvas(modifier = Modifier.fillMaxSize()) {
         drawLine(
-            start = Offset(currentOffset, 0f),
-            end = Offset(currentOffset, size.height),
+            start = Offset(offset, 0f),
+            end = Offset(offset, size.height),
             color = Color.Red,
             strokeWidth = 6f,
         )
