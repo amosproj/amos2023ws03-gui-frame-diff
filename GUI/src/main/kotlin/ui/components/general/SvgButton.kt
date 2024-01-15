@@ -1,4 +1,4 @@
-package ui.components
+package ui.components.general
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
  * @return [Unit]
  */
 @Composable
-fun svgButton(
+fun SvgButton(
     onClick: () -> Unit,
     content: String,
     modifier: Modifier = Modifier,

@@ -5,7 +5,7 @@ The project uses a [gradle plugin](https://github.com/jk1/Gradle-License-Report)
 The reports are all saved in the `./licenses/reports/<SubprojectName>` directories.
 Currently, we are allowing the licenses `MIT` and `Apache 2.0`. Furthermore, the plugin
 has difficulties (see this [issue](https://github.com/jk1/Gradle-License-Report/issues/272))
-recognizing licenses for jetbrains packages (`compose`, `skiko`, `kotlinx`),
+recognizing licenses for jetbrains packages (`compose`, `skiko`, `kotlinx`, `kotlin`),
 which are all under the `Apache 2.0` license. Thus, we can safely white-flag them.
 
 This information can be changed in `./licenses/allowed-licenses.json`.

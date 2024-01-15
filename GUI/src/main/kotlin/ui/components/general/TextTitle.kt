@@ -1,4 +1,4 @@
-package ui.components
+package ui.components.general
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
  */
 
 @Composable
-fun RowScope.textTitle(text: String) {
+fun RowScope.TextTitle(text: String) {
     AutoSizeText(
         text = text,
         modifier = Modifier.weight(1f).fillMaxSize().padding(20.dp),

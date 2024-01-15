@@ -1,4 +1,4 @@
-package ui.components
+package ui.components.general
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -14,6 +14,11 @@ import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.unit.dp
 
+/**
+ * A [Icon] with a tooltip that shows when the mouse hovers over it.
+ * @param text The text to show in the tooltip.
+ * @return A [Icon] with a tooltip that shows when the mouse hovers over it.
+ */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InfoIconWithHover(text: String) {

@@ -1,4 +1,4 @@
-package ui.components
+package ui.components.diffScreen
 
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.input.key.*
@@ -7,7 +7,7 @@ import frameNavigation.FrameNavigation
 /**
  * A function that handles key presses.
  * @param event [KeyEvent] containing the key press event.
- * @param keyActions [Map] of [Pair]s of [Boolean] and [Key] to [Function]s to be called when the key is pressed.
+ * @param navigator The FrameNavigation object that contains the navigation logic.
  * @return [Boolean] true if the key was handled, false otherwise.
  */
 @OptIn(ExperimentalComposeUiApi::class)

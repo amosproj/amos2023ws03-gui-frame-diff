@@ -25,6 +25,10 @@
       "moduleName": "org.jetbrains.compose..*"
     },
     {
+      "moduleLicense": null,
+      "moduleName": "org.jetbrains.kotlin:.*"
+    },
+    {
       "moduleLicense": "Eclipse Public License - v 1.0",
       "moduleName": "junit:junit"
     }

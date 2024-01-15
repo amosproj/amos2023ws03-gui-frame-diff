@@ -1,4 +1,4 @@
-package ui.components
+package ui.components.diffScreen
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
+import ui.components.general.AutoSizeText
 
 /**
  * A Composable function that creates a box to display the timeline.
@@ -25,13 +26,14 @@ import frameNavigation.FrameNavigation
  * @return [Unit]
  */
 @Composable
-fun timeline(navigator: FrameNavigation) {
-    // set the width of the timelinebox
+fun Timeline(navigator: FrameNavigation) {
+    val navigatorUpdated by rememberUpdatedState(navigator)
+    // set the width of the timeline-box
     var componentWidth by remember { mutableStateOf(0.8f) }
     // current percentage on the cursor as Int between 0 and 100
-    val currentPercentage = (navigator.currentRelativePosition.value * 100).toInt()
+    val currentPercentage = (navigatorUpdated.currentRelativePosition.value * 100).toInt()
     // current x-offset of the indicator
-    val currentOffset = (navigator.currentRelativePosition.value * componentWidth).toFloat()
+    val currentOffset = (navigatorUpdated.currentRelativePosition.value * componentWidth).toFloat()
     // current x-offset of the indicator as dp to show current percentage
     val currentOffsetDp = with(LocalDensity.current) { currentOffset.toDp() }
     // width of text component to center the current percentage over the cursor
@@ -39,7 +41,7 @@ fun timeline(navigator: FrameNavigation) {
 
     fun jumpPercentageHandler(offset: Offset) {
         cursorOffset = offset
-        navigator.jumpToPercentage((cursorOffset.x.toDouble() / componentWidth).coerceIn(0.0, 1.0))
+        navigatorUpdated.jumpToPercentage((cursorOffset.x.toDouble() / componentWidth).coerceIn(0.0, 1.0))
     }
 
     Column(
@@ -47,7 +49,7 @@ fun timeline(navigator: FrameNavigation) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // #### timeline labeling ####
-        timelineTopLabels(currentPercentage, currentOffsetDp, navigator)
+        TimelineTopLabels(currentPercentage, currentOffsetDp, navigatorUpdated)
         // #### timeline box ####
         Box(
             modifier =
@@ -60,12 +62,14 @@ fun timeline(navigator: FrameNavigation) {
                         width = 2.dp,
                         color = Color.Black,
                     )
+                    // calculate the width of the timeline-box
                     .layout { measurable, constraints ->
                         val placeable = measurable.measure(constraints)
                         // Store the width
                         componentWidth = placeable.width.toFloat()
                         layout(placeable.width, placeable.height) { placeable.placeRelative(0, 0) }
                     }
+                    // handle clicks and drags on the timeline
                     .pointerInput(Unit) { detectTapGestures { offset -> jumpPercentageHandler(offset) } }
                     .pointerInput(Unit) {
                         detectDragGestures(
@@ -74,21 +78,27 @@ fun timeline(navigator: FrameNavigation) {
                         )
                     },
         ) {
-            drawRedLine(currentOffset)
+            // #### red line ####
+            DrawRedLine(currentOffset)
             // #### clickable timeline ####
             Box(
                 modifier = Modifier.fillMaxSize(),
             ) {
-                alignedSizedText("0%", Alignment.CenterStart, 20.dp)
-                alignedSizedText("50%", Alignment.Center, 20.dp)
-                alignedSizedText("100%", Alignment.CenterEnd, 20.dp)
+                AlignedSizedText("0%", Alignment.CenterStart, 20.dp)
+                AlignedSizedText("50%", Alignment.Center, 20.dp)
+                AlignedSizedText("100%", Alignment.CenterEnd, 20.dp)
             }
         }
     }
 }
 
+/**
+ * A Composable function that draws a red line on the timeline.
+ * @param currentOffset [Float] containing the current x-offset of the indicator.
+ * @return [Unit]
+ */
 @Composable
-private fun drawRedLine(currentOffset: Float) {
+private fun DrawRedLine(currentOffset: Float) {
     Canvas(modifier = Modifier.fillMaxSize()) {
         drawLine(
             start = Offset(currentOffset, 0f),
@@ -99,8 +109,15 @@ private fun drawRedLine(currentOffset: Float) {
     }
 }
 
+/**
+ * A Composable function that creates labels for the timeline.
+ * @param currentPercentage [Int] containing the current percentage on the cursor as Int between 0 and 100.
+ * @param currentOffsetDp [Dp] containing the current x-offset of the indicator as dp to show current percentage.
+ * @param navigator [FrameNavigation] containing the navigator.
+ * @return [Unit]
+ */
 @Composable
-private fun timelineTopLabels(
+private fun TimelineTopLabels(
     currentPercentage: Int,
     currentOffsetDp: Dp,
     navigator: FrameNavigation,
@@ -111,9 +128,9 @@ private fun timelineTopLabels(
         modifier = Modifier.fillMaxWidth(0.8f).fillMaxHeight(0.3f),
     ) {
         // Starting Label
-        alignedSizedText("0", Alignment.CenterStart, 2.dp)
+        AlignedSizedText("0", Alignment.CenterStart, 2.dp)
         // Current Percentage Label
-        alignedSizedText(
+        AlignedSizedText(
             text = "$currentPercentage%",
             alignment = Alignment.TopStart,
             padding = 2.dp,
@@ -123,12 +140,20 @@ private fun timelineTopLabels(
                 }.offset(x = (currentOffsetDp - (textWidth / 3).dp)),
         )
         // Ending Label
-        alignedSizedText("${navigator.getSizeOfDiff()}", Alignment.CenterEnd, 2.dp)
+        AlignedSizedText("${navigator.getSizeOfDiff()}", Alignment.CenterEnd, 2.dp)
     }
 }
 
+/**
+ * A Composable function that creates a text component with a given alignment and padding.
+ * @param text [String] containing the text to display.
+ * @param alignment [Alignment] containing the alignment of the text.
+ * @param padding [Dp] containing the padding of the text.
+ * @param modifier [Modifier] containing the modifier of the text.
+ * @return [Unit]
+ */
 @Composable
-fun BoxScope.alignedSizedText(
+fun BoxScope.AlignedSizedText(
     text: String,
     alignment: Alignment,
     padding: Dp = 0.dp,

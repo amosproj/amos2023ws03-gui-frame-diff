@@ -2,11 +2,11 @@ package frameNavigation
 
 import FrameNavigationInterface
 import algorithms.AlignmentElement
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.graphics.toComposeImageBitmap
+import kotlinx.coroutines.*
 import models.AppState
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import wrappers.Resettable2DFrameConverter
@@ -17,7 +17,7 @@ import kotlin.math.roundToInt
  * A class that implements the [FrameNavigationInterface] interface.
  * @param state [MutableState]<[AppState]> containing the global state.
  */
-class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface {
+class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) : FrameNavigationInterface {
     // create the grabbers
     private val video1Grabber: FFmpegFrameGrabber = FFmpegFrameGrabber(state.value.video1Path)
     private val video2Grabber: FFmpegFrameGrabber = FFmpegFrameGrabber(state.value.video2Path)
@@ -37,7 +37,8 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
     var diffBitmap: MutableState<ImageBitmap> = mutableStateOf(BufferedImage(1, 1, 1).toComposeImageBitmap())
 
     // state variables for the current frame index
-    var currentIndex: MutableState<Int> = mutableStateOf(0)
+    var currentIndex: Int = 0
+    var jumpLock = false
 
     // holds the relative position of the current frame in the diff video
     // 0.0 means the first frame, 1.0 means the last frame
@@ -52,7 +53,7 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
         // diffSequence is already generated
         generateSequences()
         // jump to the first frame
-        jumpToFrame(0)
+        jumpToFrame()
     }
 
     /**
@@ -105,7 +106,8 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
      * @return [Unit]
      */
     override fun jumpFrames(frames: Int) {
-        jumpToFrame(grabberDiff.frameNumber + frames)
+        currentIndex = grabberDiff.frameNumber + frames
+        jumpToFrame()
     }
 
     /**
@@ -122,12 +124,13 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
         val diffFrame = ((diffSequence.size - 1).toDouble() * percentage).roundToInt()
 
         // check if the frame is already displayed
-        if (diffFrame == currentIndex.value) {
+        if (diffFrame == currentIndex) {
             return
         }
 
         // jump to the frame
-        jumpToFrame(diffFrame)
+        currentIndex = diffFrame
+        jumpToFrame()
     }
 
     /**
@@ -135,21 +138,53 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
      * @param index [Int] containing the index of the frame to jump to.
      * @return [Unit]
      */
-    override fun jumpToFrame(index: Int) {
-        // check bounds
-        val boundedIndex = index.coerceIn(0, diffSequence.size - 1)
-        currentIndex.value = boundedIndex
-        currentRelativePosition.value = boundedIndex.toDouble() / (diffSequence.size - 1).toDouble()
+    override fun jumpToFrame() {
+        // calculate the index to jump to; round to the nearest whole integer
+        var coercedIndex = currentIndex.coerceIn(0, diffSequence.size - 1)
+        // update the percentage used for rendering the timeline position
+        currentRelativePosition.value = coercedIndex.toDouble() / (diffSequence.size - 1).toDouble()
+        // do nothing if locked
+        if (jumpLock) {
+            return
+        }
+        // lock the jump to prevent multiple updates from running at the same time
+        jumpLock = true
+        // set unrealistic goal to force an update
+        var goal = -1
+        // launch a coroutine to update the bitmaps
+        scope.launch(Dispatchers.IO) {
+            // temp variables to hold the bitmaps and update all at once
+            var b1: ImageBitmap? = null
+            var b2: ImageBitmap? = null
+            var b3: ImageBitmap? = null
 
-        // jump to the frame in each video by mapping the frame using the generated sequences
-        video1Grabber.setVideoFrameNumber(video1Frames[boundedIndex])
-        video2Grabber.setVideoFrameNumber(video2Frames[boundedIndex])
-        grabberDiff.setVideoFrameNumber(boundedIndex)
+            // coercedIndex can be updated outside of the coroutine, so check it every iteration
+            while (goal != coercedIndex) {
+                // if current rendering does not match the selected frame, update the rendering
+                goal = coercedIndex
 
-        // update the bitmaps
-        video1Bitmap.value = getBitmap(video1Grabber)
-        video2Bitmap.value = getBitmap(video2Grabber)
-        diffBitmap.value = getBitmap(grabberDiff)
+                // update the bitmaps
+                video1Grabber.setVideoFrameNumber(video1Frames[goal])
+                b1 = getBitmap(video1Grabber)
+
+                video2Grabber.setVideoFrameNumber(video2Frames[goal])
+                b2 = getBitmap(video2Grabber)
+
+                grabberDiff.setVideoFrameNumber(goal)
+                b3 = getBitmap(grabberDiff)
+
+                // update the selected frame in case it changed while the coroutine was running
+                coercedIndex = currentIndex.coerceIn(0, diffSequence.size - 1)
+            }
+            // after goal was met update the rendered bitmaps in UI thread and unlock the jump
+            withContext(Dispatchers.Main) {
+                video1Bitmap.value = b1!!
+                video2Bitmap.value = b2!!
+                diffBitmap.value = b3!!
+            }
+            currentIndex = coercedIndex
+            jumpLock = false
+        }
     }
 
     /**
@@ -175,7 +210,7 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
      */
     override fun jumpToNextDiff(forward: Boolean) {
         // get the current frame
-        var index = currentIndex.value
+        var index = currentIndex
         // create a function that increments or decrements the index
         val op: (Int) -> Int = if (forward) { x: Int -> x + 1 } else { x: Int -> x - 1 }
         // ignore current frame by jumping once
@@ -185,7 +220,8 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
             index = op(index)
         }
         // jump to the frame
-        jumpToFrame(index)
+        currentIndex = index
+        jumpToFrame()
     }
 
     /**

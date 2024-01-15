@@ -1,4 +1,4 @@
-package ui.components
+package ui.components.general
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,7 +30,7 @@ import javax.swing.JOptionPane
  * @return [Unit]
  */
 @Composable
-fun wrappedImage(
+fun SaveableImage(
     bitmap: MutableState<ImageBitmap>,
     modifier: Modifier = Modifier,
 ) {
@@ -82,7 +82,7 @@ private fun DropdownMenu(
     ) {
         DropdownMenuItem({
             expanded.value = false
-            saveBitmapAsPng(bitmap)
+            openFileSaverAndGetPath { path -> saveBitmapAsPng(bitmap, path) }
         }) {
             Text("Save image as png")
         }
@@ -93,8 +93,11 @@ private fun DropdownMenu(
  * a composable function to save the choosen bitmap as png
  * @param bitmap [MutableState] <[ImageBitmap]> contains the bitmap
  */
-private fun saveBitmapAsPng(bitmap: MutableState<ImageBitmap>) {
-    var path = openSaveChooserAndGetPath() ?: return
+private fun saveBitmapAsPng(
+    bitmap: MutableState<ImageBitmap>,
+    path: String,
+) {
+    var path = path
     if (!path.endsWith(".png")) {
         path = "$path.png"
     }

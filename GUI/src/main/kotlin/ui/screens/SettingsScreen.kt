@@ -1,16 +1,18 @@
 package ui.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import models.AppState
 import ui.components.*
+import ui.components.general.TextTitle
+import ui.components.general.TitleWithInfo
+import ui.components.selectVideoScreen.FileSelectorButton
+import ui.components.settingsScreen.BackButton
+import ui.components.settingsScreen.CustomSlider
+import ui.components.settingsScreen.SaveButton
 
 /**
  * SettingsScreen is the screen where the user can change the settings of the app.
@@ -40,8 +42,9 @@ fun SettingsScreen(state: MutableState<AppState>) {
     // Contains the whole Screen
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         // Title
-        Row(modifier = Modifier.weight(0.2f)) { textTitle("Settings") }
+        Row(modifier = Modifier.weight(0.2f)) { TextTitle("Settings") }
         TitleWithInfo(Modifier.weight(0.15f), "Hyperparameters", textForHyper)
+
         // gap open penalty
         Row(modifier = Modifier.weight(0.2f)) {
             CustomSlider(
@@ -53,6 +56,7 @@ fun SettingsScreen(state: MutableState<AppState>) {
                 onChange = { state.value = state.value.copy(gapOpenPenalty = it) },
             )
         }
+
         // gap extend penalty
         Row(modifier = Modifier.weight(0.2f)) {
             CustomSlider(
@@ -64,6 +68,7 @@ fun SettingsScreen(state: MutableState<AppState>) {
                 onChange = { state.value = state.value.copy(gapExtendPenalty = it) },
             )
         }
+
         // mask
         Row(modifier = Modifier.weight(0.175f)) {
             FileSelectorButton(
@@ -75,50 +80,11 @@ fun SettingsScreen(state: MutableState<AppState>) {
                 },
             )
         }
+
+        // back and save button
         Row(modifier = Modifier.weight(0.2f)) {
-            // back
             BackButton(state, oldState)
-            // save
             SaveButton(state, oldState)
         }
-    }
-}
-
-@Composable
-fun RowScope.BackButton(
-    state: MutableState<AppState>,
-    oldState: MutableState<AppState>,
-) {
-    Button(
-        // fills all available space
-        modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxSize(1f),
-        onClick = { state.value = oldState.value.copy(screen = Screen.SelectVideoScreen) },
-    ) {
-        Image(
-            painter = painterResource("back-arrow.svg"),
-            contentDescription = "back",
-            modifier = Modifier.fillMaxSize().alpha(0.8f).padding(4.dp),
-        )
-    }
-}
-
-@Composable
-fun RowScope.SaveButton(
-    state: MutableState<AppState>,
-    oldState: MutableState<AppState>,
-) {
-    Button(
-        // fills all available space
-        modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxSize(1f),
-        onClick = {
-            oldState.value = state.value
-            state.value = oldState.value.copy(screen = Screen.SelectVideoScreen)
-        },
-    ) {
-        Image(
-            painter = painterResource("save.svg"),
-            contentDescription = "save",
-            modifier = Modifier.fillMaxSize().alpha(0.8f).padding(4.dp),
-        )
     }
 }

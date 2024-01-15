@@ -1,4 +1,4 @@
-package ui.components
+package ui.components.diffScreen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -6,7 +6,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.rememberWindowState
-import ui.themes.wrapTheming
+import ui.themes.WrapTheming
 
 /**
  * A Composable function that creates a window if the window is not null.
@@ -16,7 +16,7 @@ import ui.themes.wrapTheming
  * @return [Unit]
  */
 @Composable
-fun windowCreator(
+fun WindowCreator(
     window: MutableState<Unit?>,
     title: String,
     content: @Composable () -> Unit,
@@ -32,5 +32,5 @@ fun windowCreator(
             title = title,
             onCloseRequest = { window.value = null },
             state = state,
-        ) { wrapTheming(content) }
+        ) { WrapTheming(content) }
 }

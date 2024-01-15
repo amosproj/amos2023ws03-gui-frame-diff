@@ -1,10 +1,11 @@
-package ui.components
+package ui.components.diffScreen
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import frameNavigation.FrameNavigation
+import ui.components.general.SvgButton
 
 /**
  * A Composable function that creates a row of navigation buttons.
@@ -21,9 +22,9 @@ fun NavigationButtons(
     rowModifier: Modifier = Modifier,
 ) {
     Row(modifier = rowModifier.fillMaxWidth()) {
-        svgButton(onClick = { navigator.jumpToNextDiff(false) }, content = "skipStart.svg", modifier = buttonModifier)
-        svgButton(onClick = { navigator.jumpFrames(-1) }, content = "skipPrev.svg", modifier = buttonModifier)
-        svgButton(onClick = { navigator.jumpFrames(1) }, content = "skipNext.svg", modifier = buttonModifier)
-        svgButton(onClick = { navigator.jumpToNextDiff(true) }, content = "skipEnd.svg", modifier = buttonModifier)
+        SvgButton(onClick = { navigator.jumpToNextDiff(false) }, content = "skipStart.svg", modifier = buttonModifier)
+        SvgButton(onClick = { navigator.jumpFrames(-1) }, content = "skipPrev.svg", modifier = buttonModifier)
+        SvgButton(onClick = { navigator.jumpFrames(1) }, content = "skipNext.svg", modifier = buttonModifier)
+        SvgButton(onClick = { navigator.jumpToNextDiff(true) }, content = "skipEnd.svg", modifier = buttonModifier)
     }
 }

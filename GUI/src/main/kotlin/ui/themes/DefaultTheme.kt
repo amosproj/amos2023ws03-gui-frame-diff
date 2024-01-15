@@ -1,7 +1,6 @@
 package ui.themes
 
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Typography
 import androidx.compose.material.darkColors
 import androidx.compose.runtime.Composable
@@ -10,16 +9,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-
-// sets the default color palette
-@Composable
-fun wrapTheming(content: @Composable () -> Unit) {
-    defaultTheme {
-        Surface(color = defaultBackgroundColor) {
-            content()
-        }
-    }
-}
 
 val defaultBackgroundColor = Color.hsv(340f, 0.83f, 0.04f)
 
@@ -60,7 +49,6 @@ val MyTypography =
 @Composable
 fun defaultTheme(content: @Composable () -> Unit) {
     val colors = DarkColorPalette
-
     MaterialTheme(
         colors = colors,
         content = content,

@@ -1,19 +1,14 @@
 package ui.screens
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
-import logic.differenceGeneratorWrapper.DifferenceGeneratorWrapper
 import models.AppState
-import ui.components.AutoSizeText
-import ui.components.FileSelectorButton
-import ui.components.helpMenu
-import ui.components.projectMenu
+import ui.components.general.HelpMenu
+import ui.components.general.ProjectMenu
+import ui.components.selectVideoScreen.AdvancedSettingsButton
+import ui.components.selectVideoScreen.ComputeDifferencesButton
+import ui.components.selectVideoScreen.FileSelectorButton
 
 /**
  * A Composable function that creates a screen to select the videos to compare.
@@ -27,9 +22,9 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
         // menu bar
         TopAppBar {
             Row(modifier = Modifier.fillMaxWidth()) {
-                projectMenu(state, Modifier.weight(0.1f))
+                ProjectMenu(state, Modifier.weight(0.1f))
                 Spacer(modifier = Modifier.weight(0.8f))
-                helpMenu(Modifier.weight(0.1f))
+                HelpMenu(Modifier.weight(0.1f))
             }
         }
 
@@ -51,73 +46,10 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
                 },
             )
         }
-        // button to compute the differences
+        // screen switch buttons
         Row(modifier = Modifier.weight(0.15f)) {
             ComputeDifferencesButton(state)
             AdvancedSettingsButton(state)
         }
-    }
-}
-
-/**
- * A Composable function that creates a button to compute the differences between two videos.
- *
- * @param state [AppState] object containing the state of the application.
- * @return [Unit]
- */
-@Composable
-fun RowScope.ComputeDifferencesButton(state: MutableState<AppState>) {
-    Button(
-        // fills all available space
-        modifier = Modifier.weight(0.9f).padding(8.dp).fillMaxSize(1f),
-        onClick = {
-            // generate the differences
-            val generator = DifferenceGeneratorWrapper(state)
-            generator.getDifferences(state.value.outputPath)
-            // set the sequence and screen
-            state.value = state.value.copy(sequenceObj = generator.getSequence(), screen = Screen.DiffScreen)
-        },
-        // enable the button only if all the paths are not empty
-        enabled = state.value.video1Path.isNotEmpty() && state.value.video2Path.isNotEmpty() && state.value.outputPath.isNotEmpty(),
-    ) {
-        AutoSizeText(
-            text = "Compute and Display Differences",
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-            // remove default centering
-            modifier = Modifier,
-        )
-    }
-}
-
-@Composable
-fun RowScope.AdvancedSettingsButton(state: MutableState<AppState>) {
-    Button(
-        // fills all available space
-        modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxSize(1f),
-        onClick = {
-            // set the screen
-            state.value = state.value.copy(screen = Screen.SettingsScreen)
-        },
-    ) {
-        Image(
-            painter = painterResource("settings.svg"),
-            contentDescription = "settings",
-            modifier = Modifier.fillMaxSize().alpha(0.8f).padding(4.dp),
-        )
-    }
-}
-
-@Composable
-fun hyperlinkDropdownMenuItem(
-    text: String,
-    uri: String,
-) {
-    val uriHandler = LocalUriHandler.current
-    DropdownMenuItem(
-        onClick = {
-            uriHandler.openUri(uri)
-        },
-    ) {
-        Text(text, fontSize = MaterialTheme.typography.body2.fontSize)
     }
 }

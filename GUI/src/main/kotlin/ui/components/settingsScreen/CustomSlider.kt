@@ -1,4 +1,4 @@
-package ui.components
+package ui.components.settingsScreen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -9,6 +9,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import ui.components.general.AutoSizeText
+import ui.components.general.TitleWithInfo
 
 /**
  * Title is a composable that displays a title.
@@ -60,7 +62,7 @@ fun RowScope.CustomSlider(
             // max value
             AutoSizeText(text = maxValue.toString(), modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxHeight(1f))
             // current value
-            currentValueInputField(textValue, minValue, maxValue, sliderValue)
+            CurrentValueInputField(textValue, minValue, maxValue, sliderValue)
         }
     }
 }
@@ -74,7 +76,7 @@ fun RowScope.CustomSlider(
  * @param sliderValue the value of the slider
  */
 @Composable
-private fun currentValueInputField(
+private fun CurrentValueInputField(
     textValue: MutableState<String>,
     minValue: Double,
     maxValue: Double,

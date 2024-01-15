@@ -1,8 +1,6 @@
-package ui.components
+package ui.components.general
 
 import Screen
-import ScreenDeserializer
-import ScreenSerializer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -12,24 +10,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin.readValue
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import models.AppState
+import models.JsonMapper
 import java.io.File
-
-// singleton Serializer/Deserializer
-object AppConfig {
-    val mapper: ObjectMapper =
-        ObjectMapper().apply {
-            val module =
-                SimpleModule().apply {
-                    addSerializer(Screen::class.java, ScreenSerializer())
-                    addDeserializer(Screen::class.java, ScreenDeserializer())
-                }
-            registerModule(module)
-        }
-}
 
 /**
  * Dropdown menu to open and save projects
@@ -39,7 +25,7 @@ object AppConfig {
  * @return a dropdown menu to open and save projects
  */
 @Composable
-fun projectMenu(
+fun ProjectMenu(
     state: MutableState<AppState>,
     modifier: Modifier = Modifier,
 ) {
@@ -59,18 +45,20 @@ fun projectMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
         ) {
+            val openScope = rememberCoroutineScope()
             DropdownMenuItem(
                 onClick = {
-                    openFileChooserAndGetPath()?.let { handleOpenProject(state, it) }
+                    openScope.launch(Dispatchers.IO) { openFileChooserAndGetPath { path -> handleOpenProject(state, path) } }
                     expanded = false
                 },
             ) {
                 Text("Open Project", fontSize = MaterialTheme.typography.body2.fontSize)
             }
 
+            val saveScope = rememberCoroutineScope()
             DropdownMenuItem(
                 onClick = {
-                    openSaveChooserAndGetPath()?.let { handleSaveProject(state, it) }
+                    saveScope.launch(Dispatchers.IO) { openFileSaverAndGetPath { path -> handleSaveProject(state, path) } }
                     expanded = false
                 },
                 enabled = state.value.screen == Screen.DiffScreen,
@@ -91,7 +79,7 @@ fun handleOpenProject(
     path: String,
 ) {
     val file = File(path).readLines()
-    state.value = AppConfig.mapper.readValue<AppState>(file.joinToString(""))
+    state.value = JsonMapper.mapper.readValue<AppState>(file.joinToString(""))
 }
 
 /**
@@ -103,6 +91,6 @@ fun handleSaveProject(
     state: MutableState<AppState>,
     path: String,
 ) {
-    val jsonData = AppConfig.mapper.writeValueAsString(state.value)
+    val jsonData = JsonMapper.mapper.writeValueAsString(state.value)
     File("$path.json").writeText(jsonData)
 }
