@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ui.components.general.openSaveChooserAndGetPath
+import ui.components.general.openFileSaverAndGetPath
 
 /**
  * Button to save the collage
@@ -28,7 +28,7 @@ fun SaveCollageButton(
     val scope = rememberCoroutineScope()
     Button(
         modifier = modifier.padding(8.dp).fillMaxSize(),
-        onClick = { scope.launch(Dispatchers.IO) { openSaveChooserAndGetPath { path -> navigator.createCollage(path) } } },
+        onClick = { scope.launch(Dispatchers.IO) { openFileSaverAndGetPath { path -> navigator.createCollage(path) } } },
     ) {
         Text(text = "Save Collage")
     }

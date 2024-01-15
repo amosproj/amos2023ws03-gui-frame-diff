@@ -22,7 +22,7 @@ fun openFileChooserAndGetPath(onResult: (String) -> Unit) {
  * @param onResult The callback to be called when a file was selected.
  * @return The selected file path, or null if no file was selected.
  */
-fun openSaveChooserAndGetPath(onResult: (String) -> Unit) {
+fun openFileSaverAndGetPath(onResult: (String) -> Unit) {
     val fileChooser = JFileChooser()
     val result = fileChooser.showSaveDialog(null)
     if (result == JFileChooser.APPROVE_OPTION) {

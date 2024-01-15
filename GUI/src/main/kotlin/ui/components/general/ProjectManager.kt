@@ -58,7 +58,7 @@ fun ProjectMenu(
             val saveScope = rememberCoroutineScope()
             DropdownMenuItem(
                 onClick = {
-                    saveScope.launch(Dispatchers.IO) { openSaveChooserAndGetPath { path -> handleSaveProject(state, path) } }
+                    saveScope.launch(Dispatchers.IO) { openFileSaverAndGetPath { path -> handleSaveProject(state, path) } }
                     expanded = false
                 },
                 enabled = state.value.screen == Screen.DiffScreen,

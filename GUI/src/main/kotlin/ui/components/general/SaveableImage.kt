@@ -85,7 +85,7 @@ private fun DropdownMenu(
         val scope = rememberCoroutineScope()
         DropdownMenuItem({
             expanded.value = false
-            scope.launch(Dispatchers.IO) { openSaveChooserAndGetPath { path -> saveBitmapAsPng(bitmap, path) } }
+            scope.launch(Dispatchers.IO) { openFileSaverAndGetPath { path -> saveBitmapAsPng(bitmap, path) } }
         }) {
             Text("Save image as png")
         }
