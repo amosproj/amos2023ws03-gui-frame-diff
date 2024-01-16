@@ -48,7 +48,7 @@ fun DiffScreen(state: MutableState<AppState>) {
         TopAppBar {
             Row(modifier = Modifier.fillMaxWidth()) {
                 ProjectMenu(state, Modifier.weight(0.1f))
-                SaveCollageButton(navigator, Modifier.weight(0.1f))
+                SaveCollageButton(navigator, Modifier.weight(0.1f), state)
                 Spacer(modifier = Modifier.weight(0.7f))
                 HelpMenu(Modifier.weight(0.1f))
             }
@@ -67,9 +67,9 @@ fun DiffScreen(state: MutableState<AppState>) {
 
         // #####   Difference Videos   #####
         Row(modifier = Modifier.fillMaxWidth().fillMaxHeight().weight(0.5f)) {
-            DisplayDifferenceImage(bitmap = navigator.video1Bitmap, navigator = navigator, title = "Video 1")
-            DisplayDifferenceImage(bitmap = navigator.diffBitmap, navigator = navigator, title = "Diff")
-            DisplayDifferenceImage(bitmap = navigator.video2Bitmap, navigator = navigator, title = "Video 2")
+            DisplayDifferenceImage(bitmap = navigator.video1Bitmap, navigator = navigator, title = "Video 1", state = state)
+            DisplayDifferenceImage(bitmap = navigator.diffBitmap, navigator = navigator, title = "Diff", state = state)
+            DisplayDifferenceImage(bitmap = navigator.video2Bitmap, navigator = navigator, title = "Video 2", state = state)
         }
         // #####   Timeline   #####
         Row(modifier = Modifier.fillMaxSize().weight(0.15f)) { Timeline(navigator) }

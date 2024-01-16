@@ -48,7 +48,9 @@ fun ProjectMenu(
             val openScope = rememberCoroutineScope()
             DropdownMenuItem(
                 onClick = {
-                    openScope.launch(Dispatchers.IO) { openFileChooserAndGetPath { path -> handleOpenProject(state, path) } }
+                    openScope.launch(
+                        Dispatchers.IO,
+                    ) { openFileChooserAndGetPath(state.value.openProjectPath) { path -> handleOpenProject(state, path) } }
                     expanded = false
                 },
             ) {
@@ -58,7 +60,9 @@ fun ProjectMenu(
             val saveScope = rememberCoroutineScope()
             DropdownMenuItem(
                 onClick = {
-                    saveScope.launch(Dispatchers.IO) { openFileSaverAndGetPath { path -> handleSaveProject(state, path) } }
+                    saveScope.launch(
+                        Dispatchers.IO,
+                    ) { openFileSaverAndGetPath(state.value.saveProjectPath) { path -> handleSaveProject(state, path) } }
                     expanded = false
                 },
                 enabled = state.value.screen == Screen.DiffScreen,
@@ -80,6 +84,7 @@ fun handleOpenProject(
 ) {
     val file = File(path).readLines()
     state.value = JsonMapper.mapper.readValue<AppState>(file.joinToString(""))
+    state.value = state.value.copy(openProjectPath = path)
 }
 
 /**
@@ -91,6 +96,11 @@ fun handleSaveProject(
     state: MutableState<AppState>,
     path: String,
 ) {
+    var savePath = path
+    if (!savePath.endsWith(".json")) {
+        savePath = "$savePath.json"
+    }
+    state.value = state.value.copy(saveProjectPath = savePath)
     val jsonData = JsonMapper.mapper.writeValueAsString(state.value)
-    File("$path.json").writeText(jsonData)
+    File(savePath).writeText(jsonData)
 }

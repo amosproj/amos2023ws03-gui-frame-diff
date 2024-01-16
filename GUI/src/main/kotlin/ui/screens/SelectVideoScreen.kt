@@ -36,6 +36,7 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
                 onUpdateResult = { selectedFilePath ->
                     state.value = state.value.copy(video1Path = selectedFilePath)
                 },
+                directoryPath = state.value.video1Path,
             )
 
             FileSelectorButton(
@@ -44,6 +45,7 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
                 onUpdateResult = { selectedFilePath ->
                     state.value = state.value.copy(video2Path = selectedFilePath)
                 },
+                directoryPath = state.value.video2Path,
             )
         }
         // screen switch buttons

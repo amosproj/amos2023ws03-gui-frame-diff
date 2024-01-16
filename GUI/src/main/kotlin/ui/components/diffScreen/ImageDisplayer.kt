@@ -11,6 +11,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.key.onKeyEvent
 import frameNavigation.FrameNavigation
+import models.AppState
 import ui.components.general.SaveableImage
 
 /**
@@ -20,6 +21,7 @@ import ui.components.general.SaveableImage
  * @param modifier [Modifier] to apply to the element.
  * @param navigator [FrameNavigation] containing the navigation logic.
  * @param title [String] containing the title of the window.
+ * @param state [mutableStateOf]<[AppState]> containing the global state of the application.
  * @return [Unit]
  */
 @Composable
@@ -28,12 +30,13 @@ fun RowScope.DisplayDifferenceImage(
     modifier: Modifier = Modifier,
     navigator: FrameNavigation,
     title: String,
+    state: MutableState<AppState>,
 ) {
     // pop-out window
     val window = remember { mutableStateOf<Unit?>(null) }
 
     // handles the window creation if the window is not null
-    WindowCreator(window, title) { FullScreenContent(bitmap = bitmap, navigator = navigator) }
+    WindowCreator(window, title) { FullScreenContent(bitmap = bitmap, navigator = navigator, state) }
 
     Column(modifier = Modifier.fillMaxSize().weight(1f)) {
         // button sets the window to null and then to not null, which triggers the window render
@@ -41,7 +44,7 @@ fun RowScope.DisplayDifferenceImage(
             window.value = null
             window.value = Unit
         }
-        SaveableImage(bitmap = bitmap, modifier = modifier.weight(0.92f))
+        SaveableImage(bitmap = bitmap, modifier = modifier.weight(0.92f), state = state)
     }
 }
 
@@ -49,12 +52,14 @@ fun RowScope.DisplayDifferenceImage(
  * The Content being displayed in the full screen window.
  * @param bitmap [MutableState]<[ImageBitmap]> containing the bitmap to display.
  * @param navigator [FrameNavigation] containing the navigation logic.
+ * @param state [mutableStateOf]<[AppState]> containing the global state of the application.
  * @return [Unit]
  */
 @Composable
 fun FullScreenContent(
     bitmap: MutableState<ImageBitmap>,
     navigator: FrameNavigation,
+    state: MutableState<AppState>,
 ) {
     val focusRequester = remember { FocusRequester() }
     Column(
@@ -67,7 +72,7 @@ fun FullScreenContent(
             focusRequester.requestFocus()
         }
         // #####   Difference Videos   #####
-        SaveableImage(bitmap = bitmap, modifier = Modifier.weight(0.85f))
+        SaveableImage(bitmap = bitmap, modifier = Modifier.weight(0.85f), state = state)
         // #####   Navigation   #####
         NavigationButtons(navigator = navigator, buttonModifier = Modifier.weight(1f), rowModifier = Modifier.weight(0.15f))
     }
