@@ -17,25 +17,28 @@ import ui.components.general.InfoIconWithHover
 import ui.components.general.openFileChooserAndGetPath
 
 /**
-* A Composable function that creates a button with a file selector functionality.
-*
-* @param buttonText The text to be displayed on the button.
+ * A Composable function that creates a button with a file selector functionality.
+ *
+ * @param buttonText The text to be displayed on the button.
  * @param buttonPath The path to the selected file.
-* @param onUpdateResult A function that will be called with the selected file path as a parameter.
+ * @param onUpdateResult A function that will be called with the selected file path as a parameter.
+ * Should update the AppState with the selected file path for the chosen file(e.g. Video1Path).
  * @param tooltipText The text to be displayed in the tooltip.
+ * @param directoryPath The path to the directory to be opened in the file chooser.
  * @return [Unit]
-*/
+ */
 @Composable
 fun RowScope.FileSelectorButton(
     buttonText: String,
     buttonPath: String,
     onUpdateResult: (String) -> Unit,
     tooltipText: String? = null,
+    directoryPath: String? = null,
 ) {
     val scope = rememberCoroutineScope()
     Button(
         modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f),
-        onClick = { scope.launch(Dispatchers.IO) { openFileChooserAndGetPath { path -> onUpdateResult(path) } } },
+        onClick = { scope.launch(Dispatchers.IO) { openFileChooserAndGetPath(directoryPath) { path -> onUpdateResult(path) } } },
     ) {
         // column to display the button text and the selected file path
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {

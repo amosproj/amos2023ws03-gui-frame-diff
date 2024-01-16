@@ -319,7 +319,7 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
         }
 
         // save the collage
-        val file = java.io.File("$outputPath.png")
+        val file = java.io.File(outputPath)
         javax.imageio.ImageIO.write(collage, "png", file)
     }
 }

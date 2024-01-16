@@ -14,15 +14,27 @@ import java.nio.file.FileSystems
  * @param video1Path the path of the first video
  * @param video2Path the path of the second video
  * @param outputPath the path of the output video
+ * @param saveCollagePath the last path where a collage was saved
+ * @param saveProjectPath the last path where a project was saved
+ * @param openProjectPath the last path where a project was opened
+ * @param saveFramePath the last path where a frame was saved
+ * @param maskPath the path of the mask
  * @param sequenceObj the sequence object
+ * @param gapOpenPenalty the gap open penalty
+ * @param gapExtendPenalty the gap extend penalty
+
  */
 data class AppState(
     var screen: Screen = Screen.SelectVideoScreen,
     var video1Path: String = getPath("testVideo1.mkv"),
     var video2Path: String = getPath("testVideo2.mkv"),
     var outputPath: String = getPath("output.mkv"),
-    var sequenceObj: Array<AlignmentElement> = arrayOf(),
+    var saveCollagePath: String? = null,
+    var saveProjectPath: String? = null,
+    var openProjectPath: String? = null,
+    var saveFramePath: String? = null,
     var maskPath: String = getPath("mask.png"),
+    var sequenceObj: Array<AlignmentElement> = arrayOf(),
     var gapOpenPenalty: Double = 0.2,
     var gapExtendPenalty: Double = -0.8,
 )

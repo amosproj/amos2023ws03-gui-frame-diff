@@ -76,8 +76,10 @@ fun SettingsScreen(state: MutableState<AppState>) {
                 buttonPath = state.value.maskPath,
                 tooltipText = textForMask,
                 onUpdateResult = { selectedFilePath ->
-                    state.value = state.value.copy(maskPath = selectedFilePath)
+                    state.value =
+                        state.value.copy(maskPath = selectedFilePath)
                 },
+                directoryPath = state.value.maskPath,
             )
         }
 

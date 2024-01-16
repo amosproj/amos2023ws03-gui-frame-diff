@@ -19,6 +19,7 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import models.AppState
 import java.io.File
 import javax.imageio.ImageIO
 import javax.swing.JOptionPane
@@ -27,12 +28,14 @@ import javax.swing.JOptionPane
  * A Composable function that displays an image wrapped in a row.
  * @param bitmap [MutableState]<[ImageBitmap]> containing the bitmap to display.
  * @param modifier [Modifier] to apply to the element.
+ * @param state [MutableState]<[AppState]> containing the global state.
  * @return [Unit]
  */
 @Composable
 fun SaveableImage(
     bitmap: MutableState<ImageBitmap>,
     modifier: Modifier = Modifier,
+    state: MutableState<AppState>,
 ) {
     var expanded: MutableState<Boolean> = remember { mutableStateOf(false) }
     Row(
@@ -62,7 +65,7 @@ fun SaveableImage(
                     }
                 },
         )
-        DropdownMenu(expanded, bitmap)
+        DropdownMenu(expanded, bitmap, state)
     }
 }
 
@@ -70,11 +73,13 @@ fun SaveableImage(
  * a composable function to expand a dropdown menu
  * @param expanded [Boolean] checks it´s expanded
  * @param bitmap [MutableState] <[ImageBitmap]> contains the bitmap
+ * @param state [MutableState] <[AppState]> contains the state of the app
  */
 @Composable
 private fun DropdownMenu(
     expanded: MutableState<Boolean>,
     bitmap: MutableState<ImageBitmap>,
+    state: MutableState<AppState>,
 ) {
     CursorDropdownMenu(
         expanded = expanded.value,
@@ -82,7 +87,7 @@ private fun DropdownMenu(
     ) {
         DropdownMenuItem({
             expanded.value = false
-            openFileSaverAndGetPath { path -> saveBitmapAsPng(bitmap, path) }
+            openFileSaverAndGetPath(state.value.saveFramePath) { path -> saveBitmapAsPng(bitmap, path, state) }
         }) {
             Text("Save image as png")
         }
@@ -96,12 +101,16 @@ private fun DropdownMenu(
 private fun saveBitmapAsPng(
     bitmap: MutableState<ImageBitmap>,
     path: String,
+    state: MutableState<AppState>,
 ) {
-    var path = path
-    if (!path.endsWith(".png")) {
-        path = "$path.png"
+    var savePath = path
+    // check path for suffix
+    if (!savePath.endsWith(".png")) {
+        savePath = "$savePath.png"
     }
-    val file = File(path)
+    // remember path for next time opening the file chooser
+    state.value = state.value.copy(saveFramePath = savePath)
+    val file = File(savePath)
     if (file.exists()) {
         val overwrite = showOverwriteConfirmation()
         if (!overwrite) {
