@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.toComposeImageBitmap
 import kotlinx.coroutines.*
 import models.AppState
 import org.bytedeco.javacv.FFmpegFrameGrabber
+import ui.components.general.showOverwriteConfirmation
 import wrappers.Resettable2DFrameConverter
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
@@ -330,14 +331,21 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
      * @return [Unit]
      */
     fun createInsertionsExport(outputPath: String) {
-        // save the collage
         val zipFile =
             if (outputPath.endsWith(".zip")) {
                 java.io.File(outputPath)
             } else {
                 java.io.File("$outputPath.zip")
             }
+
+        if (zipFile.exists()) {
+            val overwrite = showOverwriteConfirmation()
+            if (!overwrite) {
+                return
+            }
+        }
         val zip = java.util.zip.ZipOutputStream(zipFile.outputStream())
+
         for (i in diffSequence.indices) {
             if (diffSequence[i] == AlignmentElement.INSERTION) {
                 zip.putNextEntry(java.util.zip.ZipEntry("insertion_$i.png"))
