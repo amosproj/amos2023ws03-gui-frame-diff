@@ -11,6 +11,7 @@ import models.AppState
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import wrappers.Resettable2DFrameConverter
 import java.awt.image.BufferedImage
+import javax.imageio.ImageIO
 import kotlin.math.roundToInt
 
 /**
@@ -321,5 +322,33 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
         // save the collage
         val file = java.io.File("$outputPath.png")
         javax.imageio.ImageIO.write(collage, "png", file)
+    }
+
+    /**
+     * Creates a zip archive containing all inserted frames as png files
+     * @param outputPath [String] containing the path to save the archive to.
+     * @return [Unit]
+     */
+    fun createInsertionsExport(outputPath: String) {
+        // save the collage
+        val zipFile =
+            if (outputPath.endsWith(".zip")) {
+                java.io.File(outputPath)
+            } else {
+                java.io.File("$outputPath.zip")
+            }
+        val zip = java.util.zip.ZipOutputStream(zipFile.outputStream())
+        for (i in diffSequence.indices) {
+            if (diffSequence[i] == AlignmentElement.INSERTION) {
+                zip.putNextEntry(java.util.zip.ZipEntry("insertion_$i.png"))
+                video2Grabber.setVideoFrameNumber(video2Frames[i])
+                val insertedBitmap = getBitmap(video2Grabber)
+                val awtInsertImage = insertedBitmap.toAwtImage()
+                ImageIO.write(awtInsertImage, "PNG", zip)
+            }
+        }
+        zip.close()
+
+        jumpToFrame()
     }
 }
