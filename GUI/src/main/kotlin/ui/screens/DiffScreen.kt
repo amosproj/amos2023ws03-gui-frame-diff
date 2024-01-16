@@ -49,7 +49,7 @@ fun DiffScreen(state: MutableState<AppState>) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 ProjectMenu(state, Modifier.weight(0.1f))
                 SaveCollageButton(navigator, Modifier.weight(0.1f), state)
-                SaveInsertedFramesButton(navigator, Modifier.weight(0.1f))
+                SaveInsertedFramesButton(navigator, Modifier.weight(0.1f), state)
                 Spacer(modifier = Modifier.weight(0.6f))
                 HelpMenu(Modifier.weight(0.1f))
             }
