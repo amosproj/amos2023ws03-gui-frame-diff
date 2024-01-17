@@ -17,6 +17,7 @@ import java.nio.file.FileSystems
  * @param saveCollagePath the last path where a collage was saved
  * @param saveProjectPath the last path where a project was saved
  * @param openProjectPath the last path where a project was opened
+ * @param saveInsertionsPath the last path where insertions were saved
  * @param saveFramePath the last path where a frame was saved
  * @param maskPath the path of the mask
  * @param sequenceObj the sequence object
@@ -33,6 +34,7 @@ data class AppState(
     var saveProjectPath: String? = null,
     var openProjectPath: String? = null,
     var saveFramePath: String? = null,
+    var saveInsertionsPath: String? = null,
     var maskPath: String = getPath("mask.png"),
     var sequenceObj: Array<AlignmentElement> = arrayOf(),
     var gapOpenPenalty: Double = 0.2,

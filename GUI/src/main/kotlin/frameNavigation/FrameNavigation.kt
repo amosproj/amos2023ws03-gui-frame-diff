@@ -13,6 +13,7 @@ import util.ColoredFrameGenerator
 import wrappers.Resettable2DFrameConverter
 import java.awt.Color
 import java.awt.image.BufferedImage
+import javax.imageio.ImageIO
 import kotlin.math.roundToInt
 
 /**
@@ -355,6 +356,23 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
         // save the collage
         val file = java.io.File(outputPath)
         javax.imageio.ImageIO.write(collage, "png", file)
+    }
+
+    /**
+     * Filters all inserted frames.
+     * @return [List]<[ImageBitmap]> containing the inserted frames.
+     */
+    fun getInsertedFrames(): List<ImageBitmap> {
+        val insertedFrames = mutableListOf<ImageBitmap>()
+
+        for (i in diffSequence.indices) {
+            if (diffSequence[i] == AlignmentElement.INSERTION) {
+                video2Grabber.setVideoFrameNumber(video2Frames[i])
+                insertedFrames.add(getBitmap(video2Grabber))
+            }
+        }
+
+        return insertedFrames
     }
 
     /**
