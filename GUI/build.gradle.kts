@@ -73,6 +73,22 @@ tasks.register<Jar>("createRunnableJar") {
     destinationDirectory.set(file("$buildDir/libs"))
 }
 
+tasks.create("createFatJar", Jar::class) {
+    group = "custom tasks" // OR, for example, "build"
+    description = "Creates a self-contained fat JAR of the application that can be run."
+    manifest.attributes["Main-Class"] = "MainKt"
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    val dependencies =
+        configurations
+            .runtimeClasspath
+            .get()
+            .map(::zipTree)
+    from(dependencies)
+    exclude("../VideoGenerator/MainKt.class")
+    exclude("../DifferenceGenerator/MainKt.class")
+    with(tasks.jar.get())
+}
+
 licenseReport {
     val licensesDir = File(projectDir, "../licenses/").absolutePath
     outputDir = "$licensesDir/reports/GUI"
