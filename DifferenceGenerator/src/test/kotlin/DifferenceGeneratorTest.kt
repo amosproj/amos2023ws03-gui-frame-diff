@@ -58,8 +58,8 @@ internal class DifferenceGeneratorTest {
             gapExtension = it.toDouble()
         }
         print("Gap Open Penalty: $gapOpen, Gap Extension Penalty: $gapExtension, Iterations: $iterations")
-        val pathVideo1 = resourcesPathPrefix + "generatedVideo1.mkv"
-        val pathVideo2 = resourcesPathPrefix + "generatedVideo2.mkv"
+        val pathVideoReference = resourcesPathPrefix + "generatedVideo1.mkv"
+        val pathVideoCurrent = resourcesPathPrefix + "generatedVideo2.mkv"
         val outputPath = resourcesPathPrefix + "generatedOutput.mkv"
         var algorithm: AlignmentAlgorithm<BufferedImage> = Gotoh<BufferedImage>(metric, gapOpenPenalty = -0.5, gapExtensionPenalty = -0.0)
 
@@ -68,9 +68,9 @@ internal class DifferenceGeneratorTest {
 
         var allDistances = Array(iterations) { 0 }
         for (i in 0 until iterations) {
-            val testCaseGenerator = TestCaseGenerator(pathVideo1, pathVideo2, 50)
+            val testCaseGenerator = TestCaseGenerator(pathVideoReference, pathVideoCurrent, 50)
             val expectedAlignment = testCaseGenerator.generateRandomTestCase()
-            val differenceGenerator = DifferenceGenerator(pathVideo1, pathVideo2, outputPath, algorithm)
+            val differenceGenerator = DifferenceGenerator(pathVideoReference, pathVideoCurrent, outputPath, algorithm)
             val actualAlignment = differenceGenerator.alignment
             println("Calculated Alignment: " + actualAlignment.joinToString())
             println("Expected Alignment: " + expectedAlignment.joinToString())

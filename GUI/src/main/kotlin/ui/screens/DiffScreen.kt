@@ -18,7 +18,7 @@ import ui.components.general.TextTitle
 
 /**
  * A Composable function that creates a screen to display the differences between two videos.
- * Shows 3 videos: the first video, the difference between the two videos, and the second video.
+ * Shows 3 videos: the reference video, the difference between the two videos, and the current video.
  * Gets recomposed when the state object changes, not when state properties change.
  * @param state [MutableState]<[AppState]> containing the global state.
  * @return [Unit]
@@ -57,9 +57,9 @@ fun DiffScreen(state: MutableState<AppState>) {
 
         // #####   Titles   #####
         Row(modifier = Modifier.fillMaxWidth().weight(0.1f)) {
-            TextTitle(text = "Video 1")
+            TextTitle(text = "Reference Video")
             TextTitle(text = "Diff")
-            TextTitle(text = "Video 2")
+            TextTitle(text = "Current Video")
         }
 
         Row(modifier = Modifier.fillMaxWidth().weight(0.1f)) {
@@ -68,9 +68,9 @@ fun DiffScreen(state: MutableState<AppState>) {
 
         // #####   Difference Videos   #####
         Row(modifier = Modifier.fillMaxWidth().fillMaxHeight().weight(0.5f)) {
-            DisplayDifferenceImage(bitmap = navigator.video1Bitmap, navigator = navigator, title = "Video 1", state = state)
+            DisplayDifferenceImage(bitmap = navigator.videoReferenceBitmap, navigator = navigator, title = "Reference Video", state = state)
             DisplayDifferenceImage(bitmap = navigator.diffBitmap, navigator = navigator, title = "Diff", state = state)
-            DisplayDifferenceImage(bitmap = navigator.video2Bitmap, navigator = navigator, title = "Video 2", state = state)
+            DisplayDifferenceImage(bitmap = navigator.videoCurrentBitmap, navigator = navigator, title = "Current Video", state = state)
         }
         // #####   Timeline   #####
         Row(modifier = Modifier.fillMaxSize().weight(0.15f)) { Timeline(navigator) }

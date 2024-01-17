@@ -16,19 +16,19 @@ import java.io.File
 import kotlin.experimental.and
 
 class DifferenceGenerator(
-    video1Path: String,
-    video2Path: String,
+    videoReferencePath: String,
+    videoCurrentPath: String,
     outputPath: String,
     private val algorithm: AlignmentAlgorithm<BufferedImage>,
     maskPath: String? = null,
-) : AbstractDifferenceGenerator(video1Path, video2Path, outputPath, maskPath) {
+) : AbstractDifferenceGenerator() {
     private val outputFile = File(outputPath)
-    private val video1File = File(video1Path)
-    private val video2File = File(video2Path)
+    private val videoReferenceFile = File(videoReferencePath)
+    private val videoCurrentFile = File(videoCurrentPath)
     private val maskFile = if (maskPath != null) File(maskPath) else null
 
-    private var video1Grabber: MaskedImageGrabber = MaskedImageGrabber(video1File, null)
-    private var video2Grabber: MaskedImageGrabber = MaskedImageGrabber(video2File, null)
+    private var videoReferenceGrabber: MaskedImageGrabber = MaskedImageGrabber(videoReferenceFile, null)
+    private var videoCurrentGrabber: MaskedImageGrabber = MaskedImageGrabber(videoCurrentFile, null)
 
     private val converter = Resettable2DFrameConverter()
     private var coloredFrameGenerator: ColoredFrameGenerator
@@ -45,18 +45,18 @@ class DifferenceGenerator(
      * @throws Exception if the videos are not in an [AcceptedCodecs.ACCEPTED_CODECS].
      */
     init {
-        if (!isLosslessCodec(video1Grabber) || !isLosslessCodec(video2Grabber)) {
+        if (!isLosslessCodec(videoReferenceGrabber) || !isLosslessCodec(videoCurrentGrabber)) {
             throw Exception("Videos must be in a lossless codec")
         }
 
-        if (this.video1Grabber.imageWidth != this.video2Grabber.imageWidth ||
-            this.video1Grabber.imageHeight != this.video2Grabber.imageHeight
+        if (this.videoReferenceGrabber.imageWidth != this.videoCurrentGrabber.imageWidth ||
+            this.videoReferenceGrabber.imageHeight != this.videoCurrentGrabber.imageHeight
         ) {
             throw Exception("Videos must have the same dimensions")
         }
 
-        this.width = this.video1Grabber.imageWidth
-        this.height = this.video1Grabber.imageHeight
+        this.width = this.videoReferenceGrabber.imageWidth
+        this.height = this.videoReferenceGrabber.imageHeight
         coloredFrameGenerator = ColoredFrameGenerator(this.width, this.height)
         mask =
             if (maskFile == null) {
@@ -65,8 +65,8 @@ class DifferenceGenerator(
                 CompositeMask(maskFile, this.width, this.height)
             }
 
-        video1Grabber.mask = mask
-        video2Grabber.mask = mask
+        videoReferenceGrabber.mask = mask
+        videoCurrentGrabber.mask = mask
 
         // turn off verbose ffmpeg output
         avutil.av_log_set_level(avutil.AV_LOG_QUIET)
@@ -94,8 +94,8 @@ class DifferenceGenerator(
      * Uses the algorithm given in the constructor to align the frames of both videos.
      *
      * The resulting video consists of frames which are one of types:
-     *  - only blue pixels: a frame was deleted (only in first video)
-     *  - only green pixels: a frame was inserted (only in second video)
+     *  - only blue pixels: a frame was deleted (only in reference video)
+     *  - only green pixels: a frame was inserted (only in current video)
      *  - red and black pixels: a frame was modified (both videos contain the frame)
      */
     override fun generateDifference() {
@@ -104,39 +104,39 @@ class DifferenceGenerator(
         encoder.frameRate = 1.0
         encoder.start()
 
-        alignment = algorithm.run(video1Grabber, video2Grabber)
+        alignment = algorithm.run(videoReferenceGrabber, videoCurrentGrabber)
 
         // reset the grabbers to put the iterators to the videos' beginning
-        video1Grabber.reset()
-        video2Grabber.reset()
+        videoReferenceGrabber.reset()
+        videoCurrentGrabber.reset()
 
         for (el in alignment) {
             when (el) {
                 AlignmentElement.MATCH -> {
-                    encoder.record(getDifferencesBetweenBufferedImages(video1Grabber.next(), video2Grabber.next()))
+                    encoder.record(getDifferencesBetweenBufferedImages(videoReferenceGrabber.next(), videoCurrentGrabber.next()))
                 }
                 AlignmentElement.INSERTION -> {
                     encoder.record(coloredFrameGenerator.getColoredFrame(Color.GREEN))
-                    video2Grabber.next()
+                    videoCurrentGrabber.next()
                 }
                 AlignmentElement.DELETION -> {
                     encoder.record(coloredFrameGenerator.getColoredFrame(Color.BLUE))
-                    video1Grabber.next()
+                    videoReferenceGrabber.next()
                 }
                 AlignmentElement.PERFECT -> {
                     encoder.record(coloredFrameGenerator.getColoredFrame(Color.BLACK))
-                    video1Grabber.next()
-                    video2Grabber.next()
+                    videoReferenceGrabber.next()
+                    videoCurrentGrabber.next()
                 }
             }
         }
         encoder.stop()
         encoder.release()
 
-        video1Grabber.stop()
-        video2Grabber.stop()
-        video1Grabber.release()
-        video2Grabber.release()
+        videoReferenceGrabber.stop()
+        videoCurrentGrabber.stop()
+        videoReferenceGrabber.release()
+        videoCurrentGrabber.release()
     }
 
     /**

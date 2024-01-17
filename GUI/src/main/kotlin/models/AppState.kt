@@ -11,8 +11,8 @@ import java.nio.file.FileSystems
 /**
  * This data class represents the global state of the application.
  * @param screen the current screen
- * @param video1Path the path of the first video
- * @param video2Path the path of the second video
+ * @param videoReferencePath the path of the reference video
+ * @param videoCurrentPath the path of the current video
  * @param outputPath the path of the output video
  * @param saveCollagePath the last path where a collage was saved
  * @param saveProjectPath the last path where a project was saved
@@ -27,8 +27,8 @@ import java.nio.file.FileSystems
  */
 data class AppState(
     var screen: Screen = Screen.SelectVideoScreen,
-    var video1Path: String = getPath("testVideo1.mkv"),
-    var video2Path: String = getPath("testVideo2.mkv"),
+    var videoReferencePath: String = getPath("testVideo1.mkv"),
+    var videoCurrentPath: String = getPath("testVideo2.mkv"),
     var outputPath: String = getPath("output.mkv"),
     var saveCollagePath: String? = null,
     var saveProjectPath: String? = null,

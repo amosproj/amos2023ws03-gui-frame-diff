@@ -38,7 +38,11 @@ fun RowScope.ComputeDifferencesButton(state: MutableState<AppState>) {
             }
         },
         // enable the button only if all the paths are not empty
-        enabled = state.value.video1Path.isNotEmpty() && state.value.video2Path.isNotEmpty() && state.value.outputPath.isNotEmpty(),
+        enabled = (
+            state.value.videoReferencePath.isNotEmpty() &&
+                state.value.videoCurrentPath.isNotEmpty() &&
+                state.value.outputPath.isNotEmpty()
+        ),
     ) {
         AutoSizeText(
             text = "Compute and Display Differences",

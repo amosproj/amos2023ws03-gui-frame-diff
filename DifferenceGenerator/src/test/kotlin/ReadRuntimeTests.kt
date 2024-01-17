@@ -17,8 +17,8 @@ internal class ReadRuntimeTests {
     private val resourcesPathPrefix = "src/test/resources/"
     private val video9Frames = resourcesPathPrefix + "9Screenshots.mov"
     private val modifiedVideo9Frames = resourcesPathPrefix + "9ScreenshotsModified.mov"
-    private val video1File = File(video9Frames)
-    private val video2File = File(modifiedVideo9Frames)
+    private val videoReferenceFile = File(video9Frames)
+    private val videoCurrentFile = File(modifiedVideo9Frames)
     private val runAmount = 20
 
     private val methodMap: Map<String, (Resettable2DFrameConverter, Frame, Frame, Int, Int) -> Int> =
@@ -42,7 +42,7 @@ internal class ReadRuntimeTests {
         var difs = 0
         val method = methodMap[methodName] ?: throw Exception("Method not found")
         for (i in 0 until runs) {
-            val (differences, time) = wrapper(video1File, video2File, method)
+            val (differences, time) = wrapper(videoReferenceFile, videoCurrentFile, method)
             totalTime += time
             difs += differences
         }
@@ -61,30 +61,30 @@ internal class ReadRuntimeTests {
         vid2: File,
         method: (Resettable2DFrameConverter, Frame, Frame, Int, Int) -> Int,
     ): Pair<Int, Long> {
-        val video1Grabber = FFmpegFrameGrabber(vid1)
-        val video2Grabber = FFmpegFrameGrabber(vid2)
+        val videoReferenceGrabber = FFmpegFrameGrabber(vid1)
+        val videoCurrentGrabber = FFmpegFrameGrabber(vid2)
 
-        video1Grabber.start()
-        video2Grabber.start()
+        videoReferenceGrabber.start()
+        videoCurrentGrabber.start()
 
-        val width = video1Grabber.imageWidth
-        val height = video1Grabber.imageHeight
+        val width = videoReferenceGrabber.imageWidth
+        val height = videoReferenceGrabber.imageHeight
 
         val converter = Resettable2DFrameConverter()
 
-        var frame1 = video1Grabber.grabImage()
-        var frame2 = video2Grabber.grabImage()
+        var frame1 = videoReferenceGrabber.grabImage()
+        var frame2 = videoCurrentGrabber.grabImage()
         var counter = 0
         var time = 0L
 
         while (frame1 != null && frame2 != null) {
             time += measureTimeMillis { counter += method(converter, frame1, frame2, width, height) }
 
-            frame1 = video1Grabber.grabImage()
-            frame2 = video2Grabber.grabImage()
+            frame1 = videoReferenceGrabber.grabImage()
+            frame2 = videoCurrentGrabber.grabImage()
         }
-        video1Grabber.stop()
-        video2Grabber.stop()
+        videoReferenceGrabber.stop()
+        videoCurrentGrabber.stop()
         return Pair(counter, time)
     }
 
