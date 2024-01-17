@@ -7,12 +7,15 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
 import models.AppState
 import ui.components.general.openFileSaverAndGetPath
 import ui.components.general.showOverwriteConfirmation
 import java.io.File
+import javax.imageio.ImageIO
 
 /**
  * Button to save all inserted frames as pngs to a zip File Archive.
@@ -63,5 +66,27 @@ fun saveInsertedFramesCallback(
         }
     }
     state.value = state.value.copy(saveInsertionsPath = savePath)
-    navigator.createInsertionsExport(savePath)
+
+    createInsertionsExport(savePath, navigator.getInsertedFrames())
+}
+
+/**
+ * Creates a zip archive containing all inserted frames as pngs.
+ * @param outputPath The path to the zip archive
+ * @param frames The frames to save
+ */
+fun createInsertionsExport(
+    outputPath: String,
+    frames: List<ImageBitmap>,
+) {
+    val zipFile = File(outputPath)
+
+    val zip = java.util.zip.ZipOutputStream(zipFile.outputStream())
+
+    for (i in frames.indices) {
+        zip.putNextEntry(java.util.zip.ZipEntry("insertion_$i.png"))
+        val awtInsertImage = frames[i].toAwtImage()
+        ImageIO.write(awtInsertImage, "PNG", zip)
+    }
+    zip.close()
 }

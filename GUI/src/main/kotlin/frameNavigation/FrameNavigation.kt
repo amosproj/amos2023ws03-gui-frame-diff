@@ -325,26 +325,19 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
     }
 
     /**
-     * Creates a zip archive containing all inserted frames as png files
-     * @param outputPath [String] containing the path to save the archive to.
-     * @return [Unit]
+     * Filters all inserted frames.
+     * @return [List]<[ImageBitmap]> containing the inserted frames.
      */
-    fun createInsertionsExport(outputPath: String) {
-        val zipFile = java.io.File(outputPath)
-
-        val zip = java.util.zip.ZipOutputStream(zipFile.outputStream())
+    fun getInsertedFrames(): List<ImageBitmap> {
+        val insertedFrames = mutableListOf<ImageBitmap>()
 
         for (i in diffSequence.indices) {
             if (diffSequence[i] == AlignmentElement.INSERTION) {
-                zip.putNextEntry(java.util.zip.ZipEntry("insertion_$i.png"))
                 video2Grabber.setVideoFrameNumber(video2Frames[i])
-                val insertedBitmap = getBitmap(video2Grabber)
-                val awtInsertImage = insertedBitmap.toAwtImage()
-                ImageIO.write(awtInsertImage, "PNG", zip)
+                insertedFrames.add(getBitmap(video2Grabber))
             }
         }
-        zip.close()
 
-        jumpToFrame()
+        return insertedFrames
     }
 }
