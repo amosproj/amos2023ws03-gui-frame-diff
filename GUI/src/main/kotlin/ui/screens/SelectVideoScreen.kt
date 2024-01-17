@@ -31,21 +31,21 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
         // video selection
         Row(modifier = Modifier.weight(0.85f)) {
             FileSelectorButton(
-                buttonText = "Select Video 1",
-                buttonPath = state.value.video1Path,
+                buttonText = "Select Reference Video",
+                buttonPath = state.value.videoReferencePath,
                 onUpdateResult = { selectedFilePath ->
-                    state.value = state.value.copy(video1Path = selectedFilePath)
+                    state.value = state.value.copy(videoReferencePath = selectedFilePath)
                 },
-                directoryPath = state.value.video1Path,
+                directoryPath = state.value.videoReferencePath,
             )
 
             FileSelectorButton(
-                buttonText = "Select Video 2",
-                buttonPath = state.value.video2Path,
+                buttonText = "Select Current Video",
+                buttonPath = state.value.videoCurrentPath,
                 onUpdateResult = { selectedFilePath ->
-                    state.value = state.value.copy(video2Path = selectedFilePath)
+                    state.value = state.value.copy(videoCurrentPath = selectedFilePath)
                 },
-                directoryPath = state.value.video2Path,
+                directoryPath = state.value.videoCurrentPath,
             )
         }
         // screen switch buttons

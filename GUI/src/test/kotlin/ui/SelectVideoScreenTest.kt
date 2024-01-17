@@ -51,8 +51,8 @@ class SelectVideoScreenTest {
      */
     @Test
     fun `test presence of buttons`() {
-        composeTestRule.onNodeWithText("Select Video 1").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Select Video 2").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Select Reference Video").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Select Current Video").assertIsDisplayed()
         composeTestRule.onNodeWithText("Compute and Display Differences").assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription("settings").assertIsDisplayed()
         composeTestRule.onNodeWithText("?").assertIsDisplayed()

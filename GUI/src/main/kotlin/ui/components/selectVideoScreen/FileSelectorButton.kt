@@ -22,7 +22,7 @@ import ui.components.general.openFileChooserAndGetPath
  * @param buttonText The text to be displayed on the button.
  * @param buttonPath The path to the selected file.
  * @param onUpdateResult A function that will be called with the selected file path as a parameter.
- * Should update the AppState with the selected file path for the chosen file(e.g. Video1Path).
+ * Should update the AppState with the selected file path for the chosen file(e.g. VideoReferencePath).
  * @param tooltipText The text to be displayed in the tooltip.
  * @param directoryPath The path to the directory to be opened in the file chooser.
  * @return [Unit]
