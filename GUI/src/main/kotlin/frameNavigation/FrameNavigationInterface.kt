@@ -1,5 +1,3 @@
-
-
 /**
  * Provides navigation methods for frames in a video.
  *
