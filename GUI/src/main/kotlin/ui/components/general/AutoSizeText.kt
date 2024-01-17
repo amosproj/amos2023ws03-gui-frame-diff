@@ -93,7 +93,12 @@ fun AutoSizeText(
         style = scaled,
         onTextLayout = { result ->
             val height = result.layoutInput.constraints.maxHeight / 2
-            val width = result.layoutInput.constraints.maxWidth / result.layoutInput.text.length
+            val width =
+                if (result.layoutInput.text.isEmpty()) {
+                    0
+                } else {
+                    result.layoutInput.constraints.maxWidth / result.layoutInput.text.length
+                }
             // choose limit based on height or width or minimalFontSize
             scaled = scaled.copy(fontSize = with(localDensity) { maxOf(minOf(height, width), minimalFontSize).toSp() })
             // on overflow trim start
@@ -105,7 +110,7 @@ fun AutoSizeText(
                 data = textMeasurer.measure(currentText, scaled, overflow = TextOverflow.Visible)
             }
             // add ellipsis if the text was trimmed
-            if (currentText.length < text.length) {
+            if (currentText.length < text.length && currentText.length > 3) {
                 currentText = "..." + currentText.substring(3, currentText.length)
             }
         },
