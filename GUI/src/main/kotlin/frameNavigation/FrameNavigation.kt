@@ -397,7 +397,7 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
                 deletionBitmap
             } else {
                 videoCurrentGrabber.setVideoFrameNumber(videoCurrentIndex)
-                getBitmap(videoReferenceGrabber)
+                getBitmap(videoCurrentGrabber)
             }
         return listOf(videoReferenceBitmap, videoCurrentBitmap)
     }
