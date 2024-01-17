@@ -23,6 +23,15 @@
       - The videos are `src/test/resources/ExampleVideoNew.mov` and `src/test/resources/ExampleVideoReference.mov`.
       - The mask is `src/test/resources/mask1200x700.png`.
 
+### Environment variables
+
+For convenience reason, the project offers an environment variable to be set to use some defaults
+for path values (videos, masks, etc.).
+Set `GUI_USE_DEFAULT_PATHS` to `true` to use the default paths before running the GUI.
+
+Windows: `set $env:GUI_USE_DEFAULT_PATHS=true`
+Shell: `export GUI_USE_DEFAULT_PATHS=true`
+
 ## Testing instructions
 
 Tests can be found under `src/test/kotlin/`.

@@ -56,6 +56,18 @@ object JsonMapper {
         }
 }
 
+fun createAppState(useDefaultPaths: Boolean): AppState {
+    if (useDefaultPaths) {
+        return AppState(
+            videoReferencePath = getPath("testVideo1.mkv"),
+            videoCurrentPath = getPath("testVideo2.mkv"),
+            outputPath = getPath("output.mkv"),
+            maskPath = getPath("mask.png"),
+        )
+    }
+    return AppState()
+}
+
 /**
  *  TODO: remove this function
  *  This function is used to get the path of a file in the resources folder.
