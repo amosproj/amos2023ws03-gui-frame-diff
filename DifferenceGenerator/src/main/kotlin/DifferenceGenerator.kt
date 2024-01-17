@@ -6,10 +6,10 @@ import org.bytedeco.ffmpeg.global.avcodec.AV_CODEC_ID_FFV1
 import org.bytedeco.ffmpeg.global.avutil
 import org.bytedeco.javacv.FFmpegFrameRecorder
 import org.bytedeco.javacv.Frame
+import util.ColoredFrameGenerator
 import wrappers.MaskedImageGrabber
 import wrappers.Resettable2DFrameConverter
 import java.awt.Color
-import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import java.awt.image.DataBufferByte
 import java.io.File
@@ -31,6 +31,7 @@ class DifferenceGenerator(
     private var video2Grabber: MaskedImageGrabber = MaskedImageGrabber(video2File, null)
 
     private val converter = Resettable2DFrameConverter()
+    private var coloredFrameGenerator: ColoredFrameGenerator
 
     private var width = 0
     private var height = 0
@@ -56,9 +57,10 @@ class DifferenceGenerator(
 
         this.width = this.video1Grabber.imageWidth
         this.height = this.video1Grabber.imageHeight
+        coloredFrameGenerator = ColoredFrameGenerator(this.width, this.height)
         mask =
             if (maskFile == null) {
-                CompositeMask(getColoredBufferedImage(Color(255, 255, 255, 0), BufferedImage.TYPE_4BYTE_ABGR))
+                CompositeMask(coloredFrameGenerator.getColoredBufferedImage(Color(255, 255, 255, 0), BufferedImage.TYPE_4BYTE_ABGR))
             } else {
                 CompositeMask(maskFile, this.width, this.height)
             }
@@ -114,15 +116,15 @@ class DifferenceGenerator(
                     encoder.record(getDifferencesBetweenBufferedImages(video1Grabber.next(), video2Grabber.next()))
                 }
                 AlignmentElement.INSERTION -> {
-                    encoder.record(getColoredFrame(Color.GREEN))
+                    encoder.record(coloredFrameGenerator.getColoredFrame(Color.GREEN))
                     video2Grabber.next()
                 }
                 AlignmentElement.DELETION -> {
-                    encoder.record(getColoredFrame(Color.BLUE))
+                    encoder.record(coloredFrameGenerator.getColoredFrame(Color.BLUE))
                     video1Grabber.next()
                 }
                 AlignmentElement.PERFECT -> {
-                    encoder.record(getColoredFrame(Color.BLACK))
+                    encoder.record(coloredFrameGenerator.getColoredFrame(Color.BLACK))
                     video1Grabber.next()
                     video2Grabber.next()
                 }
@@ -148,7 +150,7 @@ class DifferenceGenerator(
         image1: BufferedImage,
         image2: BufferedImage,
     ): Frame {
-        val differences = getColoredBufferedImage(Color.BLACK)
+        val differences = coloredFrameGenerator.getColoredBufferedImage(Color.BLACK)
         val differencesData = (differences.raster.dataBuffer as DataBufferByte)
 
         val data1 = (image1.raster.dataBuffer as DataBufferByte).data
@@ -176,33 +178,5 @@ class DifferenceGenerator(
             index += 3
         }
         return converter.getFrame(differences)
-    }
-
-    /**
-     * Creates a Frame with a given color.
-     *
-     * @param color the color
-     * @return a frame colored in the given color
-     */
-    private fun getColoredFrame(color: Color): Frame {
-        return converter.getFrame(getColoredBufferedImage(color))
-    }
-
-    /**
-     * Creates a Buffered Image with a given color.
-     *
-     * @param color the color
-     * @return a Buffered Image colored in the given color
-     */
-    private fun getColoredBufferedImage(
-        color: Color,
-        type: Int = BufferedImage.TYPE_3BYTE_BGR,
-    ): BufferedImage {
-        val result = BufferedImage(width, height, type)
-        val g2d: Graphics2D = result.createGraphics()
-        g2d.paint = color
-        g2d.fillRect(0, 0, width, height)
-        g2d.dispose()
-        return result
     }
 }

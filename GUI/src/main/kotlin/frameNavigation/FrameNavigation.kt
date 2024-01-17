@@ -9,7 +9,9 @@ import androidx.compose.ui.graphics.toComposeImageBitmap
 import kotlinx.coroutines.*
 import models.AppState
 import org.bytedeco.javacv.FFmpegFrameGrabber
+import util.ColoredFrameGenerator
 import wrappers.Resettable2DFrameConverter
+import java.awt.Color
 import java.awt.image.BufferedImage
 import kotlin.math.roundToInt
 
@@ -24,7 +26,7 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
     private val grabberDiff: FFmpegFrameGrabber = FFmpegFrameGrabber(state.value.outputPath)
 
     // create the sequences
-    private var diffSequence: Array<AlignmentElement> = state.value.sequenceObj
+    var diffSequence: Array<AlignmentElement> = state.value.sequenceObj
     private var video1Frames: MutableList<Int> = mutableListOf()
     private var video2Frames: MutableList<Int> = mutableListOf()
 
@@ -38,20 +40,38 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
 
     // state variables for the current frame index
     var currentIndex: Int = 0
+    var currentDiffIndex: MutableState<Int> = mutableStateOf(0)
     var jumpLock = false
 
     // holds the relative position of the current frame in the diff video
     // 0.0 means the first frame, 1.0 means the last frame
     var currentRelativePosition: MutableState<Double> = mutableStateOf(0.0)
 
+    var width: Int = 0
+    var height: Int = 0
+
+    private var insertionBitmap: ImageBitmap
+    private var deletionBitmap: ImageBitmap
+
+    private var onNavigateCallback: () -> Unit = {}
+
     init {
         // start the grabbers
         video1Grabber.start()
         video2Grabber.start()
         grabberDiff.start()
+
         // generate the sequences for video 1 and video 2
         // diffSequence is already generated
         generateSequences()
+
+        width = grabberDiff.imageWidth
+        height = grabberDiff.imageHeight
+
+        val coloredFrameGenerator = ColoredFrameGenerator(width, height)
+        insertionBitmap = coloredFrameGenerator.getColoredBufferedImage(Color.GREEN).toComposeImageBitmap()
+        deletionBitmap = coloredFrameGenerator.getColoredBufferedImage(Color.BLUE).toComposeImageBitmap()
+
         // jump to the first frame
         jumpToFrame()
     }
@@ -70,34 +90,37 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
 
     /**
      * Generate the sequences for video 1 and video 2.
+     *
+     * If there is no image for one of the sequences (because of insertions/deletions),
+     * the index will be -1. This has to be handled when accessing a certain position in the alignment.
      */
     private fun generateSequences() {
-        // init with -1 to account for deletions/insertions on the first frame
-        video1Frames.add(-1)
-        video2Frames.add(-1)
+        // running indices for both videos
+        var video1Index = 0
+        var video2Index = 0
         for (i in diffSequence) {
             when (i) {
                 AlignmentElement.MATCH -> {
-                    video1Frames.add(video1Frames.last() + 1)
-                    video2Frames.add(video2Frames.last() + 1)
+                    video1Frames.add(video1Index++)
+                    video2Frames.add(video2Index++)
                 }
+
                 AlignmentElement.INSERTION -> {
-                    video1Frames.add(video1Frames.last())
-                    video2Frames.add(video2Frames.last() + 1)
+                    video1Frames.add(-1)
+                    video2Frames.add(video2Index++)
                 }
+
                 AlignmentElement.DELETION -> {
-                    video1Frames.add(video1Frames.last() + 1)
-                    video2Frames.add(video2Frames.last())
+                    video1Frames.add(video1Index++)
+                    video2Frames.add(-1)
                 }
+
                 AlignmentElement.PERFECT -> {
-                    video1Frames.add(video1Frames.last() + 1)
-                    video2Frames.add(video2Frames.last() + 1)
+                    video1Frames.add(video1Index++)
+                    video2Frames.add(video2Index++)
                 }
             }
         }
-        // remove the initial -1
-        video1Frames.removeAt(0)
-        video2Frames.removeAt(0)
     }
 
     /**
@@ -164,11 +187,18 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
                 goal = coercedIndex
 
                 // update the bitmaps
-                video1Grabber.setVideoFrameNumber(video1Frames[goal])
-                b1 = getBitmap(video1Grabber)
-
-                video2Grabber.setVideoFrameNumber(video2Frames[goal])
-                b2 = getBitmap(video2Grabber)
+                if (video1Frames[goal] != -1) {
+                    video1Grabber.setVideoFrameNumber(video1Frames[goal])
+                    b1 = getBitmap(video1Grabber)
+                } else {
+                    b1 = insertionBitmap
+                }
+                if (video2Frames[goal] != -1) {
+                    video2Grabber.setVideoFrameNumber(video2Frames[goal])
+                    b2 = getBitmap(video2Grabber)
+                } else {
+                    b2 = deletionBitmap
+                }
 
                 grabberDiff.setVideoFrameNumber(goal)
                 b3 = getBitmap(grabberDiff)
@@ -183,7 +213,10 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
                 diffBitmap.value = b3!!
             }
             currentIndex = coercedIndex
+            currentDiffIndex.value = currentIndex
             jumpLock = false
+        }.invokeOnCompletion {
+            onNavigateCallback()
         }
     }
 
@@ -294,7 +327,8 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
         val width = video1Grabber.imageWidth
         var xOffset = 0
         // create the collage
-        val collage = BufferedImage(width * 3 + border * 2, video1Grabber.imageHeight + titleHeight, BufferedImage.TYPE_INT_RGB)
+        val collage =
+            BufferedImage(width * 3 + border * 2, video1Grabber.imageHeight + titleHeight, BufferedImage.TYPE_INT_RGB)
         val g = collage.createGraphics()
         // fill the background with white
         g.color = java.awt.Color.WHITE
@@ -321,5 +355,37 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
         // save the collage
         val file = java.io.File(outputPath)
         javax.imageio.ImageIO.write(collage, "png", file)
+    }
+
+    /**
+     * Get the images at a certain diff index.
+     *
+     * If the index is an insertion or deletion, the corresponding bitmap will be returned.
+     *
+     * @param diffIndex [Int] containing the index of the diff.
+     * @return [List]<[ImageBitmap]> containing the bitmaps of the images.
+     */
+    fun getImagesAtDiff(diffIndex: Int): List<ImageBitmap> {
+        val video1Index = video1Frames[diffIndex]
+        val video2Index = video2Frames[diffIndex]
+        val video1Bitmap =
+            if (video1Index == -1) {
+                insertionBitmap
+            } else {
+                video1Grabber.setVideoFrameNumber(video1Index)
+                getBitmap(video1Grabber)
+            }
+        val video2Bitmap =
+            if (video2Index == -1) {
+                deletionBitmap
+            } else {
+                video1Grabber.setVideoFrameNumber(video2Index)
+                getBitmap(video1Grabber)
+            }
+        return listOf(video1Bitmap, video2Bitmap)
+    }
+
+    fun setOnNavigateCallback(callback: () -> Unit) {
+        onNavigateCallback = callback
     }
 }
