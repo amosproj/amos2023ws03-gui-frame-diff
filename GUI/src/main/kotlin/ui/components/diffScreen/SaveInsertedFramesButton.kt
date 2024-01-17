@@ -65,7 +65,7 @@ fun saveInsertedFramesCallback(
             return
         }
     }
-    state.value = state.value.copy(saveInsertionsPath = savePath)
+    state.value.saveInsertionsPath = savePath
 
     createInsertionsExport(savePath, navigator.getInsertedFrames())
 }

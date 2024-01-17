@@ -84,7 +84,7 @@ fun handleOpenProject(
 ) {
     val file = File(path).readLines()
     state.value = JsonMapper.mapper.readValue<AppState>(file.joinToString(""))
-    state.value = state.value.copy(openProjectPath = path)
+    state.value.openProjectPath = path
 }
 
 /**
@@ -100,7 +100,8 @@ fun handleSaveProject(
     if (!savePath.endsWith(".json")) {
         savePath = "$savePath.json"
     }
-    state.value = state.value.copy(saveProjectPath = savePath)
+    state.value.saveProjectPath = savePath
+
     val jsonData = JsonMapper.mapper.writeValueAsString(state.value)
     File(savePath).writeText(jsonData)
 }
