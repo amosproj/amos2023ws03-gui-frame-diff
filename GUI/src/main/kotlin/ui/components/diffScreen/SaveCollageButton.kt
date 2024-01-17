@@ -51,6 +51,6 @@ fun saveCollageCallback(
     if (!savePath.endsWith(".png")) {
         savePath = "$savePath.png"
     }
-    state.value = state.value.copy(saveCollagePath = savePath)
+    state.value.saveCollagePath = savePath
     navigator.createCollage(savePath)
 }

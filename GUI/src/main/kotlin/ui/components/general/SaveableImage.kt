@@ -109,7 +109,7 @@ private fun saveBitmapAsPng(
         savePath = "$savePath.png"
     }
     // remember path for next time opening the file chooser
-    state.value = state.value.copy(saveFramePath = savePath)
+    state.value.saveFramePath = savePath
     val file = File(savePath)
     if (file.exists()) {
         val overwrite = showOverwriteConfirmation()
