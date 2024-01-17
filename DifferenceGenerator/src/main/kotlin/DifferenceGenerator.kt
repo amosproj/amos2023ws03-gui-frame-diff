@@ -94,8 +94,8 @@ class DifferenceGenerator(
      * Uses the algorithm given in the constructor to align the frames of both videos.
      *
      * The resulting video consists of frames which are one of types:
-     *  - only blue pixels: a frame was deleted (only in first video)
-     *  - only green pixels: a frame was inserted (only in second video)
+     *  - only blue pixels: a frame was deleted (only in reference video)
+     *  - only green pixels: a frame was inserted (only in current video)
      *  - red and black pixels: a frame was modified (both videos contain the frame)
      */
     override fun generateDifference() {

@@ -18,7 +18,7 @@ import ui.components.general.TextTitle
 
 /**
  * A Composable function that creates a screen to display the differences between two videos.
- * Shows 3 videos: the first video, the difference between the two videos, and the second video.
+ * Shows 3 videos: the reference video, the difference between the two videos, and the current video.
  * Gets recomposed when the state object changes, not when state properties change.
  * @param state [MutableState]<[AppState]> containing the global state.
  * @return [Unit]

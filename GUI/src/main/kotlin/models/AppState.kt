@@ -11,8 +11,8 @@ import java.nio.file.FileSystems
 /**
  * This data class represents the global state of the application.
  * @param screen the current screen
- * @param videoReferencePath the path of the first video
- * @param videoCurrentPath the path of the second video
+ * @param videoReferencePath the path of the reference video
+ * @param videoCurrentPath the path of the current video
  * @param outputPath the path of the output video
  * @param saveCollagePath the last path where a collage was saved
  * @param saveProjectPath the last path where a project was saved
