@@ -237,24 +237,61 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
     }
 
     /**
-     * Jump to the next diff.
+     * Jump to the next diff. If no next diff exists, nothing happens.
      * @param forward [Boolean] containing whether to jump forward or backward.
      * @return [Unit]
      */
     override fun jumpToNextDiff(forward: Boolean) {
-        // get the current frame
-        var index = currentIndex
-        // create a function that increments or decrements the index
-        val op: (Int) -> Int = if (forward) { x: Int -> x + 1 } else { x: Int -> x - 1 }
-        // ignore current frame by jumping once
-        index = op(index)
-        // jump until a diff is found or the end is reached
-        while (index >= 0 && index < diffSequence.size && diffSequence[index] == AlignmentElement.PERFECT) {
-            index = op(index)
+        val index = nextDiffIndex(forward)
+
+        // dont jump to a frame, if no next diff exists
+        if (index == -1) {
+            return
         }
+
         // jump to the frame
         currentIndex = index
         jumpToFrame()
+    }
+
+    /**
+     * Check if there is a next frame in the specified direction.
+     * @param forward [Boolean] containing whether to check forward or backward.
+     * @return [Boolean] containing whether there is a next frame.
+     */
+    fun hasNextFrame(forward: Boolean): Boolean {
+        return if (forward) {
+            currentDiffIndex.value < diffSequence.size - 1
+        } else {
+            currentDiffIndex.value > 0
+        }
+    }
+
+    /**
+     * Check if there is a next difference (insertion, deletion, pixel diff) in the specified direction.
+     * @param forward [Boolean] containing whether to check forward or backward.
+     * @return [Boolean] containing whether there is a next diff.
+     */
+    fun hasNextDiff(forward: Boolean): Boolean {
+        return nextDiffIndex(forward) != -1
+    }
+
+    /**
+     * Get the index of the next diff in the specified direction.
+     *
+     * IMPORTANT: This has to use the mutableState variable currentDiffIndex instead of currentIndex,
+     * as otherwise no UI update will be triggered with a state change.
+     *
+     * @param forward [Boolean] containing whether to check forward or backward.
+     * @return [Int] containing the index of the next diff.
+     */
+    private fun nextDiffIndex(forward: Boolean): Int {
+        return if (forward) {
+            val idx = diffSequence.drop(currentDiffIndex.value + 1).indexOfFirst { it != AlignmentElement.PERFECT }
+            if (idx == -1) -1 else idx + currentDiffIndex.value + 1
+        } else {
+            diffSequence.take(currentDiffIndex.value).indexOfLast { it != AlignmentElement.PERFECT }
+        }
     }
 
     /**
