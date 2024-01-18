@@ -71,6 +71,7 @@ internal class DifferenceGeneratorTest {
             val testCaseGenerator = TestCaseGenerator(pathVideoReference, pathVideoCurrent, 50)
             val expectedAlignment = testCaseGenerator.generateRandomTestCase()
             val differenceGenerator = DifferenceGenerator(pathVideoReference, pathVideoCurrent, outputPath, algorithm)
+            differenceGenerator.generateDifference()
             val actualAlignment = differenceGenerator.alignment
             println("Calculated Alignment: " + actualAlignment.joinToString())
             println("Expected Alignment: " + expectedAlignment.joinToString())
@@ -101,6 +102,7 @@ internal class DifferenceGeneratorTest {
                 outputPath,
                 algorithm,
             )
+        g.generateDifference()
         val expectedAlignment =
             arrayOf(
                 AlignmentElement.PERFECT,
@@ -141,6 +143,7 @@ internal class DifferenceGeneratorTest {
                 outputPath,
                 algorithm,
             )
+        g.generateDifference()
         println(g.alignment.joinToString())
         val expectedAlignment =
             arrayOf(
@@ -176,6 +179,7 @@ internal class DifferenceGeneratorTest {
         }
 
         val g = DifferenceGenerator(video11Frames, video10Frames, outputPath, algorithm)
+        g.generateDifference()
         println(g.alignment.joinToString())
         val expectedAlignment =
             arrayOf(
@@ -234,6 +238,7 @@ internal class DifferenceGeneratorTest {
                 algorithm,
                 mask,
             )
+        g.generateDifference()
         val expectedAlignment =
             arrayOf(
                 AlignmentElement.PERFECT,
@@ -272,6 +277,6 @@ internal class DifferenceGeneratorTest {
             modifiedVideo9Frames,
             outputPath,
             algorithm,
-        )
+        ).generateDifference()
     }
 }

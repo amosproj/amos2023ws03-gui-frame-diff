@@ -70,8 +70,6 @@ class DifferenceGenerator(
 
         // turn off verbose ffmpeg output
         avutil.av_log_set_level(avutil.AV_LOG_QUIET)
-
-        generateDifference()
     }
 
     /**
