@@ -215,7 +215,7 @@ internal class DifferenceGeneratorTest {
                 gapOpenPenalty = -0.5,
                 gapExtensionPenalty = -0.0,
             )
-        assertThrows(Exception::class.java) {
+        assertThrows(DifferenceGeneratorCodecException::class.java) {
             DifferenceGenerator(video9Frames, compressedVideo, outputPath, algorithm)
         }
     }

@@ -1,5 +1,6 @@
 package mask
 
+import DifferenceGeneratorMaskException
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import java.io.File
@@ -26,12 +27,12 @@ class CompositeMask : Mask {
      * @param maskFile The file to load the mask from.
      * @param width The width of the image.
      * @param height The height of the image.
-     * @throws Exception if the mask does not have the same dimensions as the videos.
+     * @throws DifferenceGeneratorMaskException if the mask does not have the same dimensions as the videos.
      */
     constructor(maskFile: File, width: Int, height: Int) {
         maskImage = ImageIO.read(maskFile)
         if (maskImage.width != width || maskImage.height != height) {
-            throw Exception("Mask must have the same dimensions as the videos")
+            throw DifferenceGeneratorMaskException("Mask must have the same dimensions as the videos")
         }
     }
 

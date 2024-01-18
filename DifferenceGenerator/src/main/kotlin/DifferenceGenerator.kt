@@ -42,17 +42,18 @@ class DifferenceGenerator(
     /**
      * Initializes a new instance of the class.
      *
-     * @throws Exception if the videos are not in an [AcceptedCodecs.ACCEPTED_CODECS].
+     * @throws DifferenceGeneratorCodecException if the videos are not in an [AcceptedCodecs.ACCEPTED_CODECS].
+     * @throws DifferenceGeneratorDimensionException if the videos' dimensions don't match.
      */
     init {
         if (!isLosslessCodec(videoReferenceGrabber) || !isLosslessCodec(videoCurrentGrabber)) {
-            throw Exception("Videos must be in a lossless codec")
+            throw DifferenceGeneratorCodecException("Videos must be in a lossless codec")
         }
 
         if (this.videoReferenceGrabber.imageWidth != this.videoCurrentGrabber.imageWidth ||
             this.videoReferenceGrabber.imageHeight != this.videoCurrentGrabber.imageHeight
         ) {
-            throw Exception("Videos must have the same dimensions")
+            throw DifferenceGeneratorDimensionException("Videos must have the same dimensions")
         }
 
         this.width = this.videoReferenceGrabber.imageWidth
