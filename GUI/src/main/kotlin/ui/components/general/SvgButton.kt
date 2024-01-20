@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
  * A Composable function that creates a button.
  * @param onClick [Function] to be called when the button is clicked.
  * @param content [String] containing the name of the svg file to be displayed.
+ * @param enabled [Boolean] deciding if the button can be pressed.
  * @param modifier [Modifier] to be applied to the [Button].
  * @return [Unit]
  */
@@ -20,11 +21,13 @@ import androidx.compose.ui.unit.dp
 fun SvgButton(
     onClick: () -> Unit,
     content: String,
+    enabled: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
     Button(
         onClick = onClick,
         modifier = modifier.padding(40.dp, 20.dp, 40.dp, 20.dp),
+        enabled = enabled,
     ) {
         Image(
             painter = painterResource(content),
