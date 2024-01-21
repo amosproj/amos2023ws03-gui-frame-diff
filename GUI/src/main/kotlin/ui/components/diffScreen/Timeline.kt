@@ -1,5 +1,6 @@
 package ui.components.diffScreen
 
+import algorithms.AlignmentElement
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
@@ -7,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -83,6 +85,30 @@ fun Timeline(navigator: FrameNavigation) {
         modifier = Modifier.background(color = Color.Gray).fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Row(
+            modifier =
+                Modifier.weight(1f).fillMaxHeight(0.2f).fillMaxWidth(0.8f)
+                    .pointerInput(Unit) { detectTapGestures { offset -> jumpOffsetHandler(offset) } },
+        ) {
+            for (item in 0 until navigator.diffSequence.size) {
+                Box(
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .background(
+                                if (navigator.diffSequence[item] == AlignmentElement.PERFECT) {
+                                    Color.Black
+                                } else if (navigator.diffSequence[item] == AlignmentElement.INSERTION) {
+                                    Color.Green
+                                } else {
+                                    Color.Blue
+                                },
+                            ),
+                ) {
+                    Text(navigator.diffSequence[item].toString())
+                }
+            }
+        }
         // #### timeline labeling ####
         TimelineTopLabels(
             scrollState,
