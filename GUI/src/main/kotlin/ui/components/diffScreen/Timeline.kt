@@ -50,6 +50,7 @@ fun Timeline(navigator: FrameNavigation) {
     var thumbnailWidth by remember { mutableStateOf(0.0f) }
 
     var indicatorOffset by remember { mutableStateOf(0.0f) }
+    var indicatorOffset1 by remember { mutableStateOf(0.0f) }
     val totalDiffFrames = navigator.getSizeOfDiff()
 
     fun jumpOffsetHandler(offset: Offset) {
@@ -87,7 +88,7 @@ fun Timeline(navigator: FrameNavigation) {
     ) {
         Row(
             modifier =
-                Modifier.weight(1f).fillMaxHeight(0.2f).fillMaxWidth(0.8f)
+                Modifier.weight(0.5f).fillMaxWidth(0.8f)
                     .pointerInput(Unit) { detectTapGestures { offset -> jumpOffsetHandler(offset) } },
         ) {
             for (item in 0 until navigator.diffSequence.size) {
@@ -95,6 +96,7 @@ fun Timeline(navigator: FrameNavigation) {
                     modifier =
                         Modifier
                             .weight(1f)
+                            .fillMaxHeight()
                             .background(
                                 if (navigator.diffSequence[item] == AlignmentElement.PERFECT) {
                                     Color.Black
@@ -106,6 +108,7 @@ fun Timeline(navigator: FrameNavigation) {
                             ),
                 ) {
                     Text(navigator.diffSequence[item].toString())
+                    PositionIndicator(indicatorOffset1)
                 }
             }
         }

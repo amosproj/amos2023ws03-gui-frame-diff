@@ -1,5 +1,6 @@
 package ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.*
 import frameNavigation.FrameNavigation
 import models.AppState
@@ -60,26 +62,26 @@ fun DiffScreen(state: MutableState<AppState>) {
         }
 
         // #####   Titles   #####
-        Row(modifier = Modifier.fillMaxWidth().weight(0.1f)) {
+        Row(modifier = Modifier.fillMaxWidth().weight(0.08f)) {
             TextTitle(text = "Reference Video")
             TextTitle(text = "Diff")
             TextTitle(text = "Current Video")
         }
 
-        Row(modifier = Modifier.fillMaxWidth().weight(0.1f)) {
+        Row(modifier = Modifier.fillMaxWidth().weight(0.08f)) {
             StatisticalInformation(navigator)
         }
 
         // #####   Difference Videos   #####
-        Row(modifier = Modifier.fillMaxWidth().fillMaxHeight().weight(0.5f)) {
+        Row(modifier = Modifier.fillMaxWidth().fillMaxHeight().weight(0.45f)) {
             DisplayDifferenceImage(bitmap = navigator.videoReferenceBitmap, navigator = navigator, title = "Reference Video", state = state)
             DisplayDifferenceImage(bitmap = navigator.diffBitmap, navigator = navigator, title = "Diff", state = state)
             DisplayDifferenceImage(bitmap = navigator.videoCurrentBitmap, navigator = navigator, title = "Current Video", state = state)
         }
         // #####   Timeline   #####
-        Row(modifier = Modifier.fillMaxSize().weight(0.15f)) { Timeline(navigator) }
+        Row(modifier = Modifier.fillMaxSize().weight(0.29f).background(color = Color.Red)) { Timeline(navigator) }
 
         // #####   Navigation   #####
-        NavigationButtons(navigator, Modifier.weight(1f), Modifier.weight(0.15f))
+        NavigationButtons(navigator, Modifier.weight(1f), Modifier.weight(0.10f))
     }
 }
