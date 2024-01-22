@@ -6,7 +6,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import frameNavigation.FrameNavigation
 
 @Composable
@@ -15,7 +14,7 @@ fun RowScope.StatisticalInformation(navigator: FrameNavigation) {
     val textSize = MaterialTheme.typography.bodySmall.fontSize
     Row(modifier = Modifier.weight(0.2f).fillMaxHeight().fillMaxWidth()) {
         Column {
-            Text("Statistical Information:", fontSize =  textSize, fontWeight = FontWeight.Bold, color = textColor)
+            Text("Statistical Information:", fontSize = textSize, fontWeight = FontWeight.Bold, color = textColor)
             Text("Total Frames Reference Video: ${navigator.getSizeOfVideoReference()}", fontSize = textSize, color = textColor)
             Text("Total Frames Current Video: ${navigator.getSizeOfVideoCurrent()}", fontSize = textSize, color = textColor)
             Text("Frames with Differences: ${navigator.getFramesWithPixelDifferences()}", fontSize = textSize, color = textColor)

@@ -55,7 +55,7 @@ fun ProjectMenu(
                         Dispatchers.IO,
                     ) { openFileChooserAndGetPath(state.value.openProjectPath) { path -> handleOpenProject(state, path) } }
                     expanded = false
-                }
+                },
             )
 
             val saveScope = rememberCoroutineScope()

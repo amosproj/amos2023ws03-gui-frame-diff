@@ -4,7 +4,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import models.AppState
 import ui.components.general.HelpMenu
 import ui.components.general.ProjectMenu
@@ -24,8 +23,8 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
         // menu bar
         TopAppBar(
             backgroundColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
-            contentColor = androidx.compose.material3.MaterialTheme.colorScheme.secondary
-        )  {
+            contentColor = androidx.compose.material3.MaterialTheme.colorScheme.secondary,
+        ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 ProjectMenu(state, Modifier.weight(0.1f))
                 Spacer(modifier = Modifier.weight(0.8f))

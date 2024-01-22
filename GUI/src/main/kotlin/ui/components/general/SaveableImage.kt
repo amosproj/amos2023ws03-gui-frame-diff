@@ -88,9 +88,10 @@ private fun DropdownMenu(
         DropdownMenuItem(
             { Text("Save image as png") },
             {
-            expanded.value = false
-            openFileSaverAndGetPath(state.value.saveFramePath) { path -> saveBitmapAsPng(bitmap, path, state) }
-        })
+                expanded.value = false
+                openFileSaverAndGetPath(state.value.saveFramePath) { path -> saveBitmapAsPng(bitmap, path, state) }
+            },
+        )
     }
 }
 

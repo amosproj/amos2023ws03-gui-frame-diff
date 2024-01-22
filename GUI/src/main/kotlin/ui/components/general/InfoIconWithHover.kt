@@ -3,10 +3,10 @@ package ui.components.general
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -35,11 +35,10 @@ fun InfoIconWithHover(text: String) {
             contentDescription = null,
             tint =
                 if (isHovered) {
-
                     MaterialTheme.colorScheme.primary
                 } else {
                     MaterialTheme.colorScheme.onBackground.copy(
-                        alpha = LocalContentAlpha.current
+                        alpha = LocalContentAlpha.current,
                     )
                 },
             modifier = Modifier.size(24.dp),

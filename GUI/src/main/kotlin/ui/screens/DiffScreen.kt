@@ -9,7 +9,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.*
 import frameNavigation.FrameNavigation
 import models.AppState
@@ -49,9 +48,8 @@ fun DiffScreen(state: MutableState<AppState>) {
         // #####   Top Bar   #####
         TopAppBar(
             backgroundColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.secondary
+            contentColor = MaterialTheme.colorScheme.secondary,
         ) {
-
             Row(modifier = Modifier.fillMaxWidth()) {
                 ProjectMenu(state, Modifier.weight(0.1f))
                 SaveCollageButton(navigator, Modifier.weight(0.1f), state)
