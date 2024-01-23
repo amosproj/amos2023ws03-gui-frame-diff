@@ -49,10 +49,15 @@ fun RowScope.ComputeDifferencesButton(state: MutableState<AppState>) {
         // fills all available space
         modifier = Modifier.weight(0.9f).padding(8.dp).fillMaxSize(1f),
         onClick = {
-            if (referenceIsOlderThanCurrent(state)) {
-                calculateVideoDifferences(scope, state, errorDialogText)
-            } else {
-                showConfirmDialog.value = true
+            try {
+                if (referenceIsOlderThanCurrent(state)) {
+                    calculateVideoDifferences(scope, state, errorDialogText)
+                } else {
+                    showConfirmDialog.value = true
+                }
+            } catch (e: Exception) {
+                errorDialogText.value = "An unexpected exception was thrown when checking" +
+                    "video creation timestamps:\n\n${e.message}"
             }
         },
         // enable the button only if all the paths are not empty
