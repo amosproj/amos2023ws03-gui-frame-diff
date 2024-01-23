@@ -61,6 +61,7 @@ class VideoGeneratorImpl(
         // initialize and start Recorder
         if (!::recorder.isInitialized) {
             recorder = initializeRecorder(width, height)
+            recorder.setMetadata("CREATION-TIME", System.currentTimeMillis().toString())
             recorder.start()
         }
 

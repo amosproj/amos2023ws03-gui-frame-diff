@@ -49,9 +49,12 @@ local.properties
 src/main/resources/test/
 src/main/resources/*.zip
 src/main/resources/*.mov
-# Ignore GUI test resources except for README.md
+# Ignore GUI test resources.
 src/test/resources/**
 !src/test/resources/README.md
+!src/test/resources/ExampleVideoNew.mov
+!src/test/resources/ExampleVideoReference.mov
+!src/test/resources/mask1200x720.png
 
 
 

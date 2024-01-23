@@ -2,7 +2,15 @@
 
 This directory contains test resources for the GUI.
 
-## How to get the resources
+## Resources available in this repo
+
+There are two videos and a mask with which one can run the GUI.
+
+- ```ExampleVideoNew.mov```
+- ```ExampleVideoReference.mov```
+- ```mask1200x700.png```
+
+## Additional Resources (needed for running the tests)
 
 run the command:
 ```./gradlew downloadAndUnzipTestAssets```

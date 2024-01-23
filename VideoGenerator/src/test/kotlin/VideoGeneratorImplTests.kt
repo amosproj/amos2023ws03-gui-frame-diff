@@ -1,3 +1,4 @@
+import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -52,5 +53,28 @@ class VideoGeneratorImplTests {
         videoGenerator.save()
 
         assertTrue(Files.exists(Paths.get(videoPath)))
+    }
+
+    @Test
+    fun testMetadata() {
+        videoGenerator.loadFrame(exampleImageData1)
+        videoGenerator.loadFrame(exampleImageData2)
+        videoGenerator.loadFrame(exampleImageData3)
+        videoGenerator.loadFrame(exampleImageData4)
+        videoGenerator.loadFrame(exampleImageData5)
+        videoGenerator.loadFrame(exampleImageData6)
+        videoGenerator.loadFrame(exampleImageData7)
+        videoGenerator.loadFrame(exampleImageData8)
+        videoGenerator.loadFrame(exampleImageData9)
+        videoGenerator.save()
+
+        assertTrue(Files.exists(Paths.get(videoPath)))
+
+        val grabber = FFmpegFrameGrabber(videoPath)
+
+        grabber.start()
+        val metadata = grabber.metadata
+        println(metadata)
+        assertTrue(metadata.containsKey("CREATION-TIME"))
     }
 }

@@ -15,6 +15,7 @@ class AcceptedCodecs {
                 "ljpeg",
                 "Uncompressed YUV 422 10-bit",
                 "Uncompressed YUV 422 8-bit",
+                "FFV1 YUV 422 8-bit",
             )
     }
 }
