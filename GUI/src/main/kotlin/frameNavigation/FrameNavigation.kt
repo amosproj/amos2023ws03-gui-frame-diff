@@ -73,7 +73,7 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
         deletionBitmap = coloredFrameGenerator.getColoredBufferedImage(Color.BLUE).toComposeImageBitmap()
 
         // jump to the first frame
-        jumpToFrame()
+        jump()
     }
 
     /**
@@ -130,7 +130,7 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
      */
     override fun jumpFrames(frames: Int) {
         currentIndex = grabberDiff.frameNumber + frames
-        jumpToFrame()
+        jump()
     }
 
     /**
@@ -153,7 +153,7 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
 
         // jump to the frame
         currentIndex = diffFrame
-        jumpToFrame()
+        jump()
     }
 
     /**
@@ -161,11 +161,33 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
      * @param index [Int] containing the index of the frame to jump to.
      * @return [Unit]
      */
-    override fun jumpToFrame() {
+    override fun jumpToFrame(index: Int) {
+        currentIndex = index
+        jump()
+    }
+
+    /**
+     * Jump to the frame with the previously set index.
+     *
+     * This function launches a coroutine to update the bitmaps. The coroutine runs in an IO thread
+     * so that the UI thread is not blocked by waiting for the bitmaps to be generated.
+     * This leads to a more seamless experience when jumping through the video. Especially, the timeline
+     * can be updated while the coroutine is running, leading to a more responsive UI.
+     *
+     * A lock variable is used to prevent multiple coroutines from running at the same time. Instead, the first called
+     * coroutine will run to completion and the others will be ignored. The only running coroutine will run until the
+     * index is not changed anymore. This is done to prevent the UI from being flooded with updates.
+     *
+     * @return [Unit]
+     */
+    private fun jump() {
         // calculate the index to jump to; round to the nearest whole integer
         var coercedIndex = currentIndex.coerceIn(0, diffSequence.size - 1)
-        // update the percentage used for rendering the timeline position
+
+        // update the percentage and diff index used for rendering the timeline position
         currentRelativePosition.value = coercedIndex.toDouble() / (diffSequence.size - 1).toDouble()
+        currentDiffIndex.value = coercedIndex
+
         // do nothing if locked
         if (jumpLock) {
             return
@@ -251,7 +273,7 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
 
         // jump to the frame
         currentIndex = index
-        jumpToFrame()
+        jump()
     }
 
     /**

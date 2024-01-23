@@ -10,7 +10,6 @@ import androidx.compose.runtime.MutableState
 import hashing.VideoFrameHasher
 import models.AppState
 import java.awt.image.BufferedImage
-import java.io.File
 
 /**
  * A class that wraps the [DifferenceGenerator] class to be used in the UI.
@@ -36,16 +35,12 @@ class DifferenceGeneratorWrapper(state: MutableState<AppState>) {
 
     /**
      * Triggers the generation of the differences between the two videos and returns the path to the
-     * output file. If output file already exists, it is not generated again.
+     * output file.
      *
      * @return The path to the output file.
      */
     fun getDifferences(outPath: String): String {
-        // check if file at outputPath exists and is not empty
-        val outputFile = File(outPath)
-        if (outputFile.exists() && outputFile.isFile && outputFile.length() > 0) {
-            return outPath
-        }
+        // TODO: check if file at outputPath exists and parse differences if given
         differenceGenerator.generateDifference()
         return outPath
     }
@@ -56,6 +51,7 @@ class DifferenceGeneratorWrapper(state: MutableState<AppState>) {
      * @return The sequence of alignment elements.
      */
     fun getSequence(): Array<AlignmentElement> {
+        // TODO: if diff video exists, read it and return the sequence
         return differenceGenerator.alignment
     }
 }

@@ -1,8 +1,7 @@
 package ui.components.selectVideoScreen
 
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import DifferenceGeneratorException
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -16,6 +15,7 @@ import models.AppState
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import ui.components.general.AutoSizeText
 import ui.components.general.ConfirmationPopup
+import ui.components.general.ErrorDialog
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -31,25 +31,33 @@ import java.nio.file.attribute.BasicFileAttributes
 fun RowScope.ComputeDifferencesButton(state: MutableState<AppState>) {
     val scope = rememberCoroutineScope()
     val showConfirmDialog = remember { mutableStateOf(false) }
+    val errorDialogText = remember { mutableStateOf<String?>(null) }
+
     ConfirmationPopup(
         text = "The reference video is older than the current video. Are you sure you want to continue?",
         showDialog = showConfirmDialog.value,
         onConfirm = {
-            calculateVideoDifferences(scope, state)
+            calculateVideoDifferences(scope, state, errorDialogText)
             showConfirmDialog.value = false
         },
         onCancel = {
             showConfirmDialog.value = false
         },
     )
+
     Button(
         // fills all available space
         modifier = Modifier.weight(0.9f).padding(8.dp).fillMaxSize(1f),
         onClick = {
-            if (referenceIsOlderThanCurrent(state)) {
-                calculateVideoDifferences(scope, state)
-            } else {
-                showConfirmDialog.value = true
+            try {
+                if (referenceIsOlderThanCurrent(state)) {
+                    calculateVideoDifferences(scope, state, errorDialogText)
+                } else {
+                    showConfirmDialog.value = true
+                }
+            } catch (e: Exception) {
+                errorDialogText.value = "An unexpected exception was thrown when checking" +
+                    "video creation timestamps:\n\n${e.message}"
             }
         },
         // enable the button only if all the paths are not empty
@@ -65,17 +73,40 @@ fun RowScope.ComputeDifferencesButton(state: MutableState<AppState>) {
             // remove default centering
             modifier = Modifier,
         )
+
+        if (errorDialogText.value != null) {
+            ErrorDialog(onCloseRequest = { errorDialogText.value = null }, text = errorDialogText.value!!)
+        }
     }
 }
 
 private fun calculateVideoDifferences(
     scope: CoroutineScope,
     state: MutableState<AppState>,
+    errorDialogText: MutableState<String?>,
 ) {
     scope.launch(Dispatchers.IO) {
         // generate the differences
-        val generator = DifferenceGeneratorWrapper(state)
-        generator.getDifferences(state.value.outputPath)
+        lateinit var generator: DifferenceGeneratorWrapper
+        try {
+            generator = DifferenceGeneratorWrapper(state)
+        } catch (e: DifferenceGeneratorException) {
+            errorDialogText.value = e.message
+            return@launch
+        } catch (e: Exception) {
+            errorDialogText.value = "An unexpected exception was thrown when creating" +
+                "the DifferenceGenerator instance:\n\n${e.message}"
+            return@launch
+        }
+
+        try {
+            generator.getDifferences(state.value.outputPath)
+        } catch (e: Exception) {
+            errorDialogText.value = "An unexpected exception was thrown when running" +
+                "the difference computation:\n\n${e.message}"
+            return@launch
+        }
+
         // set the sequence and screen
         state.value = state.value.copy(sequenceObj = generator.getSequence(), screen = Screen.DiffScreen)
     }

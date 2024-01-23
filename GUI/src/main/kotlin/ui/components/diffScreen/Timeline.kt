@@ -55,9 +55,7 @@ fun Timeline(navigator: FrameNavigation) {
             (
                 (offset.x + scrollState.firstVisibleItemScrollOffset) / thumbnailWidth
             ).toInt() + scrollState.firstVisibleItemIndex
-        navigatorUpdated.currentIndex = clickedFrame
-        navigatorUpdated.currentDiffIndex.value = clickedFrame
-        navigatorUpdated.jumpToFrame()
+        navigatorUpdated.jumpToFrame(clickedFrame)
     }
 
     fun getThumbnailWidth(): Float {
