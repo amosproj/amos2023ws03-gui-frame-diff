@@ -20,6 +20,7 @@ fun ErrorDialog(
         onDismissRequest = { onCloseRequest() },
         title = { Text(text = "Error") },
         text = { Text(text) },
+        backgroundColor = MaterialTheme.colors.error,
         confirmButton = {
             TextButton(onClick = { onCloseRequest() }) {
                 Text("OK")
