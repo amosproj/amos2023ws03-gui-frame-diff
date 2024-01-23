@@ -6,6 +6,7 @@ import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -35,11 +36,17 @@ fun InfoIconWithHover(text: String) {
             contentDescription = null,
             tint =
                 if (isHovered) {
-                    MaterialTheme.colorScheme.primary
+                    LocalContentColor.current
                 } else {
-                    MaterialTheme.colorScheme.onBackground.copy(
-                        alpha = LocalContentAlpha.current,
-                    )
+                    if (LocalContentColor.current == MaterialTheme.colorScheme.onBackground) {
+                        MaterialTheme.colorScheme.primary.copy(
+                            alpha = LocalContentAlpha.current,
+                        )
+                    } else {
+                        MaterialTheme.colorScheme.onBackground.copy(
+                            alpha = LocalContentAlpha.current,
+                        )
+                    }
                 },
             modifier = Modifier.size(24.dp),
         )
