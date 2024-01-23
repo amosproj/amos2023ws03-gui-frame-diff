@@ -19,9 +19,14 @@
        - Installer at `build/compose/binaries/main/{msi|deb|dmg}/`
     - Running without creating an executable
       - `./gradlew :run`
+      - There are two videos and a mask included in this Repository that can be used for running the GUI.
+      - The videos are `src/test/resources/ExampleVideoNew.mov` and `src/test/resources/ExampleVideoReference.mov`.
+      - The mask is `src/test/resources/mask1200x700.png`.
 
 ## Testing instructions
 
 Tests can be found under `src/test/kotlin/`.
+Tests rely on data that is not included in this repository.
+To download the test data run `./gradlew downloadAndUnzipTestAssets`.
 To run all tests of the GUI use `./gradlew :test`. 
 (the colon prevents the tests of lib1 and lib2 to run)
