@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,7 +55,14 @@ fun Timeline(navigator: FrameNavigation) {
 
     fun overviewJumpOffsetHandler(offset: Offset) {
         cursorOffset = offset
-        val clickedFrame = offset.x / xwidth
+        val clickedFrame =
+            (
+                (offset.x) / xwidth
+            ).toInt()
+
+        navigatorUpdated.currentIndex = clickedFrame
+        navigatorUpdated.currentDiffIndex.value = clickedFrame
+        navigatorUpdated.jumpToFrame()
     }
 
     fun jumpOffsetHandler(offset: Offset) {
@@ -73,6 +79,7 @@ fun Timeline(navigator: FrameNavigation) {
     }
 
     indicatorOffset = getCenteredThumbnailOffset(scrollState, navigatorUpdated.currentDiffIndex.value, thumbnailWidth)
+    indicatorOffset1.value = (navigatorUpdated.currentDiffIndex.value + 0.5f) * xwidth
 
     // set the modifier applied to all timeline components
     val generalModifier = Modifier.fillMaxWidth(0.8f)
@@ -105,15 +112,15 @@ fun Timeline(navigator: FrameNavigation) {
                     Modifier
                         .pointerInput(Unit) {
                             detectTapGestures { offset ->
-                                indicatorOffset1.value = offset.x
-                                println(offset.x)
-                                println(componentWidth)
-                                println(navigator.diffSequence.size)
 
-                                var x = (componentWidth / navigator.diffSequence.size)
-                                println(x)
-                                indicatorOffset1.value = x
+                                overviewJumpOffsetHandler(offset)
                             }
+                        }
+                        .pointerInput(Unit) {
+                            detectDragGestures(
+                                onDragStart = { offset -> overviewJumpOffsetHandler(offset) },
+                                onDrag = { _, dragAmount -> overviewJumpOffsetHandler(cursorOffset + dragAmount) },
+                            )
                         },
             ) {
                 for (item in 0 until navigator.diffSequence.size) {
@@ -136,7 +143,7 @@ fun Timeline(navigator: FrameNavigation) {
                                 }
                                 .background(
                                     if (navigator.diffSequence[item] == AlignmentElement.PERFECT) {
-                                        Color.Gray
+                                        Color.Black
                                     } else if (navigator.diffSequence[item] == AlignmentElement.INSERTION) {
                                         Color.Green
                                     } else {
@@ -144,7 +151,6 @@ fun Timeline(navigator: FrameNavigation) {
                                     },
                                 ),
                     ) {
-                        Text(navigator.diffSequence[item].toString())
                     }
                 }
             }
