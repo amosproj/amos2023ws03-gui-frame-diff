@@ -16,7 +16,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
 import kotlinx.coroutines.launch
@@ -34,7 +33,7 @@ fun Timeline(navigator: FrameNavigation) {
     val scope = rememberCoroutineScope()
     // set the width of the timeline box
     var componentWidth by remember { mutableStateOf(0.0f) }
-    var xwidth by remember { mutableStateOf(0.0f) }
+    var boxWidth by remember { mutableStateOf(0.0f) }
     var componentHeight by remember { mutableStateOf(0.0f) }
 
     // width of text component to center the current percentage over the cursor
@@ -50,14 +49,14 @@ fun Timeline(navigator: FrameNavigation) {
     var thumbnailWidth by remember { mutableStateOf(0.0f) }
 
     var indicatorOffset by remember { mutableStateOf(0.0f) }
-    val indicatorOffset1 = remember { mutableStateOf(0f) }
+    val overviewIndicatorOffset = remember { mutableStateOf(0f) }
     val totalDiffFrames = navigator.getSizeOfDiff()
 
     fun overviewJumpOffsetHandler(offset: Offset) {
         cursorOffset = offset
         val clickedFrame =
             (
-                (offset.x) / xwidth
+                (offset.x) / boxWidth
             ).toInt()
 
         navigatorUpdated.currentIndex = clickedFrame
@@ -79,7 +78,7 @@ fun Timeline(navigator: FrameNavigation) {
     }
 
     indicatorOffset = getCenteredThumbnailOffset(scrollState, navigatorUpdated.currentDiffIndex.value, thumbnailWidth)
-    indicatorOffset1.value = (navigatorUpdated.currentDiffIndex.value + 0.5f) * xwidth
+    overviewIndicatorOffset.value = (navigatorUpdated.currentDiffIndex.value + 0.5f) * boxWidth
 
     // set the modifier applied to all timeline components
     val generalModifier = Modifier.fillMaxWidth(0.8f)
@@ -104,15 +103,12 @@ fun Timeline(navigator: FrameNavigation) {
         modifier = Modifier.background(color = Color.Gray).fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        var totalWidth by remember { mutableStateOf(0f) }
-        val density = LocalDensity.current
         Box(modifier = Modifier.weight(0.5f).fillMaxWidth(0.8f)) {
             Row(
                 modifier =
                     Modifier
                         .pointerInput(Unit) {
                             detectTapGestures { offset ->
-
                                 overviewJumpOffsetHandler(offset)
                             }
                         }
@@ -132,9 +128,7 @@ fun Timeline(navigator: FrameNavigation) {
                                 .layout { measurable, constraints ->
                                     val placeable1 = measurable.measure(constraints)
                                     // Store the width
-//                                componentWidth2 = placeable.width.toFloat()
-//                                componentHeight = placeable.height.toFloat()
-                                    xwidth = placeable1.width.toFloat()
+                                    boxWidth = placeable1.width.toFloat()
 
 //                                thumbnailWidth = getThumbnailWidth()
                                     layout(placeable1.width, placeable1.height) {
@@ -158,7 +152,7 @@ fun Timeline(navigator: FrameNavigation) {
                 modifier = Modifier.fillMaxHeight(),
                 contentAlignment = Alignment.Center,
             ) {
-                PositionIndicator(indicatorOffset1.value)
+                PositionIndicator(overviewIndicatorOffset.value)
             }
         }
 
