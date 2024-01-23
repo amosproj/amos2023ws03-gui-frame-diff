@@ -32,7 +32,7 @@ fun RowScope.ComputeDifferencesButton(state: MutableState<AppState>) {
     val scope = rememberCoroutineScope()
     val showConfirmDialog = remember { mutableStateOf(false) }
     ConfirmationPopup(
-        text = "The reference video is older than the current video. Are you sure you want to continue?",
+        text = "The reference video is newer than the current video. Are you sure you want to continue?",
         showDialog = showConfirmDialog.value,
         onConfirm = {
             calculateVideoDifferences(scope, state)
