@@ -4,28 +4,37 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-
-val defaultBackgroundColor = Color.hsv(340f, 0.83f, 0.04f)
 
 val DarkColorPalette =
     darkColorScheme(
-        /* possible custom color scheme
+        /*
+         ---- possible custom color scheme ----
+         there are e.g.: primary, secondary, tertiary (also with containers and colors for text on them)
+
         primary = Color.hsv(265F, 1f, 0.93f),
-        secondary = Color.Gray,
-        background = Color.DarkGray,
-        surface = Color.Black,
-        error = Color.Red,
         onPrimary = Color.White,
+
+        secondary = Color.Gray,
         onSecondary = Color.Black,
+
+        error = Color.Red,
+        onError = Color.White,
+
+        background = Color.DarkGray,
         onBackground = Color.White,
+
+        surface = Color.Black,
         onSurface = Color.White,
-        onError = Color.White,*/
+
+         */
     )
 
 val MyTypography =
     Typography(
-        /* possible styling for normal text
+        /*
+        ---- possible custom styling for text ----
+        different types are: display, headline, title, body, label (in each small, medium, large)
+
         bodySmall =
             TextStyle(
                 fontFamily = FontFamily.SansSerif,
