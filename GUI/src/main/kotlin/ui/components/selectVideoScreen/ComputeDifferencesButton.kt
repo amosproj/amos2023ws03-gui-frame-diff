@@ -1,5 +1,6 @@
 package ui.components.selectVideoScreen
 
+import DifferenceGeneratorException
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.runtime.*
@@ -84,17 +85,20 @@ private fun calculateVideoDifferences(
         lateinit var generator: DifferenceGeneratorWrapper
         try {
             generator = DifferenceGeneratorWrapper(state)
+        } catch (e: DifferenceGeneratorException) {
+            errorDialogText.value = e.toString()
+            return@launch
         } catch (e: Exception) {
-            println("EXCEPTION DURING GENERATOR INITIALIZATION: ${e.message}")
-            errorDialogText.value = e.message
+            errorDialogText.value = "An unexpected exception was thrown when creating" +
+                "the DifferenceGenerator instance:\n\n${e.message}"
             return@launch
         }
 
         try {
             generator.getDifferences(state.value.outputPath)
         } catch (e: Exception) {
-            println("EXCEPTION DURING COMPUTATION: ${e.message}")
-            errorDialogText.value = e.message
+            errorDialogText.value = "An unexpected exception was thrown when running" +
+                "the difference computation:\n\n${e.message}"
             return@launch
         }
 
