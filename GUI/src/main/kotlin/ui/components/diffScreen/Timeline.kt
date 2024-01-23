@@ -35,6 +35,7 @@ fun Timeline(navigator: FrameNavigation) {
     val scope = rememberCoroutineScope()
     // set the width of the timeline box
     var componentWidth by remember { mutableStateOf(0.0f) }
+    var xwidth by remember { mutableStateOf(0.0f) }
     var componentHeight by remember { mutableStateOf(0.0f) }
 
     // width of text component to center the current percentage over the cursor
@@ -50,8 +51,13 @@ fun Timeline(navigator: FrameNavigation) {
     var thumbnailWidth by remember { mutableStateOf(0.0f) }
 
     var indicatorOffset by remember { mutableStateOf(0.0f) }
-    var indicatorOffset1 by remember { mutableStateOf(0.0f) }
+    val indicatorOffset1 = remember { mutableStateOf(0f) }
     val totalDiffFrames = navigator.getSizeOfDiff()
+
+    fun overviewJumpOffsetHandler(offset: Offset) {
+        cursorOffset = offset
+        val clickedFrame = offset.x / xwidth
+    }
 
     fun jumpOffsetHandler(offset: Offset) {
         cursorOffset = offset
@@ -77,7 +83,12 @@ fun Timeline(navigator: FrameNavigation) {
         if (indicatorOffset < 0 || indicatorOffset > componentWidth) {
             scope.launch {
                 val thumbnailsInView = (componentWidth / thumbnailWidth).toInt()
-                scrollState.animateScrollToItem((navigator.currentDiffIndex.value - thumbnailsInView / 2).coerceIn(0, totalDiffFrames - 1))
+                scrollState.animateScrollToItem(
+                    (navigator.currentDiffIndex.value - thumbnailsInView / 2).coerceIn(
+                        0,
+                        totalDiffFrames - 1,
+                    ),
+                )
             }
         }
     }
@@ -86,32 +97,65 @@ fun Timeline(navigator: FrameNavigation) {
         modifier = Modifier.background(color = Color.Gray).fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Row(
-            modifier =
-                Modifier.weight(0.5f).fillMaxWidth(0.8f)
-                    .pointerInput(Unit) { detectTapGestures { offset -> jumpOffsetHandler(offset) } },
-        ) {
-            for (item in 0 until navigator.diffSequence.size) {
-                Box(
-                    modifier =
-                        Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                            .background(
-                                if (navigator.diffSequence[item] == AlignmentElement.PERFECT) {
-                                    Color.Black
-                                } else if (navigator.diffSequence[item] == AlignmentElement.INSERTION) {
-                                    Color.Green
-                                } else {
-                                    Color.Blue
-                                },
-                            ),
-                ) {
-                    Text(navigator.diffSequence[item].toString())
-                    PositionIndicator(indicatorOffset1)
+        var totalWidth by remember { mutableStateOf(0f) }
+        val density = LocalDensity.current
+        Box(modifier = Modifier.weight(0.5f).fillMaxWidth(0.8f)) {
+            Row(
+                modifier =
+                    Modifier
+                        .pointerInput(Unit) {
+                            detectTapGestures { offset ->
+                                indicatorOffset1.value = offset.x
+                                println(offset.x)
+                                println(componentWidth)
+                                println(navigator.diffSequence.size)
+
+                                var x = (componentWidth / navigator.diffSequence.size)
+                                println(x)
+                                indicatorOffset1.value = x
+                            }
+                        },
+            ) {
+                for (item in 0 until navigator.diffSequence.size) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                                .layout { measurable, constraints ->
+                                    val placeable1 = measurable.measure(constraints)
+                                    // Store the width
+//                                componentWidth2 = placeable.width.toFloat()
+//                                componentHeight = placeable.height.toFloat()
+                                    xwidth = placeable1.width.toFloat()
+
+//                                thumbnailWidth = getThumbnailWidth()
+                                    layout(placeable1.width, placeable1.height) {
+                                        placeable1.placeRelative(0, 0)
+                                    }
+                                }
+                                .background(
+                                    if (navigator.diffSequence[item] == AlignmentElement.PERFECT) {
+                                        Color.Gray
+                                    } else if (navigator.diffSequence[item] == AlignmentElement.INSERTION) {
+                                        Color.Green
+                                    } else {
+                                        Color.Blue
+                                    },
+                                ),
+                    ) {
+                        Text(navigator.diffSequence[item].toString())
+                    }
                 }
             }
+            Box(
+                modifier = Modifier.fillMaxHeight(),
+                contentAlignment = Alignment.Center,
+            ) {
+                PositionIndicator(indicatorOffset1.value)
+            }
         }
+
         // #### timeline labeling ####
         TimelineTopLabels(
             scrollState,
