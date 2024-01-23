@@ -38,13 +38,19 @@ fun RowScope.FileSelectorButton(
     onUpdateResult: (String) -> Unit,
     tooltipText: String? = null,
     directoryPath: String? = null,
+    buttonDescription: String? = null,
+    allowedFileExtensions: Array<String>? = null,
 ) {
     val scope = rememberCoroutineScope()
     Button(
         modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f),
         onClick = {
             scope.launch(Dispatchers.IO) {
-                openFileChooserAndGetPath(directoryPath) { path -> onUpdateResult(path) }
+                openFileChooserAndGetPath(
+                    directoryPath,
+                    { path -> onUpdateResult(path) },
+                    allowedFileExtensions,
+                )
             }
         },
         shape = MaterialTheme.shapes.medium,
@@ -66,10 +72,17 @@ fun RowScope.FileSelectorButton(
                     InfoIconWithHover(tooltipText)
                 }
             }
-            // row to display the button text
-            Row(modifier = Modifier.weight(0.15f)) {
-                AutoSizeText(text = buttonText, minimalFontSize = 27)
+
+            if (buttonDescription != null) {
+                // row to display the button text
+                Row(modifier = Modifier.weight(0.1f)) { AutoSizeText(text = buttonText, minimalFontSize = 27) }
+                // row to display the button description
+                Row(modifier = Modifier.weight(0.05f)) { AutoSizeText(text = buttonDescription) }
+            } else {
+                // row to display the button text
+                Row(modifier = Modifier.weight(0.15f)) { AutoSizeText(text = buttonText, minimalFontSize = 27) }
             }
+
             // row to display the selected file path
             Row(modifier = Modifier.weight(0.1f)) {
                 AutoSizeText(text = buttonPath ?: "No file selected", minimalFontSize = 25)

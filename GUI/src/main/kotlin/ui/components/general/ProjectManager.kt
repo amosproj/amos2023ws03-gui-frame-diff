@@ -65,7 +65,13 @@ fun ProjectMenu(
                 onClick = {
                     openScope.launch(
                         Dispatchers.IO,
-                    ) { openFileChooserAndGetPath(state.value.openProjectPath) { path -> handleOpenProject(state, path, errorDialogText) } }
+                    ) {
+                        openFileChooserAndGetPath(
+                            directoryPath = state.value.openProjectPath,
+                            onResult = { path -> handleOpenProject(state, path, errorDialogText) },
+                            allowedFileExtensions = arrayOf("json"),
+                        )
+                    }
                     expanded = false
                 },
             )

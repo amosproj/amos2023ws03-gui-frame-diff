@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import models.AppState
+import ui.components.general.ErrorDialog
 import ui.components.general.HelpMenu
 import ui.components.general.ProjectMenu
 import ui.components.selectVideoScreen.AdvancedSettingsButton
@@ -28,6 +29,9 @@ import ui.components.selectVideoScreen.LoadingDialog
 fun SelectVideoScreen(state: MutableState<AppState>) {
     val scope = rememberCoroutineScope()
     val showLoadingDialog = remember { mutableStateOf(false) }
+
+    val referenceErrorDialogText = remember { mutableStateOf<String?>(null) }
+    val currentErrorDialogText = remember { mutableStateOf<String?>(null) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         // menu bar
@@ -54,21 +58,27 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
             FileSelectorButton(
                 buttonText = "Select Reference Video",
                 buttonPath = state.value.videoReferencePath,
-                onUpdateResult = { selectedFilePath ->
-                    state.value = state.value.copy(videoReferencePath = selectedFilePath)
-                },
+                onUpdateResult = { selectedFilePath -> checkVideoFormat(selectedFilePath, state, referenceErrorDialogText) },
                 directoryPath = state.value.videoReferencePath,
+                buttonDescription = "Please upload a video with format mkv or mov.",
+                allowedFileExtensions = arrayOf("mkv", "mov"),
             )
-
+            if (referenceErrorDialogText.value != null) {
+                ErrorDialog(onCloseRequest = { referenceErrorDialogText.value = null }, text = referenceErrorDialogText.value!!)
+            }
             FileSelectorButton(
                 buttonText = "Select Current Video",
                 buttonPath = state.value.videoCurrentPath,
-                onUpdateResult = { selectedFilePath ->
-                    state.value = state.value.copy(videoCurrentPath = selectedFilePath)
-                },
+                onUpdateResult = { selectedFilePath -> checkVideoFormat(selectedFilePath, state, currentErrorDialogText) },
                 directoryPath = state.value.videoCurrentPath,
+                buttonDescription = "Please upload a video with format mkv or mov.",
+                allowedFileExtensions = arrayOf("mkv", "mov"),
             )
+            if (currentErrorDialogText.value != null) {
+                ErrorDialog(onCloseRequest = { currentErrorDialogText.value = null }, text = currentErrorDialogText.value!!)
+            }
         }
+
         // screen switch buttons
         Row(modifier = Modifier.weight(0.15f)) {
             ComputeDifferencesButton(state, scope, showLoadingDialog)
@@ -80,5 +90,19 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
         LoadingDialog(onCancel = {
             AlgorithmExecutionState.getInstance().stop()
         })
+    }
+}
+
+// TODO: add a check for the video codec
+private fun checkVideoFormat(
+    selectedFilePath: String,
+    state: MutableState<AppState>,
+    errorDialogText: MutableState<String?>,
+) {
+    if (selectedFilePath.endsWith(".mkv") || selectedFilePath.endsWith(".mov")) {
+        state.value = state.value.copy(videoCurrentPath = selectedFilePath)
+    } else {
+        errorDialogText.value =
+            "Uploaded Video is not in the correct format. Please upload a video with format mkv or mov."
     }
 }
