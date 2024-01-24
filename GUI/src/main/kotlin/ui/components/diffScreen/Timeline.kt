@@ -1,5 +1,6 @@
 package ui.components.diffScreen
 
+import algorithms.AlignmentElement
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
@@ -33,6 +34,7 @@ fun Timeline(navigator: FrameNavigation) {
     val scope = rememberCoroutineScope()
     // set the width of the timeline box
     var componentWidth by remember { mutableStateOf(0.0f) }
+    var boxWidth by remember { mutableStateOf(0.0f) }
     var componentHeight by remember { mutableStateOf(0.0f) }
 
     // width of text component to center the current percentage over the cursor
@@ -48,7 +50,14 @@ fun Timeline(navigator: FrameNavigation) {
     var thumbnailWidth by remember { mutableStateOf(0.0f) }
 
     var indicatorOffset by remember { mutableStateOf(0.0f) }
+    val overviewIndicatorOffset = remember { mutableStateOf(0f) }
     val totalDiffFrames = navigator.getSizeOfDiff()
+
+    fun overviewJumpOffsetHandler(offset: Offset) {
+        cursorOffset = offset
+        val clickedFrame = ((offset.x) / boxWidth).toInt()
+        navigatorUpdated.jumpToFrame(clickedFrame)
+    }
 
     fun jumpOffsetHandler(offset: Offset) {
         cursorOffset = offset
@@ -64,6 +73,7 @@ fun Timeline(navigator: FrameNavigation) {
     }
 
     indicatorOffset = getCenteredThumbnailOffset(scrollState, navigatorUpdated.currentDiffIndex.value, thumbnailWidth)
+    overviewIndicatorOffset.value = (navigatorUpdated.currentDiffIndex.value + 0.5f) * boxWidth
 
     // set the modifier applied to all timeline components
     val generalModifier = Modifier.fillMaxWidth(0.8f)
@@ -74,7 +84,12 @@ fun Timeline(navigator: FrameNavigation) {
         if (indicatorOffset < 0 || indicatorOffset > componentWidth) {
             scope.launch {
                 val thumbnailsInView = (componentWidth / thumbnailWidth).toInt()
-                scrollState.animateScrollToItem((navigator.currentDiffIndex.value - thumbnailsInView / 2).coerceIn(0, totalDiffFrames - 1))
+                scrollState.animateScrollToItem(
+                    (navigator.currentDiffIndex.value - thumbnailsInView / 2).coerceIn(
+                        0,
+                        totalDiffFrames - 1,
+                    ),
+                )
             }
         }
     }
@@ -83,6 +98,58 @@ fun Timeline(navigator: FrameNavigation) {
         modifier = Modifier.background(color = Color.Gray).fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Box(modifier = generalModifier.weight(0.3f)) {
+            Row(
+                modifier =
+                    Modifier
+                        .pointerInput(Unit) {
+                            detectTapGestures { offset ->
+                                overviewJumpOffsetHandler(offset)
+                            }
+                        }
+                        .pointerInput(Unit) {
+                            detectDragGestures(
+                                onDragStart = { offset -> overviewJumpOffsetHandler(offset) },
+                                onDrag = { _, dragAmount -> overviewJumpOffsetHandler(cursorOffset + dragAmount) },
+                            )
+                        },
+            ) {
+                for (item in 0 until navigator.diffSequence.size) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                                .layout { measurable, constraints ->
+                                    val placeable1 = measurable.measure(constraints)
+                                    // Store the width
+                                    boxWidth = placeable1.width.toFloat()
+
+                                    layout(placeable1.width, placeable1.height) {
+                                        placeable1.placeRelative(0, 0)
+                                    }
+                                }
+                                .background(
+                                    if (navigator.diffSequence[item] == AlignmentElement.PERFECT) {
+                                        Color.Black
+                                    } else if (navigator.diffSequence[item] == AlignmentElement.INSERTION) {
+                                        Color.Green
+                                    } else {
+                                        Color.Blue
+                                    },
+                                ),
+                    ) {
+                    }
+                }
+            }
+            Box(
+                modifier = Modifier.fillMaxHeight(),
+                contentAlignment = Alignment.Center,
+            ) {
+                PositionIndicator(overviewIndicatorOffset.value)
+            }
+        }
+
         // #### timeline labeling ####
         TimelineTopLabels(
             scrollState,
