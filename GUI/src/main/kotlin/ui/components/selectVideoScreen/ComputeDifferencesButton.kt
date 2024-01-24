@@ -119,10 +119,10 @@ fun getVideoCreationDate(videoPath: String): Long {
     val metadata = grabber.metadata
     grabber.stop()
     grabber.release()
-    var creationData = metadata.getOrDefault("CREATION-TIME", "0").toLong()
 
-    if (creationData != 0L) {
-        return creationData
+    // Expect creation_time (ffmpeg standard) to be in ISO 8601 datetime format
+    if (metadata.containsKey("creation_time")) {
+        return java.time.Instant.parse(metadata["creation_time"]!!).toEpochMilli()
     }
 
     // if metadata is not available, use file creation date

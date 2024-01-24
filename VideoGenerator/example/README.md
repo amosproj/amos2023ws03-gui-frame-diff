@@ -58,5 +58,5 @@ the URL and destination File can be set in `example/app/build.gradle.kts
     - to check for available AVDs execute `emulator -list-avds`
 2. Run `./gradlew assembleDebug assembleDebugAndroidTest` to create debug and test APKs
 3. Install the debug APK on the emulator or device, e.g. `adb install -r app/build/outputs/apk/debug/app-debug.apk`
-4. Run the app on the emulator or device, e.g. `adb shell am start -n "com.example.videogenerator/com.example.videogenerator.MainActivity" -a android.intent.action.MAIN -c android.intent.category.LAUNCHER`
+4. Run the app on the emulator or device, e.g. `adb shell am start -n "de.guiframediff.videogeneratorexample/de.guiframediff.videogeneratorexample.MainActivity" -a android.intent.action.MAIN -c android.intent.category.LAUNCHER`
 5. Run the instrumented tests via `./gradlew connectedAndroidTest`
