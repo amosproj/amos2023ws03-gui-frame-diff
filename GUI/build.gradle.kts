@@ -12,10 +12,10 @@ plugins {
     id("com.github.jk1.dependency-license-report") version "2.5"
 }
 
-group = "com.example"
+group = "amos2023ws03"
 
 // WARNING: If this value is updated, it should be updated in the AppConfig class too
-version = "1.0.0"
+version = "1.11.0"
 
 repositories {
     google()

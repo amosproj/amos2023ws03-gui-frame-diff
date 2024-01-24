@@ -46,5 +46,5 @@ fun App() {
 }
 
 object AppConfig {
-    const val VERSION = "1.0.0" // has to be updated manually, when the version in gradle is updated
+    const val VERSION = "1.11.0" // has to be updated manually, when new version is released
 }
