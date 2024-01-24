@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
 import kotlinx.coroutines.launch
@@ -263,6 +264,10 @@ private fun TimelineTopLabels(
                 continue
             }
 
+            // somehow, we need to manually convert the offset for text only dependening on the
+            // density of the device (e.g. on Windows: window scaling)
+            val textOffset = with(LocalDensity.current) { (offset - textWidth / 2).toDp() }
+
             // draw label with diff index
             AutoSizeText(
                 text = i.toString(),
@@ -273,7 +278,7 @@ private fun TimelineTopLabels(
                             textWidth = coordinates.size.width.toFloat()
                             textHeight = coordinates.size.height.toFloat()
                         }
-                        .offset(x = (offset - textWidth / 2).dp)
+                        .offset(x = textOffset)
                         .align(Alignment.TopStart),
             )
 
