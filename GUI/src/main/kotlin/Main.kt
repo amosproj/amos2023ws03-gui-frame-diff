@@ -16,13 +16,15 @@ import ui.themes.WrapTheming
  */
 fun main(): Unit =
     application {
+        // create the global state
+        val globalState = remember { mutableStateOf(AppState()) }
         Window(
             title = "GUI Frame Diff v${AppConfig.VERSION}",
             onCloseRequest = ::exitApplication,
             state = WindowState(width = 1800.dp, height = 1000.dp),
         ) {
             // applies the default Theme to the application
-            WrapTheming { App() }
+            WrapTheming { App(globalState) }
         }
     }
 
@@ -32,9 +34,7 @@ fun main(): Unit =
  * @return Unit
  */
 @Composable
-fun App() {
-    // create the global state
-    val globalState = remember { mutableStateOf(AppState()) }
+fun App(globalState: MutableState<AppState>) {
     // pass the global state to the screen, access data using state.value.*
     // to update the global state, use state.value = state.value.copy(...)
     when (globalState.value.screen) {
