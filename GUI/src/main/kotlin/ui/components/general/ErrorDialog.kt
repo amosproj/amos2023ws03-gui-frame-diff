@@ -1,6 +1,8 @@
 package ui.components.general
 
-import androidx.compose.material.*
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 
 /**
@@ -20,7 +22,7 @@ fun ErrorDialog(
         onDismissRequest = { onCloseRequest() },
         title = { Text(text = "Error") },
         text = { Text(text) },
-        backgroundColor = MaterialTheme.colors.error,
+        backgroundColor = MaterialTheme.colorScheme.error,
         confirmButton = {
             TextButton(onClick = { onCloseRequest() }) {
                 Text("OK")

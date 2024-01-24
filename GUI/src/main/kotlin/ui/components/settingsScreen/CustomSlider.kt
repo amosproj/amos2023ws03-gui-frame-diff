@@ -2,8 +2,9 @@ package ui.components.settingsScreen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Slider
-import androidx.compose.material.TextField
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Slider
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -75,6 +76,7 @@ fun RowScope.CustomSlider(
  * @param maxValue the maximum value of the slider
  * @param sliderValue the value of the slider
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CurrentValueInputField(
     textValue: MutableState<String>,

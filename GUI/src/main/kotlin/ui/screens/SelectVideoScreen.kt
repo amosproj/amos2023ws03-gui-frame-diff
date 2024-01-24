@@ -1,6 +1,6 @@
 package ui.screens
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import models.AppState
@@ -20,7 +20,10 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
     // column represents the whole screen
     Column(modifier = Modifier.fillMaxSize()) {
         // menu bar
-        TopAppBar {
+        TopAppBar(
+            backgroundColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+            contentColor = androidx.compose.material3.MaterialTheme.colorScheme.secondary,
+        ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 ProjectMenu(state, Modifier.weight(0.1f))
                 Spacer(modifier = Modifier.weight(0.8f))

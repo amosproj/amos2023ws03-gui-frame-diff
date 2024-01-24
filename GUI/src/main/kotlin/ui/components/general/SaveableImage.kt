@@ -6,9 +6,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.CursorDropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Text
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -81,16 +81,17 @@ private fun DropdownMenu(
     bitmap: MutableState<ImageBitmap>,
     state: MutableState<AppState>,
 ) {
-    CursorDropdownMenu(
+    DropdownMenu(
         expanded = expanded.value,
         onDismissRequest = { expanded.value = false },
     ) {
-        DropdownMenuItem({
-            expanded.value = false
-            openFileSaverAndGetPath(state.value.saveFramePath) { path -> saveBitmapAsPng(bitmap, path, state) }
-        }) {
-            Text("Save image as png")
-        }
+        DropdownMenuItem(
+            { Text("Save image as png") },
+            {
+                expanded.value = false
+                openFileSaverAndGetPath(state.value.saveFramePath) { path -> saveBitmapAsPng(bitmap, path, state) }
+            },
+        )
     }
 }
 

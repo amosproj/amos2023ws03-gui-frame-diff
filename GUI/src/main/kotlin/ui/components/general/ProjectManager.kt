@@ -4,8 +4,7 @@ import Screen
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
-import androidx.compose.material.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpOffset
@@ -36,7 +35,7 @@ fun ProjectMenu(
             modifier = modifier.fillMaxSize().padding(padding),
             onClick = { expanded = !expanded },
         ) {
-            Text("Project", fontSize = MaterialTheme.typography.body2.fontSize)
+            Text("Project", fontSize = MaterialTheme.typography.headlineSmall.fontSize)
         }
 
         DropdownMenu(
@@ -47,18 +46,22 @@ fun ProjectMenu(
         ) {
             val openScope = rememberCoroutineScope()
             DropdownMenuItem(
+                {
+                    Text("Open Project", fontSize = MaterialTheme.typography.headlineSmall.fontSize)
+                },
                 onClick = {
                     openScope.launch(
                         Dispatchers.IO,
                     ) { openFileChooserAndGetPath(state.value.openProjectPath) { path -> handleOpenProject(state, path) } }
                     expanded = false
                 },
-            ) {
-                Text("Open Project", fontSize = MaterialTheme.typography.body2.fontSize)
-            }
+            )
 
             val saveScope = rememberCoroutineScope()
             DropdownMenuItem(
+                {
+                    Text("Save Project", fontSize = MaterialTheme.typography.headlineSmall.fontSize)
+                },
                 onClick = {
                     saveScope.launch(
                         Dispatchers.IO,
@@ -66,9 +69,7 @@ fun ProjectMenu(
                     expanded = false
                 },
                 enabled = state.value.screen == Screen.DiffScreen,
-            ) {
-                Text("Save Project", fontSize = MaterialTheme.typography.body2.fontSize)
-            }
+            )
         }
     }
 }

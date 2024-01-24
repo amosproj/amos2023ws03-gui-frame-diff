@@ -1,6 +1,7 @@
 package ui.themes
 
-import androidx.compose.material.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 
 /**
@@ -10,7 +11,7 @@ import androidx.compose.runtime.Composable
 @Composable
 fun WrapTheming(content: @Composable () -> Unit) {
     defaultTheme {
-        Surface(color = defaultBackgroundColor) {
+        Surface(color = MaterialTheme.colorScheme.background) {
             content()
         }
     }

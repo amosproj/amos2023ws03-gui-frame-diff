@@ -1,8 +1,9 @@
 package ui.components.general
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.Text
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,7 +47,7 @@ import androidx.compose.ui.unit.TextUnit
 fun AutoSizeText(
     text: String,
     modifier: Modifier = Modifier.fillMaxSize(),
-    color: Color = Color.Unspecified,
+    color: Color = LocalContentColor.current,
     fontStyle: FontStyle? = null,
     fontWeight: FontWeight? = null,
     fontFamily: FontFamily? = null,
