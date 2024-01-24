@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import java.nio.file.FileSystems
 
+val defaultOutputPath = getPath("output.mkv")
+
 /**
  * This data class represents the global state of the application.
  * @param screen the current screen
@@ -29,7 +31,7 @@ data class AppState(
     var screen: Screen = Screen.SelectVideoScreen,
     var videoReferencePath: String = getPath("testVideo1.mkv"),
     var videoCurrentPath: String = getPath("testVideo2.mkv"),
-    var outputPath: String = getPath("output.mkv"),
+    var outputPath: String = defaultOutputPath,
     var saveCollagePath: String? = null,
     var saveProjectPath: String? = null,
     var openProjectPath: String? = null,
