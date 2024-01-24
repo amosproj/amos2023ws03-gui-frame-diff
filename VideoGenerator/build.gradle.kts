@@ -9,8 +9,8 @@ plugins {
     id("com.github.jk1.dependency-license-report") version "2.5"
 }
 
-group = "org.example"
-version = "1.0-SNAPSHOT"
+group = "amos2023ws03"
+version = "1.11.0"
 
 repositories {
     mavenCentral()
