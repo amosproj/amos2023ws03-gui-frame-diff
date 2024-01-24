@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
 import kotlinx.coroutines.launch
@@ -54,14 +55,8 @@ fun Timeline(navigator: FrameNavigation) {
 
     fun overviewJumpOffsetHandler(offset: Offset) {
         cursorOffset = offset
-        val clickedFrame =
-            (
-                (offset.x) / boxWidth
-            ).toInt()
-
-        navigatorUpdated.currentIndex = clickedFrame
-        navigatorUpdated.currentDiffIndex.value = clickedFrame
-        navigatorUpdated.jumpToFrame()
+        val clickedFrame = ((offset.x) / boxWidth).toInt()
+        navigatorUpdated.jumpToFrame(clickedFrame)
     }
 
     fun jumpOffsetHandler(offset: Offset) {
@@ -103,7 +98,7 @@ fun Timeline(navigator: FrameNavigation) {
         modifier = Modifier.background(color = Color.Gray).fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Box(modifier = Modifier.weight(0.5f).fillMaxWidth(0.8f)) {
+        Box(modifier = generalModifier.weight(0.3f)) {
             Row(
                 modifier =
                     Modifier
