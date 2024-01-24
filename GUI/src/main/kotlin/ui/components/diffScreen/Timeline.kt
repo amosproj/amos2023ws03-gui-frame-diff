@@ -130,12 +130,12 @@ fun Timeline(navigator: FrameNavigation) {
                                     }
                                 }
                                 .background(
-                                    if (navigator.diffSequence[item] == AlignmentElement.PERFECT) {
-                                        Color.Black
+                                    if (navigator.diffSequence[item] == AlignmentElement.DELETION) {
+                                        Color.Blue
                                     } else if (navigator.diffSequence[item] == AlignmentElement.INSERTION) {
                                         Color.Green
                                     } else {
-                                        Color.Blue
+                                        Color.Black
                                     },
                                 ),
                     ) {
