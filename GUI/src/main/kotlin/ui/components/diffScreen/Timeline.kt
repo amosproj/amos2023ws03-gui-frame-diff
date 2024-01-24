@@ -125,7 +125,6 @@ fun Timeline(navigator: FrameNavigation) {
                                     // Store the width
                                     boxWidth = placeable1.width.toFloat()
 
-//                                thumbnailWidth = getThumbnailWidth()
                                     layout(placeable1.width, placeable1.height) {
                                         placeable1.placeRelative(0, 0)
                                     }
