@@ -100,7 +100,6 @@ fun handleOpenProject(
     val metadata = grabber.metadata
     grabber.stop()
     grabber.release()
-    println(metadata)
 
     // if metadata contains APP-STATE, load it
     if (metadata.containsKey("APP-STATE")) {
