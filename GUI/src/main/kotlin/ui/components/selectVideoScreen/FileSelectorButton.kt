@@ -3,11 +3,14 @@ package ui.components.selectVideoScreen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
@@ -39,6 +42,7 @@ fun RowScope.FileSelectorButton(
     Button(
         modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f),
         onClick = { scope.launch(Dispatchers.IO) { openFileChooserAndGetPath(directoryPath) { path -> onUpdateResult(path) } } },
+        shape = MaterialTheme.shapes.medium,
     ) {
         // column to display the button text and the selected file path
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -48,6 +52,7 @@ fun RowScope.FileSelectorButton(
                     painter = painterResource("upload.svg"),
                     contentDescription = "Upload",
                     modifier = Modifier.alpha(0.8f),
+                    colorFilter = ColorFilter.tint(LocalContentColor.current),
                 )
                 if (tooltipText != null) {
                     InfoIconWithHover(tooltipText)
