@@ -20,12 +20,34 @@ fun ErrorDialog(
 ) {
     AlertDialog(
         onDismissRequest = { onCloseRequest() },
-        title = { Text(text = "Error") },
-        text = { Text(text) },
+        title = {
+            Text(
+                text = "Error",
+                color = MaterialTheme.colorScheme.onError,
+                fontSize = MaterialTheme.typography.titleMedium.fontSize,
+            )
+        },
+        text = {
+            Text(
+                text,
+                color = MaterialTheme.colorScheme.onError,
+                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+            )
+        },
         backgroundColor = MaterialTheme.colorScheme.error,
         confirmButton = {
-            TextButton(onClick = { onCloseRequest() }) {
-                Text("OK")
+            TextButton(
+                onClick = { onCloseRequest() },
+                colors =
+                    ButtonDefaults.textButtonColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                    ),
+            ) {
+                Text(
+                    "OK",
+                    color = MaterialTheme.colorScheme.onErrorContainer,
+                )
             }
         },
     )
