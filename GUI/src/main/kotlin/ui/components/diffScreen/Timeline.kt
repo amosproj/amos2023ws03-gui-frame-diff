@@ -134,6 +134,8 @@ fun Timeline(navigator: FrameNavigation) {
                                         Color.Blue
                                     } else if (navigator.diffSequence[item] == AlignmentElement.INSERTION) {
                                         Color.Green
+                                    } else if (navigator.diffSequence[item] == AlignmentElement.MATCH) {
+                                        Color.Yellow
                                     } else {
                                         Color.Black
                                     },
