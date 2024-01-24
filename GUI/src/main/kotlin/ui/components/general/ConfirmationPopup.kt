@@ -2,6 +2,8 @@ package ui.components.general
 
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -17,16 +19,49 @@ fun ConfirmationPopup(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { onCancel() },
-            title = { Text(text = "Confirmation") },
-            text = { Text(text) },
+            title = {
+                Text(
+                    text = "Confirmation",
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                )
+            },
+            text = {
+                Text(
+                    text,
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                )
+            },
+            backgroundColor = MaterialTheme.colorScheme.secondary,
             confirmButton = {
-                TextButton(onClick = { onConfirm() }) {
-                    Text("Yes")
+                TextButton(
+                    onClick = { onConfirm() },
+                    colors =
+                        ButtonDefaults.textButtonColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                        ),
+                ) {
+                    Text(
+                        "Yes",
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    )
                 }
             },
             dismissButton = {
-                TextButton(onClick = { onCancel() }) {
-                    Text("No")
+                TextButton(
+                    onClick = { onCancel() },
+                    colors =
+                        ButtonDefaults.textButtonColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                        ),
+                ) {
+                    Text(
+                        "No",
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    )
                 }
             },
         )
