@@ -14,7 +14,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import models.AppState
 import models.JsonMapper
-import java.io.File
+import org.bytedeco.javacv.FFmpegFrameGrabber
+import org.bytedeco.javacv.FFmpegFrameRecorder
+import org.bytedeco.javacv.Frame
 
 /**
  * Dropdown menu to open and save projects
@@ -28,8 +30,14 @@ fun ProjectMenu(
     state: MutableState<AppState>,
     modifier: Modifier = Modifier,
 ) {
+    var errorDialogText = remember { mutableStateOf<String?>(null) }
     var expanded by remember { mutableStateOf(false) }
     val padding = 8.dp
+
+    if (errorDialogText.value != null) {
+        ErrorDialog(onCloseRequest = { errorDialogText.value = null }, text = errorDialogText.value!!)
+    }
+
     Box(modifier = modifier.fillMaxSize()) {
         Button(
             modifier = modifier.fillMaxSize().padding(padding),
@@ -52,7 +60,7 @@ fun ProjectMenu(
                 onClick = {
                     openScope.launch(
                         Dispatchers.IO,
-                    ) { openFileChooserAndGetPath(state.value.openProjectPath) { path -> handleOpenProject(state, path) } }
+                    ) { openFileChooserAndGetPath(state.value.openProjectPath) { path -> handleOpenProject(state, path, errorDialogText) } }
                     expanded = false
                 },
             )
@@ -82,10 +90,26 @@ fun ProjectMenu(
 fun handleOpenProject(
     state: MutableState<AppState>,
     path: String,
+    errorText: MutableState<String?>,
 ) {
-    val file = File(path).readLines()
-    state.value = JsonMapper.mapper.readValue<AppState>(file.joinToString(""))
     state.value.openProjectPath = path
+
+    // grab metadata
+    val grabber = FFmpegFrameGrabber(path)
+    grabber.start()
+    val metadata = grabber.metadata
+    grabber.stop()
+    grabber.release()
+    println(metadata)
+
+    // if metadata contains APP-STATE, load it
+    if (metadata.containsKey("APP-STATE")) {
+        state.value = JsonMapper.mapper.readValue<AppState>(metadata["APP-STATE"]!!)
+        // in case the video moved, set the output path to the new location
+        state.value.outputPath = path
+    } else {
+        errorText.value = "The selected file does not contain a valid project."
+    }
 }
 
 /**
@@ -98,11 +122,30 @@ fun handleSaveProject(
     path: String,
 ) {
     var savePath = path
-    if (!savePath.endsWith(".json")) {
-        savePath = "$savePath.json"
+    // add .mkv extension if not present
+    if (!savePath.endsWith(".mkv")) {
+        savePath = "$savePath.mkv"
     }
+    // set save path
     state.value.saveProjectPath = savePath
 
-    val jsonData = JsonMapper.mapper.writeValueAsString(state.value)
-    File(savePath).writeText(jsonData)
+    val grabber = FFmpegFrameGrabber(state.value.outputPath)
+    grabber.start()
+    val recorder = FFmpegFrameRecorder(savePath, grabber.imageWidth, grabber.imageHeight)
+    // set metadata
+    recorder.setMetadata("APP-STATE", JsonMapper.mapper.writeValueAsString(state.value))
+    recorder.start()
+    // clone
+    var frame: Frame? = grabber.grabFrame()
+    while (frame != null) {
+        recorder.record(frame)
+        frame = grabber.grabFrame()
+    }
+
+    // stop and release
+    grabber.stop()
+    grabber.release()
+
+    recorder.stop()
+    recorder.release()
 }
