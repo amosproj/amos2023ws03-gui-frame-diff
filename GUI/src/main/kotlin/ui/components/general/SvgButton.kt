@@ -28,7 +28,7 @@ fun SvgButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier.padding(40.dp, 20.dp, 40.dp, 20.dp),
+        modifier = modifier.padding(40.dp, 20.dp),
         enabled = enabled,
     ) {
         Image(

@@ -1,7 +1,6 @@
 package ui.components.general
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.input.pointer.PointerEventPass
@@ -40,8 +38,7 @@ fun SaveableImage(
     var expanded: MutableState<Boolean> = remember { mutableStateOf(false) }
     Row(
         modifier =
-            modifier.background(Color.Gray)
-                .padding(8.dp)
+            modifier.padding(8.dp)
                 .fillMaxWidth(1f),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
