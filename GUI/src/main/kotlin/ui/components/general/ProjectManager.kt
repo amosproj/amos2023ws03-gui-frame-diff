@@ -109,7 +109,8 @@ fun handleOpenProject(
 }
 
 /**
- * Opens the json and writes the current state to the file
+ * Creates a new diff video containing a serialized app state, which can be loaded in a later session.
+ *
  * @param state the current state of the app
  * @param path the path to the file to save
  */
@@ -127,9 +128,16 @@ fun handleSaveProject(
 
     val grabber = FFmpegFrameGrabber(state.value.outputPath)
     grabber.start()
+
     val recorder = FFmpegFrameRecorder(savePath, grabber.imageWidth, grabber.imageHeight)
+
     // set metadata
     recorder.setMetadata("APP-STATE", JsonMapper.mapper.writeValueAsString(state.value))
+
+    // copy codec and framerate from original diff video
+    recorder.frameRate = grabber.frameRate
+    recorder.videoCodec = grabber.videoCodec
+
     recorder.start()
     // clone
     var frame: Frame? = grabber.grabFrame()
