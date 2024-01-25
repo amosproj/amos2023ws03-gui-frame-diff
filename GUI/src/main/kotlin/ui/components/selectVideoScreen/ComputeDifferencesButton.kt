@@ -11,8 +11,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import logic.differenceGeneratorWrapper.DifferenceGeneratorWrapper
+import logic.getVideoMetadata
 import models.AppState
-import org.bytedeco.javacv.FFmpegFrameGrabber
 import ui.components.general.AutoSizeText
 import ui.components.general.ConfirmationPopup
 import ui.components.general.ErrorDialog
@@ -114,11 +114,7 @@ private fun calculateVideoDifferences(
 
 fun getVideoCreationDate(videoPath: String): Long {
     // attempt to get metadata
-    val grabber = FFmpegFrameGrabber(videoPath)
-    grabber.start()
-    val metadata = grabber.metadata
-    grabber.stop()
-    grabber.release()
+    val metadata = getVideoMetadata(videoPath)
 
     // Expect creation_time (ffmpeg standard) to be in ISO 8601 datetime format
     if (metadata.containsKey("creation_time")) {
