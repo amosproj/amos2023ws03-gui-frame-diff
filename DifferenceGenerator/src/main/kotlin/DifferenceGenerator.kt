@@ -132,6 +132,9 @@ class DifferenceGenerator(
         encoder.stop()
         encoder.release()
 
+        // check one last time, if the algorithm is still alive
+        algorithm.isAlive()
+
         videoReferenceGrabber.stop()
         videoCurrentGrabber.stop()
         videoReferenceGrabber.release()
