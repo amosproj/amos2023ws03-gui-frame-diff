@@ -88,6 +88,10 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
         grabberDiff.close()
     }
 
+    protected fun finalize() {
+        close()
+    }
+
     /**
      * Generate the sequences for the reference and current video.
      *

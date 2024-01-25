@@ -14,10 +14,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.*
 import frameNavigation.FrameNavigation
 import models.AppState
+import models.defaultOutputPath
 import ui.components.diffScreen.*
 import ui.components.general.HelpMenu
 import ui.components.general.ProjectMenu
 import ui.components.general.TextTitle
+import java.io.File
 
 /**
  * A Composable function that creates a screen to display the differences between two videos.
@@ -32,6 +34,13 @@ fun DiffScreen(state: MutableState<AppState>) {
     // create the navigator, which implements the jumping logic
     val scope = rememberCoroutineScope()
     val navigator = FrameNavigation(state, scope)
+    DisposableEffect(Unit) {
+        onDispose {
+            navigator.close()
+            val f = File(defaultOutputPath)
+            if (f.exists()) f.delete()
+        }
+    }
     // force into focus to intercept key presses
     val focusRequester = FocusRequester()
 
