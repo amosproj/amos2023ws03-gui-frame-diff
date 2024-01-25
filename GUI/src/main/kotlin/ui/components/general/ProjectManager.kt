@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import logic.getVideoMetadata
 import models.AppState
 import models.JsonMapper
 import org.bytedeco.javacv.FFmpegFrameGrabber
@@ -95,11 +96,7 @@ fun handleOpenProject(
     state.value.openProjectPath = path
 
     // grab metadata
-    val grabber = FFmpegFrameGrabber(path)
-    grabber.start()
-    val metadata = grabber.metadata
-    grabber.stop()
-    grabber.release()
+    val metadata = getVideoMetadata(path)
 
     // if metadata contains APP-STATE, load it
     if (metadata.containsKey("APP-STATE")) {
