@@ -2,9 +2,13 @@ package ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.TopAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,10 +30,11 @@ import ui.components.selectVideoScreen.FileSelectorButton
  * @param state [MutableState]<[AppState]> containing the global state.
  * @return [Unit]
  */
+
 @Composable
 fun SelectVideoScreen(state: MutableState<AppState>) {
     val scope = rememberCoroutineScope()
-    var isLoading = remember { mutableStateOf(false) }
+    var showDialog = mutableStateOf(false)
     var isCancelling = remember { mutableStateOf(false) }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -67,14 +72,53 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
             }
             // screen switch buttons
             Row(modifier = Modifier.weight(0.15f)) {
-                ComputeDifferencesButton(state, scope, isLoading, isCancelling)
+                ComputeDifferencesButton(state, scope, showDialog, isCancelling)
                 AdvancedSettingsButton(state)
             }
         }
-        if (isLoading.value) {
-            Loading(isCancelling)
+        if (showDialog.value) {
+            ShowDialog(isCancelling)
         }
     }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun ShowDialog(isCancelling: MutableState<Boolean>) {
+    AlertDialog(
+        modifier = Modifier.fillMaxSize(0.6f),
+        onDismissRequest = { },
+        title = {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+            ) {
+                Text(text = "Computing")
+            }
+        },
+        text = {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxWidth().fillMaxHeight(0.8f),
+            ) {
+                CircularProgressIndicator(modifier = Modifier.size(150.dp))
+            }
+        },
+        confirmButton = {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                TextButton(onClick = { isCancelling.value = true }) {
+                    if (isCancelling.value) {
+                        CircularProgressIndicator()
+                    } else {
+                        Text("Cancel")
+                    }
+                }
+            }
+        },
+    )
 }
 
 @Composable

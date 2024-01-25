@@ -27,12 +27,12 @@ import java.nio.file.attribute.BasicFileAttributes
  * @param state [AppState] object containing the state of the application.
  * @return [Unit]
  */
-@OptIn(DelicateCoroutinesApi::class)
+
 @Composable
 fun RowScope.ComputeDifferencesButton(
     state: MutableState<AppState>,
     scope: CoroutineScope,
-    isLoading: MutableState<Boolean>,
+    showDialog: MutableState<Boolean>,
     isCancelling: MutableState<Boolean>,
 ) {
     val showConfirmDialog = remember { mutableStateOf(false) }
@@ -44,7 +44,7 @@ fun RowScope.ComputeDifferencesButton(
         onClick = {
             try {
                 if (referenceIsOlderThanCurrent(state)) {
-                    calculateVideoDifferences(scope, state, errorDialogText, isLoading, isCancelling)
+                    calculateVideoDifferences(scope, state, errorDialogText, showDialog, isCancelling)
                 } else {
                     showConfirmDialog.value = true
                 }
