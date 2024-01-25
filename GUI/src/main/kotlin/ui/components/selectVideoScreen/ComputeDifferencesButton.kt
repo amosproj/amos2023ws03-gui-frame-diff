@@ -1,6 +1,8 @@
 package ui.components.selectVideoScreen
 
 import DifferenceGeneratorException
+import DifferenceGeneratorStoppedException
+import algorithms.AlgorithmExecutionState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
@@ -33,7 +35,6 @@ fun RowScope.ComputeDifferencesButton(
     state: MutableState<AppState>,
     scope: CoroutineScope,
     showDialog: MutableState<Boolean>,
-    isCancelling: MutableState<Boolean>,
 ) {
     val showConfirmDialog = remember { mutableStateOf(false) }
     val errorDialogText = remember { mutableStateOf<String?>(null) }
@@ -44,7 +45,7 @@ fun RowScope.ComputeDifferencesButton(
         onClick = {
             try {
                 if (referenceIsOlderThanCurrent(state)) {
-                    calculateVideoDifferences(scope, state, errorDialogText, showDialog, isCancelling)
+                    calculateVideoDifferences(scope, state, errorDialogText, showDialog)
                 } else {
                     showConfirmDialog.value = true
                 }
@@ -78,10 +79,10 @@ private fun calculateVideoDifferences(
     state: MutableState<AppState>,
     errorDialogText: MutableState<String?>,
     isLoading: MutableState<Boolean>,
-    isCancelling: MutableState<Boolean>,
 ) {
     scope.launch(Dispatchers.IO) {
         isLoading.value = true
+        AlgorithmExecutionState.getInstance().reset()
 
         // generate the differences
         lateinit var generator: DifferenceGeneratorWrapper
@@ -98,19 +99,24 @@ private fun calculateVideoDifferences(
 
         try {
             generator.getDifferences(state.value.outputPath)
+        } catch (e: DifferenceGeneratorStoppedException) {
+            println("stopped by canceling...")
+            return@launch
         } catch (e: Exception) {
             errorDialogText.value = "An unexpected exception was thrown when running" +
                 "the difference computation:\n\n${e.message}"
             return@launch
         }
 
-        // set the sequence and screen
-        if (!isCancelling.value) {
-            state.value =
-                state.value.copy(sequenceObj = generator.getSequence(), screen = Screen.DiffScreen)
-        }
-        isCancelling.value = false
         isLoading.value = false
+
+        // check for cancellation one last time before switching to the diff screen
+        if (!AlgorithmExecutionState.getInstance().isAlive()) {
+            return@launch
+        }
+
+        // set the sequence and screen
+        state.value = state.value.copy(sequenceObj = generator.getSequence(), screen = Screen.DiffScreen)
     }
 }
 
