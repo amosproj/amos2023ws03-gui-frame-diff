@@ -6,19 +6,21 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.TopAppBar
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.*
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
 import models.AppState
 import models.defaultOutputPath
 import ui.components.diffScreen.*
 import ui.components.general.HelpMenu
 import ui.components.general.ProjectMenu
-import ui.components.general.TextTitle
 import java.io.File
 
 /**
@@ -71,10 +73,10 @@ fun DiffScreen(state: MutableState<AppState>) {
         }
 
         // #####   Titles   #####
-        Row(modifier = Modifier.fillMaxWidth().weight(0.08f)) {
-            TextTitle(text = "Reference Video")
-            TextTitle(text = "Diff")
-            TextTitle(text = "Current Video")
+        Row(modifier = Modifier.fillMaxWidth().weight(0.08f), horizontalArrangement = Arrangement.SpaceEvenly) {
+            VideoTitle("Reference Video")
+            VideoTitle("Difference")
+            VideoTitle("Current Video")
         }
 
         Row(modifier = Modifier.fillMaxWidth().weight(0.08f)) {
@@ -93,4 +95,19 @@ fun DiffScreen(state: MutableState<AppState>) {
         // #####   Navigation   #####
         NavigationButtons(navigator, Modifier.weight(1f), Modifier.weight(0.10f))
     }
+}
+
+/**
+ * A Composable function that creates a centered title with 30% width.
+ * @param text [String] containing the text of the title.
+ * @return [Unit]
+ */
+@Composable
+fun RowScope.VideoTitle(text: String) {
+    Text(
+        text = text,
+        modifier = Modifier.padding(0.dp, 5.dp).weight(0.3f),
+        fontSize = MaterialTheme.typography.displaySmall.fontSize,
+        textAlign = TextAlign.Center,
+    )
 }
