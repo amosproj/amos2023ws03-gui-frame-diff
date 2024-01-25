@@ -115,10 +115,10 @@ private fun calculateVideoDifferences(
 fun getVideoCreationDate(videoPath: String): Long {
     // attempt to get metadata
     val metadata = getVideoMetadata(videoPath)
-    var creationData = metadata.getOrDefault("CREATION-TIME", "0").toLong()
 
-    if (creationData != 0L) {
-        return creationData
+    // Expect creation_time (ffmpeg standard) to be in ISO 8601 datetime format
+    if (metadata.containsKey("creation_time")) {
+        return java.time.Instant.parse(metadata["creation_time"]!!).toEpochMilli()
     }
 
     // if metadata is not available, use file creation date

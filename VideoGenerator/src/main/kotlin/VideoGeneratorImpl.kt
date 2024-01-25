@@ -4,6 +4,7 @@ import org.bytedeco.javacv.FFmpegFrameRecorder
 import org.bytedeco.javacv.Frame
 import java.io.ByteArrayInputStream
 import java.nio.ByteBuffer
+import java.time.LocalDateTime
 import javax.imageio.ImageIO
 
 /**
@@ -61,7 +62,7 @@ class VideoGeneratorImpl(
         // initialize and start Recorder
         if (!::recorder.isInitialized) {
             recorder = initializeRecorder(width, height)
-            recorder.setMetadata("CREATION-TIME", System.currentTimeMillis().toString())
+            recorder.setMetadata("creation_time", LocalDateTime.now().toString())
             recorder.start()
         }
 

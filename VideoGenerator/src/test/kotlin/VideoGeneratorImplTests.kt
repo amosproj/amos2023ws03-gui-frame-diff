@@ -75,6 +75,6 @@ class VideoGeneratorImplTests {
         grabber.start()
         val metadata = grabber.metadata
         println(metadata)
-        assertTrue(metadata.containsKey("CREATION-TIME"))
+        assertTrue(metadata.containsKey("creation_time"))
     }
 }
