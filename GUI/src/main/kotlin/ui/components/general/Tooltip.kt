@@ -35,6 +35,7 @@ fun Tooltip(text: String) {
                 text = text,
                 modifier = Modifier.padding(8.dp),
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
+                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
             )
         }
     }
