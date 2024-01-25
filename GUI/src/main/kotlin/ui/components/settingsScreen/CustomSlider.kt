@@ -3,14 +3,15 @@ package ui.components.settingsScreen
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import ui.components.general.AutoSizeText
 import ui.components.general.TitleWithInfo
 
 /**
@@ -36,18 +37,18 @@ fun RowScope.CustomSlider(
     var textValue = remember { mutableStateOf(default.toString()) }
 
     // Column contains the slider construct
-    Column(modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier = Modifier.weight(1f).padding(10.dp).fillMaxHeight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
         // title
         if (tooltipText != null) {
-            TitleWithInfo(Modifier.weight(0.5f), title, tooltipText)
+            TitleWithInfo(title, tooltipText, MaterialTheme.typography.headlineSmall.fontSize)
         } else {
-            AutoSizeText(modifier = Modifier.weight(0.5f).padding(8.dp), text = title)
+            Text(modifier = Modifier.weight(0.5f).padding(8.dp), text = title)
         }
 
         // slider
-        Row(modifier = Modifier.weight(0.2f)) {
+        Row(modifier = Modifier.weight(0.2f), verticalAlignment = Alignment.CenterVertically) {
             // min value
-            AutoSizeText(text = minValue.toString(), modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxHeight(1f))
+            Text(text = minValue.toString(), modifier = Modifier.padding(2.dp))
             // slider
             Slider(
                 value = sliderValue.value.toFloat(),
@@ -58,10 +59,10 @@ fun RowScope.CustomSlider(
                     textValue.value = String.format("%.2f", it).replace(",", ".")
                 },
                 valueRange = minValue.toFloat()..maxValue.toFloat(),
-                modifier = Modifier.weight(0.5f).padding(8.dp).fillMaxHeight(1f),
+                modifier = Modifier.fillMaxHeight(1f).fillMaxWidth(0.5f),
             )
             // max value
-            AutoSizeText(text = maxValue.toString(), modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxHeight(1f))
+            Text(text = maxValue.toString(), modifier = Modifier.padding(2.dp))
             // current value
             CurrentValueInputField(textValue, minValue, maxValue, sliderValue)
         }
@@ -98,5 +99,6 @@ private fun CurrentValueInputField(
             }
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        modifier = Modifier.padding(8.dp),
     )
 }

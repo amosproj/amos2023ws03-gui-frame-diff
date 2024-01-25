@@ -1,6 +1,8 @@
 package ui.components.general
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -12,9 +14,10 @@ import androidx.compose.ui.unit.dp
  */
 
 @Composable
-fun RowScope.TextTitle(text: String) {
-    AutoSizeText(
+fun TextTitle(text: String) {
+    Text(
         text = text,
-        modifier = Modifier.weight(1f).fillMaxSize().padding(20.dp),
+        modifier = Modifier.padding(0.dp, 10.dp),
+        fontSize = MaterialTheme.typography.displayMedium.fontSize,
     )
 }

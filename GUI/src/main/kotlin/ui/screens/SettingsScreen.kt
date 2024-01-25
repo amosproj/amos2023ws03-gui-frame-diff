@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import models.AppState
 import ui.components.general.TextTitle
 import ui.components.general.TitleWithInfo
-import ui.components.selectVideoScreen.FileSelectorButton
+import ui.components.selectVideoScreen.MaskSelectorButton
 import ui.components.settingsScreen.BackButton
 import ui.components.settingsScreen.CustomSlider
 import ui.components.settingsScreen.SaveButton
@@ -37,10 +37,10 @@ fun SettingsScreen(state: MutableState<AppState>) {
             "The transparent areas will be included in the video difference computation \n" +
             "while the opaque areas will be excluded."
     // Contains the whole Screen
-    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier = Modifier.fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally) {
         // Title
-        Row(modifier = Modifier.weight(0.2f)) { TextTitle("Settings") }
-        TitleWithInfo(Modifier.weight(0.15f), "Hyperparameters", textForHyper)
+        Row(horizontalArrangement = Arrangement.Center) { TextTitle("Settings") }
+        TitleWithInfo("Hyperparameters", textForHyper, MaterialTheme.typography.headlineMedium.fontSize)
 
         // gap open penalty
         Row(modifier = Modifier.weight(0.2f)) {
@@ -68,7 +68,7 @@ fun SettingsScreen(state: MutableState<AppState>) {
 
         // mask
         Row(modifier = Modifier.weight(0.175f)) {
-            FileSelectorButton(
+            MaskSelectorButton(
                 buttonText = "Upload Mask",
                 buttonPath = state.value.maskPath,
                 tooltipText = textForMask,

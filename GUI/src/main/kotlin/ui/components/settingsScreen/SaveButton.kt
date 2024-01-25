@@ -27,7 +27,7 @@ fun RowScope.SaveButton(
 ) {
     Button(
         // fills all available space
-        modifier = Modifier.weight(0.1f).padding(8.dp).fillMaxSize(1f),
+        modifier = Modifier.weight(0.1f).padding(16.dp).fillMaxSize(1f),
         onClick = {
             oldState.value = state.value
             state.value = oldState.value.copy(screen = Screen.SelectVideoScreen)
