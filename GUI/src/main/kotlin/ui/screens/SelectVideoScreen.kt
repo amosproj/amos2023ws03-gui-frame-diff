@@ -2,7 +2,11 @@ package ui.screens
 
 import algorithms.AlgorithmExecutionState
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.TopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import models.AppState
@@ -18,6 +22,7 @@ import ui.components.selectVideoScreen.LoadingDialog
  * @param state [MutableState]<[AppState]> containing the global state.
  * @return [Unit]
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectVideoScreen(state: MutableState<AppState>) {
     val scope = rememberCoroutineScope()
@@ -26,15 +31,21 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
     Column(modifier = Modifier.fillMaxSize()) {
         // menu bar
         TopAppBar(
-            backgroundColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
-            contentColor = androidx.compose.material3.MaterialTheme.colorScheme.secondary,
-        ) {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                ProjectMenu(state, Modifier.weight(0.1f))
-                Spacer(modifier = Modifier.weight(0.8f))
-                HelpMenu(Modifier.weight(0.1f))
-            }
-        }
+            title = {
+                Text(
+                    text = "Select Video Screen",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.secondary,
+                )
+            },
+            navigationIcon = {
+                ProjectMenu(state)
+            },
+            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
+            actions = {
+                HelpMenu()
+            },
+        )
 
         // video selection
         Row(modifier = Modifier.weight(0.85f)) {

@@ -1,6 +1,5 @@
 package ui.components.diffScreen
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -23,11 +22,11 @@ import ui.components.general.openFileSaverAndGetPath
 @Composable
 fun SaveCollageButton(
     navigator: FrameNavigation,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     state: MutableState<AppState>,
 ) {
     Button(
-        modifier = modifier.padding(8.dp).fillMaxSize(),
+        modifier = modifier.padding(8.dp),
         onClick = { openFileSaverAndGetPath(state.value.saveCollagePath) { path -> saveCollageCallback(navigator, path, state) } },
     ) {
         Text(text = "Save Collage")

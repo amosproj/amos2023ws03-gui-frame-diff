@@ -2,7 +2,6 @@ package ui.components.general
 
 import Screen
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -34,17 +33,17 @@ fun ProjectMenu(
     var errorDialogText = remember { mutableStateOf<String?>(null) }
     var expanded by remember { mutableStateOf(false) }
     val padding = 8.dp
-
+    
     if (errorDialogText.value != null) {
         ErrorDialog(onCloseRequest = { errorDialogText.value = null }, text = errorDialogText.value!!)
     }
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box {
         Button(
-            modifier = modifier.fillMaxSize().padding(padding),
+            modifier = modifier.padding(padding),
             onClick = { expanded = !expanded },
         ) {
-            Text("Project", fontSize = MaterialTheme.typography.headlineSmall.fontSize)
+            Text("Project", fontSize = MaterialTheme.typography.bodyMedium.fontSize)
         }
 
         DropdownMenu(
@@ -56,7 +55,7 @@ fun ProjectMenu(
             val openScope = rememberCoroutineScope()
             DropdownMenuItem(
                 {
-                    Text("Open Project", fontSize = MaterialTheme.typography.headlineSmall.fontSize)
+                    Text("Open Project", fontSize = MaterialTheme.typography.bodyMedium.fontSize)
                 },
                 onClick = {
                     openScope.launch(
@@ -69,7 +68,7 @@ fun ProjectMenu(
             val saveScope = rememberCoroutineScope()
             DropdownMenuItem(
                 {
-                    Text("Save Project", fontSize = MaterialTheme.typography.headlineSmall.fontSize)
+                    Text("Save Project", fontSize = MaterialTheme.typography.bodyMedium.fontSize)
                 },
                 onClick = {
                     saveScope.launch(

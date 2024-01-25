@@ -3,13 +3,21 @@ package ui.screens
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.*
+import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
 import models.AppState
 import models.defaultOutputPath
@@ -26,6 +34,7 @@ import java.io.File
  * @return [Unit]
  */
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiffScreen(state: MutableState<AppState>) {
     // create the navigator, which implements the jumping logic
@@ -55,17 +64,30 @@ fun DiffScreen(state: MutableState<AppState>) {
 
         // #####   Top Bar   #####
         TopAppBar(
-            backgroundColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.secondary,
-        ) {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                ProjectMenu(state, Modifier.weight(0.1f))
-                SaveCollageButton(navigator, Modifier.weight(0.1f), state)
-                SaveInsertedFramesButton(navigator, Modifier.weight(0.1f), state)
-                Spacer(modifier = Modifier.weight(0.6f))
-                HelpMenu(Modifier.weight(0.1f))
-            }
-        }
+            title = {
+                Text(
+                    text = "Difference Screen",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.secondary,
+                )
+            },
+            navigationIcon = {
+                Row {
+                    IconButton(
+                        modifier = Modifier.padding(8.dp),
+                        content = { Icon(Icons.Default.ArrowBack, "back button") },
+                        onClick = { state.value = state.value.copy(screen = Screen.SelectVideoScreen) },
+                    )
+                    ProjectMenu(state)
+                }
+            },
+            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
+            actions = {
+                SaveCollageButton(navigator = navigator, state = state)
+                SaveInsertedFramesButton(navigator = navigator, state = state)
+                HelpMenu()
+            },
+        )
         // #####   Difference Videos   #####
         Row(modifier = Modifier.fillMaxWidth().weight(0.45f)) {
             DisplayDifferenceImage(bitmap = navigator.videoReferenceBitmap, navigator = navigator, title = "Reference Video", state = state)
