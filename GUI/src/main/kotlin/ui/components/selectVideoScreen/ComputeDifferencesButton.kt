@@ -10,9 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import logic.differenceGeneratorWrapper.DifferenceGeneratorWrapper
 import models.AppState
 import org.bytedeco.javacv.FFmpegFrameGrabber
@@ -29,11 +27,13 @@ import java.nio.file.attribute.BasicFileAttributes
  * @param state [AppState] object containing the state of the application.
  * @return [Unit]
  */
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun RowScope.ComputeDifferencesButton(
     state: MutableState<AppState>,
     scope: CoroutineScope,
     isLoading: MutableState<Boolean>,
+    isCancelling: MutableState<Boolean>,
 ) {
     val showConfirmDialog = remember { mutableStateOf(false) }
     val errorDialogText = remember { mutableStateOf<String?>(null) }
@@ -44,7 +44,7 @@ fun RowScope.ComputeDifferencesButton(
         onClick = {
             try {
                 if (referenceIsOlderThanCurrent(state)) {
-                    calculateVideoDifferences(scope, state, errorDialogText, isLoading)
+                    calculateVideoDifferences(scope, state, errorDialogText, isLoading, isCancelling)
                 } else {
                     showConfirmDialog.value = true
                 }
@@ -78,6 +78,7 @@ private fun calculateVideoDifferences(
     state: MutableState<AppState>,
     errorDialogText: MutableState<String?>,
     isLoading: MutableState<Boolean>,
+    isCancelling: MutableState<Boolean>,
 ) {
     scope.launch(Dispatchers.IO) {
         isLoading.value = true
@@ -103,10 +104,13 @@ private fun calculateVideoDifferences(
             return@launch
         }
 
-        isLoading.value = false
-
         // set the sequence and screen
-        state.value = state.value.copy(sequenceObj = generator.getSequence(), screen = Screen.DiffScreen)
+        if (!isCancelling.value) {
+            state.value =
+                state.value.copy(sequenceObj = generator.getSequence(), screen = Screen.DiffScreen)
+        }
+        isCancelling.value = false
+        isLoading.value = false
     }
 }
 

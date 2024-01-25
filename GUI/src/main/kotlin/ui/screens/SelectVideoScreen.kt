@@ -5,14 +5,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.TopAppBar
 import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.*
 import models.AppState
+import ui.components.general.AutoSizeText
 import ui.components.general.HelpMenu
 import ui.components.general.ProjectMenu
 import ui.components.selectVideoScreen.AdvancedSettingsButton
@@ -26,10 +28,9 @@ import ui.components.selectVideoScreen.FileSelectorButton
  */
 @Composable
 fun SelectVideoScreen(state: MutableState<AppState>) {
-    var isLoading = remember { mutableStateOf(false) }
-    var job: Job? = null
     val scope = rememberCoroutineScope()
-
+    var isLoading = remember { mutableStateOf(false) }
+    var isCancelling = remember { mutableStateOf(false) }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             // menu bar
@@ -66,42 +67,60 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
             }
             // screen switch buttons
             Row(modifier = Modifier.weight(0.15f)) {
-                ComputeDifferencesButton(state, scope, isLoading)
+                ComputeDifferencesButton(state, scope, isLoading, isCancelling)
                 AdvancedSettingsButton(state)
             }
         }
         if (isLoading.value) {
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .background(color = Color.Black.copy(alpha = 0.5f))
-                        .pointerInput(Unit) {
-                        },
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth().align(Alignment.Center),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Spacer(modifier = Modifier.fillMaxHeight(0.1f))
-                    Box(modifier = Modifier.weight(0.7f)) {
-                        CircularProgressIndicator(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth(0.3f),
-                        )
-                    }
+            Loading(isCancelling)
+        }
+    }
+}
 
-                    Button(
-                        modifier = Modifier.weight(0.3f).fillMaxWidth(0.5f),
-                        onClick = {
-                            isLoading.value = false
-                            scope.cancel()
-                        },
+@Composable
+private fun Loading(isCancelling: MutableState<Boolean>) {
+    Box(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(color = Color.Black.copy(alpha = 0.5f))
+                .pointerInput(Unit) {
+                },
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Box(modifier = Modifier.weight(0.6f)) {
+                CircularProgressIndicator(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(0.2f)
+                            .align(Alignment.Center),
+                )
+            }
+
+            Button(
+                modifier = Modifier.weight(0.2f).fillMaxWidth(0.3f),
+                onClick = {
+                    isCancelling.value = true
+                },
+            ) {
+                if (isCancelling.value) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        Text("X")
+                        AutoSizeText("is Cancelling", modifier = Modifier.padding(10.dp))
+                        CircularProgressIndicator(color = Color.Black)
                     }
+                } else {
+                    Column {
+                    }
+                    Spacer(modifier = Modifier.fillMaxHeight(0.3f))
+                    AutoSizeText("X", textAlign = TextAlign.Center)
                 }
             }
         }
