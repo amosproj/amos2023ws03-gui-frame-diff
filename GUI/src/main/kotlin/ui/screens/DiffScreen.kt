@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.*
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
 import models.AppState
@@ -67,8 +68,9 @@ fun DiffScreen(state: MutableState<AppState>) {
             title = {
                 Text(
                     text = "Difference Screen",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.secondary,
+                    fontWeight = FontWeight.Bold,
                 )
             },
             navigationIcon = {

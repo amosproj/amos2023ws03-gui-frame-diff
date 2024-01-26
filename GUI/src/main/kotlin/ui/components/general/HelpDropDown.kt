@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 
@@ -26,7 +27,11 @@ fun HelpMenu(modifier: Modifier = Modifier) {
             modifier = modifier.padding(padding),
             onClick = { expanded = !expanded },
         ) {
-            Text("?", fontSize = MaterialTheme.typography.bodyMedium.fontSize)
+            Text(
+                text = "?",
+                fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                fontWeight = FontWeight.Bold,
+            )
         }
         DropdownMenu(
             modifier = modifier.padding(padding),

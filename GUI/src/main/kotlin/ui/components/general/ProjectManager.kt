@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -43,7 +44,11 @@ fun ProjectMenu(
             modifier = modifier.padding(padding),
             onClick = { expanded = !expanded },
         ) {
-            Text("Project", fontSize = MaterialTheme.typography.bodyMedium.fontSize)
+            Text(
+                text = "Project",
+                fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                fontWeight = FontWeight.Bold,
+            )
         }
 
         DropdownMenu(

@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import models.AppState
 import ui.components.general.HelpMenu
 import ui.components.general.ProjectMenu
@@ -34,8 +35,9 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
             title = {
                 Text(
                     text = "Select Video Screen",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.secondary,
+                    fontWeight = FontWeight.Bold,
                 )
             },
             navigationIcon = {
