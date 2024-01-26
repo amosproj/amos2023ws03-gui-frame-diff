@@ -24,7 +24,7 @@ fun TitleWithInfo(
     fontSize: TextUnit,
     topSpace: Dp,
 ) {
-    Row (modifier = Modifier.padding(0.dp, topSpace,0.dp,0.dp)) {
+    Row(modifier = Modifier.padding(0.dp, topSpace, 0.dp, 0.dp)) {
         Text(
             text = text,
             modifier = Modifier.padding(2.dp),
