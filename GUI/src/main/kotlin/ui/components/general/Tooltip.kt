@@ -24,7 +24,7 @@ fun Tooltip(text: String) {
     val cornerSize = 16.dp
     Popup(
         alignment = Alignment.BottomEnd,
-        offset = IntOffset(-24, 0),
+        offset = IntOffset(-28, 0),
     ) {
         // Draw a rectangle shape with rounded corners inside the popup
         Box(
@@ -36,6 +36,7 @@ fun Tooltip(text: String) {
                 modifier = Modifier.padding(8.dp),
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
                 fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                lineHeight = MaterialTheme.typography.labelLarge.lineHeight,
             )
         }
     }
