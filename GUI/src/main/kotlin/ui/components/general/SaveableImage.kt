@@ -2,6 +2,7 @@ package ui.components.general
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -78,17 +79,25 @@ private fun DropdownMenu(
     bitmap: MutableState<ImageBitmap>,
     state: MutableState<AppState>,
 ) {
-    DropdownMenu(
-        expanded = expanded.value,
-        onDismissRequest = { expanded.value = false },
-    ) {
-        DropdownMenuItem(
-            { Text("Save image as png") },
-            {
-                expanded.value = false
-                openFileSaverAndGetPath(state.value.saveFramePath) { path -> saveBitmapAsPng(bitmap, path, state) }
-            },
-        )
+    Box(modifier = Modifier, contentAlignment = Alignment.TopStart) {
+        DropdownMenu(
+            expanded = expanded.value,
+            onDismissRequest = { expanded.value = false },
+        ) {
+            DropdownMenuItem(
+                { Text("Save image as png") },
+                {
+                    expanded.value = false
+                    openFileSaverAndGetPath(state.value.saveFramePath) { path ->
+                        saveBitmapAsPng(
+                            bitmap,
+                            path,
+                            state,
+                        )
+                    }
+                },
+            )
+        }
     }
 }
 
