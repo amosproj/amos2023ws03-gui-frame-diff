@@ -79,12 +79,12 @@ fun DiffScreen(state: MutableState<AppState>) {
                         onClick = { state.value = state.value.copy(screen = Screen.SelectVideoScreen) },
                     )
                     ProjectMenu(state)
+                    SaveCollageButton(navigator = navigator, state = state)
+                    SaveInsertedFramesButton(navigator = navigator, state = state)
                 }
             },
             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
             actions = {
-                SaveCollageButton(navigator = navigator, state = state)
-                SaveInsertedFramesButton(navigator = navigator, state = state)
                 HelpMenu()
             },
         )
