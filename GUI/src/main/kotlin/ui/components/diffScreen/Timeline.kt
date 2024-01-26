@@ -23,6 +23,7 @@ import frameNavigation.FrameNavigation
 import kotlinx.coroutines.launch
 import logic.caches.ThumbnailCache
 import ui.components.general.AutoSizeText
+import ui.components.general.TitleWithInfo
 
 /**
  * A Composable function that creates a box to display the timeline.
@@ -97,7 +98,31 @@ fun Timeline(navigator: FrameNavigation) {
 
     Column(
         modifier = Modifier.padding(16.dp).fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Row(
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 4.dp),
+        ) {
+            Box(modifier = Modifier.weight(0.1f)) {}
+            Box(modifier = Modifier.weight(0.2f)) {
+                val statisticalInformation =
+                    "Total Frames Reference Video: ${navigator.getSizeOfVideoReference()}\n" +
+                        "Total Frames Current Video: ${navigator.getSizeOfVideoCurrent()}\n" +
+                        "Frames with Differences: ${navigator.getFramesWithPixelDifferences()}\n" +
+                        "Inserted Frames: ${navigator.getInsertions()}\n" +
+                        "Deleted Frames: ${navigator.getDeletions()}"
+                TitleWithInfo(
+                    text = "Statistical Information",
+                    tooltipText = statisticalInformation,
+                    fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                    topSpace = 4.dp,
+                )
+            }
+
+            Box(modifier = Modifier.weight(0.7f)) {}
+        }
+
         Box(modifier = generalModifier.weight(0.3f)) {
             Row(
                 modifier =
