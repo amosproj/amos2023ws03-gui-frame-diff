@@ -26,11 +26,11 @@ class DifferenceGeneratorWrapper(state: MutableState<AppState>) {
 
     private var differenceGenerator: DifferenceGenerator =
         DifferenceGenerator(
-            videoReferencePath = state.value.videoReferencePath,
-            videoCurrentPath = state.value.videoCurrentPath,
-            outputPath = state.value.outputPath,
+            videoReferencePath = state.value.videoReferencePath!!,
+            videoCurrentPath = state.value.videoCurrentPath!!,
+            outputPath = state.value.outputPath!!,
             algorithm = divideAndConquerAligner,
-            maskPath = if (state.value.maskPath == "") null else state.value.maskPath,
+            maskPath = state.value.maskPath,
         )
 
     /**

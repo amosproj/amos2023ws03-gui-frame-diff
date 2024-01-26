@@ -29,15 +29,15 @@ val defaultOutputPath = getPath("output.mkv")
  */
 data class AppState(
     var screen: Screen = Screen.SelectVideoScreen,
-    var videoReferencePath: String = getPath("testVideo1.mkv"),
-    var videoCurrentPath: String = getPath("testVideo2.mkv"),
-    var outputPath: String = defaultOutputPath,
+    var videoReferencePath: String? = null,
+    var videoCurrentPath: String? = null,
+    var outputPath: String? = null,
     var saveCollagePath: String? = null,
     var saveProjectPath: String? = null,
     var openProjectPath: String? = null,
     var saveFramePath: String? = null,
     var saveInsertionsPath: String? = null,
-    var maskPath: String = getPath("mask.png"),
+    var maskPath: String? = null,
     var sequenceObj: Array<AlignmentElement> = arrayOf(),
     var gapOpenPenalty: Double = 0.2,
     var gapExtendPenalty: Double = -0.8,
@@ -61,7 +61,7 @@ fun createAppState(useDefaultPaths: Boolean): AppState {
         return AppState(
             videoReferencePath = getPath("testVideo1.mkv"),
             videoCurrentPath = getPath("testVideo2.mkv"),
-            outputPath = getPath("output.mkv"),
+            outputPath = defaultOutputPath,
             maskPath = getPath("mask.png"),
         )
     }

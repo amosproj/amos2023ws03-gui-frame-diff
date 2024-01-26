@@ -1,12 +1,10 @@
 package ui.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import models.AppState
-import ui.components.*
 import ui.components.general.TextTitle
 import ui.components.general.TitleWithInfo
 import ui.components.selectVideoScreen.FileSelectorButton
@@ -18,7 +16,6 @@ import ui.components.settingsScreen.SaveButton
  * SettingsScreen is the screen where the user can change the settings of the app.
  *
  * @param state the state of the app
- * @param oldState the previous state of the app
  */
 @Composable
 fun SettingsScreen(state: MutableState<AppState>) {
