@@ -4,7 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -40,7 +40,7 @@ fun SaveableImage(
     Row(
         modifier =
             modifier.padding(8.dp)
-                .fillMaxWidth(1f),
+                .fillMaxSize(1f),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {
@@ -61,7 +61,8 @@ fun SaveableImage(
                             }
                         }
                     }
-                },
+                }
+                    .fillMaxSize(),
         )
         DropdownMenu(expanded, bitmap, state)
     }

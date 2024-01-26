@@ -33,7 +33,7 @@ fun ProjectMenu(
     var errorDialogText = remember { mutableStateOf<String?>(null) }
     var expanded by remember { mutableStateOf(false) }
     val padding = 8.dp
-    
+
     if (errorDialogText.value != null) {
         ErrorDialog(onCloseRequest = { errorDialogText.value = null }, text = errorDialogText.value!!)
     }
