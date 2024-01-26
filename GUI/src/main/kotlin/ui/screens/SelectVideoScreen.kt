@@ -2,6 +2,7 @@ package ui.screens
 
 import algorithms.AlgorithmExecutionState
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,7 +31,7 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
 
     Column(modifier = Modifier.fillMaxSize()) {
         // menu bar
-        TopAppBar(
+        CenterAlignedTopAppBar(
             title = {
                 Text(
                     text = "Select Video Screen",
