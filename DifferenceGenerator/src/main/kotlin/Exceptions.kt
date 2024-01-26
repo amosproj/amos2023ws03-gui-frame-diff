@@ -61,3 +61,15 @@ class DifferenceGeneratorMaskException(message: String, cause: Throwable? = null
         return "MaskException(message=$message, cause=$cause)"
     }
 }
+
+/**
+ * Exception thrown when the algorithm run is stopped from the outside.
+ *
+ * @param message the detail message.
+ * @param cause the cause.
+ */
+class DifferenceGeneratorStoppedException(message: String, cause: Throwable? = null) : DifferenceGeneratorException(message, cause) {
+    override fun toString(): String {
+        return "StoppedException(message=$message, cause=$cause)"
+    }
+}

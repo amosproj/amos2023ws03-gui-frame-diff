@@ -47,6 +47,9 @@ class DivideAndConquerAligner<T>(private val algorithm: AlignmentAlgorithm<T>, p
         hashes1 = markDuplicates(hasher.getHashes(a))
         hashes2 = markDuplicates(hasher.getHashes(b))
 
+        // check if the algorithm got cancelled from the outside
+        isAlive()
+
         // find unique exact matches between the two sequences
         val equals = findMatches()
 
@@ -75,12 +78,17 @@ class DivideAndConquerAligner<T>(private val algorithm: AlignmentAlgorithm<T>, p
             // advance iterators to skip the current match's positions
             a.next()
             b.next()
+
+            // regularly check if thread is still needed
+            isAlive()
         }
 
         // process alignment after last known match
         val subArray1 = a.take(a.size() - lastMatchIndex1)
         val subArray2 = b.take(b.size() - lastMatchIndex2)
         alignment.addAll(getSubAlignment(subArray1, subArray2))
+
+        isAlive()
 
         return alignment.toTypedArray()
     }

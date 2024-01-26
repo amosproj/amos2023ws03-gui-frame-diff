@@ -1,4 +1,6 @@
 package ui.screens
+
+import algorithms.AlgorithmExecutionState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.*
@@ -9,6 +11,7 @@ import ui.components.general.ProjectMenu
 import ui.components.selectVideoScreen.AdvancedSettingsButton
 import ui.components.selectVideoScreen.ComputeDifferencesButton
 import ui.components.selectVideoScreen.FileSelectorButton
+import ui.components.selectVideoScreen.LoadingDialog
 
 /**
  * A Composable function that creates a screen to select the videos to compare.
@@ -17,7 +20,9 @@ import ui.components.selectVideoScreen.FileSelectorButton
  */
 @Composable
 fun SelectVideoScreen(state: MutableState<AppState>) {
-    // column represents the whole screen
+    val scope = rememberCoroutineScope()
+    val showLoadingDialog = remember { mutableStateOf(false) }
+
     Column(modifier = Modifier.fillMaxSize()) {
         // menu bar
         TopAppBar(
@@ -53,8 +58,15 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
         }
         // screen switch buttons
         Row(modifier = Modifier.weight(0.15f)) {
-            ComputeDifferencesButton(state)
+            ComputeDifferencesButton(state, scope, showLoadingDialog)
             AdvancedSettingsButton(state)
         }
+    }
+
+    if (showLoadingDialog.value) {
+        LoadingDialog(onCancel = {
+            AlgorithmExecutionState.getInstance().stop()
+            showLoadingDialog.value = false
+        })
     }
 }
