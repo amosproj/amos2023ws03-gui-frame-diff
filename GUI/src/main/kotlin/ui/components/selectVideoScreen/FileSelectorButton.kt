@@ -25,43 +25,55 @@ import ui.components.general.openFileChooserAndGetPath
  * @param buttonText The text to be displayed on the button.
  * @param buttonPath The path to the selected file.
  * @param onUpdateResult A function that will be called with the selected file path as a parameter.
- * Should update the AppState with the selected file path for the chosen file(e.g. VideoReferencePath).
+ * Should update the AppState with the selected file path for the chosen file(e.g.
+ * VideoReferencePath).
  * @param tooltipText The text to be displayed in the tooltip.
  * @param directoryPath The path to the directory to be opened in the file chooser.
  * @return [Unit]
  */
 @Composable
 fun RowScope.FileSelectorButton(
-    buttonText: String,
-    buttonPath: String?,
-    onUpdateResult: (String) -> Unit,
-    tooltipText: String? = null,
-    directoryPath: String? = null,
+        buttonText: String,
+        buttonPath: String?,
+        onUpdateResult: (String) -> Unit,
+        tooltipText: String? = null,
+        directoryPath: String? = null,
 ) {
     val scope = rememberCoroutineScope()
     Button(
-        modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f),
-        onClick = { scope.launch(Dispatchers.IO) { openFileChooserAndGetPath(directoryPath) { path -> onUpdateResult(path) } } },
-        shape = MaterialTheme.shapes.medium,
+            modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f),
+            onClick = {
+                scope.launch(Dispatchers.IO) {
+                    openFileChooserAndGetPath(directoryPath) { path -> onUpdateResult(path) }
+                }
+            },
+            shape = MaterialTheme.shapes.medium,
     ) {
         // column to display the button text and the selected file path
-        Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             // row to display the upload icon
             Row(modifier = Modifier.weight(0.75f)) {
                 Image(
-                    painter = painterResource("upload.svg"),
-                    contentDescription = "Upload",
-                    modifier = Modifier.alpha(0.8f),
-                    colorFilter = ColorFilter.tint(LocalContentColor.current),
+                        painter = painterResource("upload.svg"),
+                        contentDescription = "Upload",
+                        modifier = Modifier.alpha(0.8f),
+                        colorFilter = ColorFilter.tint(LocalContentColor.current),
                 )
                 if (tooltipText != null) {
                     InfoIconWithHover(tooltipText)
                 }
             }
             // row to display the button text
-            Row(modifier = Modifier.weight(0.15f)) { AutoSizeText(text = buttonText) }
+            Row(modifier = Modifier.weight(0.15f)) {
+                AutoSizeText(text = buttonText, minimalFontSize = 27)
+            }
             // row to display the selected file path
-            Row(modifier = Modifier.weight(0.1f)) { AutoSizeText(text = buttonPath ?: "No file selected", minimalFontSize = 20) }
+            Row(modifier = Modifier.weight(0.1f)) {
+                AutoSizeText(text = buttonPath ?: "No file selected", minimalFontSize = 25)
+            }
         }
     }
 }
