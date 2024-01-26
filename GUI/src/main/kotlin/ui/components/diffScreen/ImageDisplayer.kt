@@ -81,7 +81,7 @@ fun FullScreenContent(
         // #####   Difference Videos   #####
         SaveableImage(bitmap = bitmap, modifier = Modifier.weight(0.85f), state = state)
         // #####   Navigation   #####
-        NavigationButtons(navigator = navigator, buttonModifier = Modifier.weight(1f), rowModifier = Modifier.weight(0.15f))
+        NavigationButtons(navigator = navigator, buttonModifier = Modifier.weight(1f), rowModifier = Modifier.weight(0.10f))
     }
 }
 
