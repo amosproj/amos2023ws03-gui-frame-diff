@@ -31,9 +31,9 @@ import ui.components.general.openFileChooserAndGetPath
  * @return [Unit]
  */
 @Composable
-fun MaskSelectorButton(
+fun RowScope.MaskSelectorButton(
     buttonText: String,
-    buttonPath: String,
+    buttonPath: String?,
     onUpdateResult: (String) -> Unit,
     tooltipText: String,
     directoryPath: String? = null,
@@ -42,7 +42,7 @@ fun MaskSelectorButton(
     Button(
         onClick = { scope.launch(Dispatchers.IO) { openFileChooserAndGetPath(directoryPath) { path -> onUpdateResult(path) } } },
         shape = MaterialTheme.shapes.medium,
-        modifier = Modifier.padding(16.dp),
+        modifier = Modifier.padding(16.dp).weight(0.6f).fillMaxHeight(0.9f),
     ) {
         // column to display the button text and the selected file path
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -62,7 +62,11 @@ fun MaskSelectorButton(
                     InfoIconWithHover(tooltipText)
                 }
                 // row to display the selected file path
-                Row { Text(text = buttonPath, fontSize = MaterialTheme.typography.bodyMedium.fontSize) }
+                Row {
+                    if (buttonPath != null) {
+                        Text(text = buttonPath, fontSize = MaterialTheme.typography.bodyMedium.fontSize)
+                    }
+                }
             }
         }
     }

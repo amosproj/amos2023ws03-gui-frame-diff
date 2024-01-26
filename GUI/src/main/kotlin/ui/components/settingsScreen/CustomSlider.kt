@@ -40,7 +40,7 @@ fun RowScope.CustomSlider(
     Column(modifier = Modifier.weight(1f).padding(10.dp).fillMaxHeight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
         // title
         if (tooltipText != null) {
-            TitleWithInfo(title, tooltipText, MaterialTheme.typography.headlineSmall.fontSize)
+            TitleWithInfo(title, tooltipText, MaterialTheme.typography.headlineSmall.fontSize, 2.dp)
         } else {
             Text(modifier = Modifier.weight(0.5f).padding(8.dp), text = title)
         }

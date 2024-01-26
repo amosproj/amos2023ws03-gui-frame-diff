@@ -1,9 +1,7 @@
 package ui.components.settingsScreen
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
@@ -27,7 +25,7 @@ fun RowScope.SaveButton(
 ) {
     Button(
         // fills all available space
-        modifier = Modifier.weight(0.1f).padding(16.dp).fillMaxSize(1f),
+        modifier = Modifier.weight(0.4f).padding(16.dp).fillMaxHeight(0.4f),
         onClick = {
             oldState.value = state.value
             state.value = oldState.value.copy(screen = Screen.SelectVideoScreen)
