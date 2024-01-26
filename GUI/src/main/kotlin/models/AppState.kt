@@ -7,6 +7,7 @@ import algorithms.AlignmentElement
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import java.nio.file.FileSystems
+import kotlin.io.path.pathString
 
 val defaultOutputPath = getPath("output.mkv")
 
@@ -56,6 +57,14 @@ object JsonMapper {
         }
 }
 
+/**
+ * Creates an [AppState] object with default values.
+ *
+ * We always need the output path, so we don't use the test-sources path for it,
+ * a temp file is used.
+ *
+ * @param useDefaultPaths whether to use the convenience paths or not.
+ */
 fun createAppState(useDefaultPaths: Boolean): AppState {
     if (useDefaultPaths) {
         return AppState(
@@ -65,7 +74,7 @@ fun createAppState(useDefaultPaths: Boolean): AppState {
             maskPath = getPath("mask.png"),
         )
     }
-    return AppState()
+    return AppState(outputPath = kotlin.io.path.createTempFile("guiFrameDiffOutput", suffix = ".mkv").pathString)
 }
 
 /**

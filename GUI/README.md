@@ -29,8 +29,8 @@ For convenience reason, the project offers an environment variable to be set to 
 for path values (videos, masks, etc.).
 Set `GUI_USE_DEFAULT_PATHS` to `true` to use the default paths before running the GUI.
 
-Windows: `set $env:GUI_USE_DEFAULT_PATHS=true`
-Shell: `export GUI_USE_DEFAULT_PATHS=true`
+- Windows: `$env:GUI_USE_DEFAULT_PATHS="true"`
+- Shell: `export GUI_USE_DEFAULT_PATHS=true`
 
 ## Testing instructions
 
