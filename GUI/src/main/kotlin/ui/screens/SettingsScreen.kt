@@ -6,15 +6,19 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import models.AppState
+import ui.components.general.*
+import ui.components.general.AutoSizeText
 import ui.components.general.HelpMenu
 import ui.components.general.ProjectMenu
-import ui.components.general.TitleWithInfo
 import ui.components.selectVideoScreen.MaskSelectorButton
 import ui.components.settingsScreen.CustomSlider
 import ui.components.settingsScreen.SaveButton
@@ -76,7 +80,7 @@ fun SettingsScreen(state: MutableState<AppState>) {
                                     state.value
                                         .copy(
                                             screen =
-                                                Screen.SelectVideoScreen,
+                                            Screen.SelectVideoScreen,
                                         )
                             },
                         )
@@ -149,8 +153,15 @@ fun SettingsScreen(state: MutableState<AppState>) {
                         },
                         directoryPath = state.value.maskPath,
                     )
-                    Column(modifier = Modifier.weight(0.2f)) {
-                        // Implement remove mask button here
+                    Column(modifier = Modifier.weight(0.2f).fillMaxHeight(0.9f)) {
+                        Button(
+                            onClick = { state.value = state.value.copy(maskPath = null) },
+                            shape = MaterialTheme.shapes.medium,
+                            modifier = Modifier.padding(16.dp).weight(0.6f).fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                        ) {
+                            AutoSizeText("x", modifier = Modifier.align(Alignment.CenterVertically))
+                        }
                     }
                     Column(modifier = Modifier.weight(0.2f)) {}
                 }
