@@ -30,7 +30,7 @@ import ui.components.general.openFileChooserAndGetPath
 @Composable
 fun RowScope.FileSelectorButton(
     buttonText: String,
-    buttonPath: String,
+    buttonPath: String?,
     onUpdateResult: (String) -> Unit,
     tooltipText: String? = null,
     directoryPath: String? = null,
@@ -56,7 +56,7 @@ fun RowScope.FileSelectorButton(
             // row to display the button text
             Row(modifier = Modifier.weight(0.15f)) { AutoSizeText(text = buttonText) }
             // row to display the selected file path
-            Row(modifier = Modifier.weight(0.1f)) { AutoSizeText(text = buttonPath, minimalFontSize = 20) }
+            Row(modifier = Modifier.weight(0.1f)) { AutoSizeText(text = buttonPath ?: "No file selected", minimalFontSize = 20) }
         }
     }
 }

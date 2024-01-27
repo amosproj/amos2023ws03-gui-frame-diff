@@ -7,6 +7,7 @@ import algorithms.AlignmentElement
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import java.nio.file.FileSystems
+import kotlin.io.path.pathString
 
 val defaultOutputPath = getPath("output.mkv")
 
@@ -29,15 +30,15 @@ val defaultOutputPath = getPath("output.mkv")
  */
 data class AppState(
     var screen: Screen = Screen.SelectVideoScreen,
-    var videoReferencePath: String = getPath("testVideo1.mkv"),
-    var videoCurrentPath: String = getPath("testVideo2.mkv"),
-    var outputPath: String = defaultOutputPath,
+    var videoReferencePath: String? = null,
+    var videoCurrentPath: String? = null,
+    var outputPath: String? = null,
     var saveCollagePath: String? = null,
     var saveProjectPath: String? = null,
     var openProjectPath: String? = null,
     var saveFramePath: String? = null,
     var saveInsertionsPath: String? = null,
-    var maskPath: String = getPath("mask.png"),
+    var maskPath: String? = null,
     var sequenceObj: Array<AlignmentElement> = arrayOf(),
     var gapOpenPenalty: Double = 0.2,
     var gapExtendPenalty: Double = -0.8,
@@ -54,6 +55,26 @@ object JsonMapper {
                 }
             registerModule(module)
         }
+}
+
+/**
+ * Creates an [AppState] object with default values.
+ *
+ * We always need the output path, so we don't use the test-sources path for it,
+ * a temp file is used.
+ *
+ * @param useDefaultPaths whether to use the convenience paths or not.
+ */
+fun createAppState(useDefaultPaths: Boolean): AppState {
+    if (useDefaultPaths) {
+        return AppState(
+            videoReferencePath = getPath("testVideo1.mkv"),
+            videoCurrentPath = getPath("testVideo2.mkv"),
+            outputPath = defaultOutputPath,
+            maskPath = getPath("mask.png"),
+        )
+    }
+    return AppState(outputPath = kotlin.io.path.createTempFile("guiFrameDiffOutput", suffix = ".mkv").pathString)
 }
 
 /**

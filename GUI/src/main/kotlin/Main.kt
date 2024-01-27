@@ -3,7 +3,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
-import models.AppState
+import models.createAppState
 import ui.screens.DiffScreen
 import ui.screens.SelectVideoScreen
 import ui.screens.SettingsScreen
@@ -34,7 +34,13 @@ fun main(): Unit =
 @Composable
 fun App() {
     // create the global state
-    val globalState = remember { mutableStateOf(AppState()) }
+    val globalState =
+        remember {
+            mutableStateOf(
+                createAppState(useDefaultPaths = System.getenv("GUI_USE_DEFAULT_PATHS").toBoolean()),
+            )
+        }
+
     // pass the global state to the screen, access data using state.value.*
     // to update the global state, use state.value = state.value.copy(...)
     when (globalState.value.screen) {

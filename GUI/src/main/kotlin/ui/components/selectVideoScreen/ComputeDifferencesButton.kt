@@ -29,7 +29,6 @@ import java.nio.file.attribute.BasicFileAttributes
  * @param state [AppState] object containing the state of the application.
  * @return [Unit]
  */
-
 @Composable
 fun RowScope.ComputeDifferencesButton(
     state: MutableState<AppState>,
@@ -56,9 +55,9 @@ fun RowScope.ComputeDifferencesButton(
         },
         // enable the button only if all the paths are not empty
         enabled = (
-            state.value.videoReferencePath.isNotEmpty() &&
-                state.value.videoCurrentPath.isNotEmpty() &&
-                state.value.outputPath.isNotEmpty()
+            state.value.videoReferencePath != null &&
+                state.value.videoCurrentPath != null &&
+                state.value.outputPath != null
         ),
     ) {
         AutoSizeText(
@@ -98,7 +97,7 @@ private fun calculateVideoDifferences(
         }
 
         try {
-            generator.getDifferences(state.value.outputPath)
+            generator.getDifferences(state.value.outputPath!!)
         } catch (e: DifferenceGeneratorStoppedException) {
             println("stopped by canceling...")
             return@launch
@@ -136,7 +135,7 @@ fun getVideoCreationDate(videoPath: String): Long {
 }
 
 fun referenceIsOlderThanCurrent(state: MutableState<AppState>): Boolean {
-    val creationDate1 = getVideoCreationDate(state.value.videoReferencePath)
-    val creationDate2 = getVideoCreationDate(state.value.videoCurrentPath)
+    val creationDate1 = getVideoCreationDate(state.value.videoReferencePath!!)
+    val creationDate2 = getVideoCreationDate(state.value.videoCurrentPath!!)
     return creationDate1 < creationDate2
 }
