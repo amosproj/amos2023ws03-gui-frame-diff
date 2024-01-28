@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -91,7 +92,7 @@ fun DiffScreen(state: MutableState<AppState>) {
             },
         )
         // #####   Difference Videos   #####
-        Row(modifier = Modifier.fillMaxWidth().weight(0.45f)) {
+        Row(modifier = Modifier.fillMaxWidth().weight(0.45f), verticalAlignment = Alignment.Bottom) {
             DisplayDifferenceImage(bitmap = navigator.videoReferenceBitmap, navigator = navigator, title = "Reference Video", state = state)
             DisplayDifferenceImage(bitmap = navigator.diffBitmap, navigator = navigator, title = "Difference", state = state)
             DisplayDifferenceImage(bitmap = navigator.videoCurrentBitmap, navigator = navigator, title = "Current Video", state = state)

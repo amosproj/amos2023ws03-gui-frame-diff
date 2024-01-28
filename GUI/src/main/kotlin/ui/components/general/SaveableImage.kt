@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -28,41 +29,50 @@ import javax.swing.JOptionPane
  * @param bitmap [MutableState]<[ImageBitmap]> containing the bitmap to display.
  * @param modifier [Modifier] to apply to the element.
  * @param state [MutableState]<[AppState]> containing the global state.
+ * @param fullScreen [Boolean] deciding if the image is being displayed in full screen.
  * @return [Unit]
  */
 @Composable
 fun SaveableImage(
     bitmap: MutableState<ImageBitmap>,
     modifier: Modifier = Modifier,
+    fullScreen: Boolean,
     state: MutableState<AppState>,
 ) {
     var expanded: MutableState<Boolean> = remember { mutableStateOf(false) }
+    var modifierAdjusted =
+        Modifier.pointerInput(Unit) {
+            awaitPointerEventScope {
+                while (true) {
+                    val event = awaitPointerEvent(PointerEventPass.Initial)
+                    if (event.changes.any { it.isConsumed }) {
+                        continue
+                    }
+
+                    if (event.buttons.isSecondaryPressed) {
+                        expanded.value = true
+                    }
+                }
+            }
+        }
+
+    if (fullScreen) {
+        modifierAdjusted = modifierAdjusted.fillMaxSize()
+    } else {
+        modifierAdjusted = modifierAdjusted.fillMaxWidth()
+    }
+
     Row(
         modifier =
             modifier.padding(8.dp)
-                .fillMaxSize(1f),
+                .fillMaxWidth(1f),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {
         Image(
             bitmap = bitmap.value,
             null,
-            modifier =
-                Modifier.pointerInput(Unit) {
-                    awaitPointerEventScope {
-                        while (true) {
-                            val event = awaitPointerEvent(PointerEventPass.Initial)
-                            if (event.changes.any { it.isConsumed }) {
-                                continue
-                            }
-
-                            if (event.buttons.isSecondaryPressed) {
-                                expanded.value = true
-                            }
-                        }
-                    }
-                }
-                    .fillMaxSize(),
+            modifier = modifierAdjusted,
         )
         DropdownMenu(expanded, bitmap, state)
     }

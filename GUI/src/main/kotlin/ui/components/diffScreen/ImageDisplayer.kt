@@ -41,17 +41,17 @@ fun RowScope.DisplayDifferenceImage(
     // handles the window creation if the window is not null
     WindowCreator(window, title) { FullScreenContent(bitmap = bitmap, navigator = navigator, state) }
 
-    Column(modifier = Modifier.fillMaxSize().weight(1f)) {
+    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Bottom) {
         // button sets the window to null and then to not null, which triggers the window render
 
-        Row(Modifier.weight(0.2f), verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier, verticalAlignment = Alignment.CenterVertically) {
             VideoTitle(title)
             FullScreenButton {
                 window.value = null
                 window.value = Unit
             }
         }
-        SaveableImage(bitmap = bitmap, modifier = modifier.weight(0.92f), state = state)
+        SaveableImage(bitmap = bitmap, modifier = modifier, fullScreen = false, state = state)
     }
 }
 
@@ -79,7 +79,7 @@ fun FullScreenContent(
             focusRequester.requestFocus()
         }
         // #####   Difference Videos   #####
-        SaveableImage(bitmap = bitmap, modifier = Modifier.weight(0.85f), state = state)
+        SaveableImage(bitmap = bitmap, modifier = Modifier.fillMaxSize().weight(0.85f), fullScreen = true, state = state)
         // #####   Navigation   #####
         NavigationButtons(navigator = navigator, buttonModifier = Modifier.weight(1f), rowModifier = Modifier.weight(0.10f))
     }

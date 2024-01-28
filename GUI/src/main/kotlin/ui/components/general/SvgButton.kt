@@ -1,7 +1,6 @@
 package ui.components.general
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.LocalContentColor
@@ -34,7 +33,7 @@ fun SvgButton(
         Image(
             painter = painterResource(content),
             contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier,
             colorFilter = ColorFilter.tint(LocalContentColor.current),
         )
     }

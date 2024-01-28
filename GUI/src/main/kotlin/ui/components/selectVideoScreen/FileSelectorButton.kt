@@ -33,34 +33,34 @@ import ui.components.general.openFileChooserAndGetPath
  */
 @Composable
 fun RowScope.FileSelectorButton(
-        buttonText: String,
-        buttonPath: String?,
-        onUpdateResult: (String) -> Unit,
-        tooltipText: String? = null,
-        directoryPath: String? = null,
+    buttonText: String,
+    buttonPath: String?,
+    onUpdateResult: (String) -> Unit,
+    tooltipText: String? = null,
+    directoryPath: String? = null,
 ) {
     val scope = rememberCoroutineScope()
     Button(
-            modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f),
-            onClick = {
-                scope.launch(Dispatchers.IO) {
-                    openFileChooserAndGetPath(directoryPath) { path -> onUpdateResult(path) }
-                }
-            },
-            shape = MaterialTheme.shapes.medium,
+        modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f),
+        onClick = {
+            scope.launch(Dispatchers.IO) {
+                openFileChooserAndGetPath(directoryPath) { path -> onUpdateResult(path) }
+            }
+        },
+        shape = MaterialTheme.shapes.medium,
     ) {
         // column to display the button text and the selected file path
         Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             // row to display the upload icon
             Row(modifier = Modifier.weight(0.75f)) {
                 Image(
-                        painter = painterResource("upload.svg"),
-                        contentDescription = "Upload",
-                        modifier = Modifier.alpha(0.8f),
-                        colorFilter = ColorFilter.tint(LocalContentColor.current),
+                    painter = painterResource("upload.svg"),
+                    contentDescription = "Upload",
+                    modifier = Modifier.alpha(0.8f),
+                    colorFilter = ColorFilter.tint(LocalContentColor.current),
                 )
                 if (tooltipText != null) {
                     InfoIconWithHover(tooltipText)
