@@ -151,9 +151,9 @@ fun SettingsScreen(state: MutableState<AppState>) {
         Row(
             modifier = Modifier.weight(0.2f),
         ) {
-            Column(modifier = Modifier.weight(0.3f)) {}
+            Column(modifier = Modifier.weight(0.55f)) {}
             SaveButton(state, oldState)
-            Column(modifier = Modifier.weight(0.3f)) {}
+            Column(modifier = Modifier.weight(0.05f)) {}
         }
     }
 }
