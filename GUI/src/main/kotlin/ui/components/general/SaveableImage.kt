@@ -1,9 +1,7 @@
 package ui.components.general
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -62,12 +60,11 @@ fun SaveableImage(
         modifierAdjusted = modifierAdjusted.fillMaxWidth()
     }
 
-    Row(
+    Box(
         modifier =
             modifier.padding(8.dp)
                 .fillMaxWidth(1f),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
+        contentAlignment = Alignment.Center,
     ) {
         Image(
             bitmap = bitmap.value,
