@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import models.AppState
+import org.bytedeco.javacv.FFmpegFrameGrabber
 import ui.components.general.ErrorDialog
 import ui.components.general.HelpMenu
 import ui.components.general.ProjectMenu
@@ -58,24 +59,44 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
             FileSelectorButton(
                 buttonText = "Select Reference Video",
                 buttonPath = state.value.videoReferencePath,
-                onUpdateResult = { selectedFilePath -> checkVideoFormat(selectedFilePath, state, referenceErrorDialogText) },
+                onUpdateResult = { selectedFilePath ->
+                    checkVideoFormatAndCodec(
+                        selectedFilePath,
+                        state,
+                        referenceErrorDialogText,
+                        true,
+                    )
+                },
                 directoryPath = state.value.videoReferencePath,
                 buttonDescription = "Please upload a video with format mkv or mov.",
                 allowedFileExtensions = arrayOf("mkv", "mov"),
             )
             if (referenceErrorDialogText.value != null) {
-                ErrorDialog(onCloseRequest = { referenceErrorDialogText.value = null }, text = referenceErrorDialogText.value!!)
+                ErrorDialog(
+                    onCloseRequest = { referenceErrorDialogText.value = null },
+                    text = referenceErrorDialogText.value!!,
+                )
             }
             FileSelectorButton(
                 buttonText = "Select Current Video",
                 buttonPath = state.value.videoCurrentPath,
-                onUpdateResult = { selectedFilePath -> checkVideoFormat(selectedFilePath, state, currentErrorDialogText) },
+                onUpdateResult = { selectedFilePath ->
+                    checkVideoFormatAndCodec(
+                        selectedFilePath,
+                        state,
+                        currentErrorDialogText,
+                        false,
+                    )
+                },
                 directoryPath = state.value.videoCurrentPath,
                 buttonDescription = "Please upload a video with format mkv or mov.",
                 allowedFileExtensions = arrayOf("mkv", "mov"),
             )
             if (currentErrorDialogText.value != null) {
-                ErrorDialog(onCloseRequest = { currentErrorDialogText.value = null }, text = currentErrorDialogText.value!!)
+                ErrorDialog(
+                    onCloseRequest = { currentErrorDialogText.value = null },
+                    text = currentErrorDialogText.value!!,
+                )
             }
         }
 
@@ -93,16 +114,27 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
     }
 }
 
-// TODO: add a check for the video codec
-private fun checkVideoFormat(
+private fun checkVideoFormatAndCodec(
     selectedFilePath: String,
     state: MutableState<AppState>,
     errorDialogText: MutableState<String?>,
+    isReference: Boolean,
 ) {
-    if (selectedFilePath.endsWith(".mkv") || selectedFilePath.endsWith(".mov")) {
-        state.value = state.value.copy(videoCurrentPath = selectedFilePath)
-    } else {
+    if (!selectedFilePath.endsWith(".mkv") && !selectedFilePath.endsWith(".mov")) {
         errorDialogText.value =
             "Uploaded Video is not in the correct format. Please upload a video with format mkv or mov."
+        return
+    }
+    val grabber = FFmpegFrameGrabber(selectedFilePath)
+    grabber.start()
+    if (!(grabber.videoMetadata["encoder"] ?: grabber.videoCodecName).lowercase().contains("ffv1")) {
+        errorDialogText.value =
+            "Uploaded Video is not in the correct codec. Please upload a video encoded with ffv1."
+        return
+    }
+    if (isReference) {
+        state.value = state.value.copy(videoReferencePath = selectedFilePath)
+    } else {
+        state.value = state.value.copy(videoCurrentPath = selectedFilePath)
     }
 }
