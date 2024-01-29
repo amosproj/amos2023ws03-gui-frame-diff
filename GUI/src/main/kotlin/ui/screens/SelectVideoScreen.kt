@@ -66,7 +66,6 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
     if (showLoadingDialog.value) {
         LoadingDialog(onCancel = {
             AlgorithmExecutionState.getInstance().stop()
-            showLoadingDialog.value = false
         })
     }
 }

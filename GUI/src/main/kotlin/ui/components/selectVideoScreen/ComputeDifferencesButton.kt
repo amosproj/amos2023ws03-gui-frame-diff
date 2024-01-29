@@ -120,8 +120,6 @@ private fun calculateVideoDifferences(
             return@launch
         }
 
-        isLoading.value = false
-
         // check for cancellation one last time before switching to the diff screen
         if (!AlgorithmExecutionState.getInstance().isAlive()) {
             return@launch
@@ -129,6 +127,8 @@ private fun calculateVideoDifferences(
 
         // set the sequence and screen
         state.value = state.value.copy(sequenceObj = generator.getSequence(), screen = Screen.DiffScreen)
+    }.invokeOnCompletion {
+        isLoading.value = false
     }
 }
 
