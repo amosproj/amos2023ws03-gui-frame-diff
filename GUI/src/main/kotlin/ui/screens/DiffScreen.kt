@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -82,8 +84,30 @@ fun DiffScreen(state: MutableState<AppState>) {
                         onClick = { state.value = state.value.copy(screen = Screen.SelectVideoScreen) },
                     )
                     ProjectMenu(state)
-                    SaveCollageButton(navigator = navigator, state = state)
-                    SaveInsertedFramesButton(navigator = navigator, state = state)
+                    // Decide whether to show the menu as a dropdown or as a row of buttons
+                    BoxWithConstraints {
+                        if (maxWidth < 1200.dp) {
+                            var expanded by remember { mutableStateOf(false) }
+                            IconButton(
+                                modifier = Modifier.padding(8.dp),
+                                content = { Icon(Icons.Default.Menu, "Menu button") },
+                                onClick = { expanded = true },
+                            )
+                            DropdownMenu(
+                                content = {
+                                    SaveCollageButton(navigator = navigator, state = state)
+                                    SaveInsertedFramesButton(navigator = navigator, state = state)
+                                },
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false },
+                            )
+                        } else {
+                            Row {
+                                SaveCollageButton(navigator = navigator, state = state)
+                                SaveInsertedFramesButton(navigator = navigator, state = state)
+                            }
+                        }
+                    }
                 }
             },
             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
