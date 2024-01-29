@@ -2,12 +2,14 @@ package ui.components.settingsScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -24,18 +26,23 @@ fun RowScope.SaveButton(
     oldState: MutableState<AppState>,
 ) {
     Button(
-        // fills all available space
-        modifier = Modifier.weight(0.4f).padding(16.dp).fillMaxHeight(0.4f),
+        content = {
+            Image(
+                painter = painterResource("save.svg"),
+                contentDescription = "save",
+                modifier = Modifier.size(50.dp),
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onTertiary),
+            )
+        },
+        colors =
+            ButtonDefaults.buttonColors(
+                contentColor = MaterialTheme.colorScheme.onTertiary,
+                containerColor = MaterialTheme.colorScheme.tertiary,
+            ),
+        modifier = Modifier.size(80.dp, 80.dp).clip(CircleShape),
         onClick = {
             oldState.value = state.value
             state.value = oldState.value.copy(screen = Screen.SelectVideoScreen)
         },
-    ) {
-        Image(
-            painter = painterResource("save.svg"),
-            contentDescription = "save",
-            modifier = Modifier.fillMaxSize().alpha(0.8f).padding(4.dp),
-            colorFilter = ColorFilter.tint(LocalContentColor.current),
-        )
-    }
+    )
 }
