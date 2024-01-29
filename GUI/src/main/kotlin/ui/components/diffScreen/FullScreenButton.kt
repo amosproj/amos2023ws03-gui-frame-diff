@@ -1,11 +1,14 @@
 package ui.components.diffScreen
 
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import ui.components.general.SvgButton
 
 /**
  * A Composable function that displays a button to open the image in a full screen window.
@@ -14,13 +17,20 @@ import ui.components.general.SvgButton
  * @return [Unit]
  */
 @Composable
-fun RowScope.FullScreenButton(
+fun FullScreenButton(
     buttonModifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
-    SvgButton(
-        content = "full-screen.svg",
-        modifier = buttonModifier.weight(0.3f).sizeIn(maxWidth = 100.dp, maxHeight = 100.dp),
+    IconButton(
         onClick = onClick,
+        modifier = buttonModifier,
+        content = {
+            Image(
+                painter = painterResource("full-screen.svg"),
+                contentDescription = "Fullscreen Button",
+                modifier = Modifier.padding(8.dp),
+                colorFilter = ColorFilter.tint(LocalContentColor.current),
+            )
+        },
     )
 }
