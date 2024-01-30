@@ -122,11 +122,7 @@ fun DiffScreen(state: MutableState<AppState>) {
             DisplayDifferenceImage(bitmap = navigator.videoCurrentBitmap, navigator = navigator, title = "Current Video", state = state)
         }
         // #####   Timeline   #####
-        Row(
-            modifier = Modifier.fillMaxSize().weight(0.29f),
-        ) {
-            Timeline(navigator)
-        }
+        Row(modifier = Modifier.fillMaxSize().weight(0.29f)) { Timeline(navigator) }
 
         // #####   Navigation   #####
         NavigationButtons(navigator, Modifier.weight(1f), Modifier.weight(0.10f))

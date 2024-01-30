@@ -97,11 +97,7 @@ private fun DropdownMenu(
                 {
                     expanded.value = false
                     openFileSaverAndGetPath(state.value.saveFramePath) { path ->
-                        saveBitmapAsPng(
-                            bitmap,
-                            path,
-                            state,
-                        )
+                        saveBitmapAsPng(bitmap, path, state)
                     }
                 },
             )
