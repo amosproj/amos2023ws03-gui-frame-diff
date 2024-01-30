@@ -17,6 +17,7 @@ import logic.differenceGeneratorWrapper.DifferenceGeneratorWrapper
 import logic.getVideoMetadata
 import models.AppState
 import ui.components.general.AutoSizeText
+import ui.components.general.ConfirmationPopup
 import ui.components.general.ErrorDialog
 import java.nio.file.Files
 import java.nio.file.Path
@@ -72,6 +73,18 @@ fun RowScope.ComputeDifferencesButton(
             ErrorDialog(onCloseRequest = { errorDialogText.value = null }, text = errorDialogText.value!!)
         }
     }
+
+    ConfirmationPopup(
+        text = "The reference video is newer than the current video. Are you sure you want to continue?",
+        showDialog = showConfirmDialog.value,
+        onConfirm = {
+            calculateVideoDifferences(scope, state, errorDialogText, showDialog)
+            showConfirmDialog.value = false
+        },
+        onCancel = {
+            showConfirmDialog.value = false
+        },
+    )
 }
 
 private fun calculateVideoDifferences(
@@ -108,8 +121,6 @@ private fun calculateVideoDifferences(
             return@launch
         }
 
-        isLoading.value = false
-
         // check for cancellation one last time before switching to the diff screen
         if (!AlgorithmExecutionState.getInstance().isAlive()) {
             return@launch
@@ -117,6 +128,8 @@ private fun calculateVideoDifferences(
 
         // set the sequence and screen
         state.value = state.value.copy(sequenceObj = generator.getSequence(), screen = Screen.DiffScreen)
+    }.invokeOnCompletion {
+        isLoading.value = false
     }
 }
 
