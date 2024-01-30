@@ -15,7 +15,7 @@ plugins {
 group = "amos2023ws03"
 
 // WARNING: If this value is updated, it should be updated in the AppConfig class too
-version = "1.11.0"
+version = "1.12.0"
 
 repositories {
     google()

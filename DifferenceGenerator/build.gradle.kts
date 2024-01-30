@@ -15,7 +15,7 @@ repositories {
 }
 
 group = "amos2023ws03"
-version = "1.11.0"
+version = "1.12.0"
 
 dependencies {
     testImplementation(kotlin("test"))
