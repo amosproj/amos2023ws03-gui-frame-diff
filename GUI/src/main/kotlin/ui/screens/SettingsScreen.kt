@@ -5,16 +5,19 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import models.AppState
+import ui.components.general.*
 import ui.components.general.HelpMenu
 import ui.components.general.ProjectMenu
-import ui.components.general.TitleWithInfo
 import ui.components.selectVideoScreen.MaskSelectorButton
 import ui.components.settingsScreen.CustomSlider
 import ui.components.settingsScreen.SaveButton
@@ -132,10 +135,9 @@ fun SettingsScreen(state: MutableState<AppState>) {
 
                 // mask
                 Row(
-                    modifier = Modifier.height(200.dp),
+                    modifier = Modifier.height(200.dp).fillMaxWidth(0.8f),
                     horizontalArrangement = Arrangement.Center,
                 ) {
-                    Column(modifier = Modifier.weight(0.2f)) {}
                     MaskSelectorButton(
                         buttonText = "Upload Mask",
                         buttonPath = state.value.maskPath,
@@ -149,10 +151,21 @@ fun SettingsScreen(state: MutableState<AppState>) {
                         },
                         directoryPath = state.value.maskPath,
                     )
-                    Column(modifier = Modifier.weight(0.2f)) {
-                        // Implement remove mask button here
+
+                    // delete mask path
+                    Column(modifier = Modifier.weight(0.2f).padding(16.dp).fillMaxHeight(0.9f)) {
+                        Button(
+                            onClick = { state.value = state.value.copy(maskPath = null) },
+                            shape = MaterialTheme.shapes.medium,
+                            modifier = Modifier.fillMaxSize(),
+                            content = { Icon(Icons.Default.Close, "delete mask path", modifier = Modifier.fillMaxSize(0.6f)) },
+                            colors =
+                                ButtonDefaults.buttonColors(
+                                    contentColor = MaterialTheme.colorScheme.onTertiary,
+                                    containerColor = MaterialTheme.colorScheme.tertiary,
+                                ),
+                        )
                     }
-                    Column(modifier = Modifier.weight(0.2f)) {}
                 }
             }
         }
