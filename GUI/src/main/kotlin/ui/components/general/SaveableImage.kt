@@ -1,9 +1,8 @@
 package ui.components.general
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DropdownMenu
@@ -12,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.input.pointer.PointerEventPass
@@ -29,41 +27,49 @@ import javax.swing.JOptionPane
  * @param bitmap [MutableState]<[ImageBitmap]> containing the bitmap to display.
  * @param modifier [Modifier] to apply to the element.
  * @param state [MutableState]<[AppState]> containing the global state.
+ * @param fullScreen [Boolean] deciding if the image is being displayed in full screen.
  * @return [Unit]
  */
 @Composable
 fun SaveableImage(
     bitmap: MutableState<ImageBitmap>,
     modifier: Modifier = Modifier,
+    fullScreen: Boolean,
     state: MutableState<AppState>,
 ) {
     var expanded: MutableState<Boolean> = remember { mutableStateOf(false) }
-    Row(
+    var modifierAdjusted =
+        Modifier.pointerInput(Unit) {
+            awaitPointerEventScope {
+                while (true) {
+                    val event = awaitPointerEvent(PointerEventPass.Initial)
+                    if (event.changes.any { it.isConsumed }) {
+                        continue
+                    }
+
+                    if (event.buttons.isSecondaryPressed) {
+                        expanded.value = true
+                    }
+                }
+            }
+        }
+
+    if (fullScreen) {
+        modifierAdjusted = modifierAdjusted.fillMaxSize()
+    } else {
+        modifierAdjusted = modifierAdjusted.fillMaxWidth()
+    }
+
+    Box(
         modifier =
-            modifier.background(Color.Gray)
-                .padding(8.dp)
+            modifier.padding(8.dp)
                 .fillMaxWidth(1f),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
+        contentAlignment = Alignment.Center,
     ) {
         Image(
             bitmap = bitmap.value,
             null,
-            modifier =
-                Modifier.pointerInput(Unit) {
-                    awaitPointerEventScope {
-                        while (true) {
-                            val event = awaitPointerEvent(PointerEventPass.Initial)
-                            if (event.changes.any { it.isConsumed }) {
-                                continue
-                            }
-
-                            if (event.buttons.isSecondaryPressed) {
-                                expanded.value = true
-                            }
-                        }
-                    }
-                },
+            modifier = modifierAdjusted,
         )
         DropdownMenu(expanded, bitmap, state)
     }
@@ -81,17 +87,21 @@ private fun DropdownMenu(
     bitmap: MutableState<ImageBitmap>,
     state: MutableState<AppState>,
 ) {
-    DropdownMenu(
-        expanded = expanded.value,
-        onDismissRequest = { expanded.value = false },
-    ) {
-        DropdownMenuItem(
-            { Text("Save image as png") },
-            {
-                expanded.value = false
-                openFileSaverAndGetPath(state.value.saveFramePath) { path -> saveBitmapAsPng(bitmap, path, state) }
-            },
-        )
+    Box(modifier = Modifier, contentAlignment = Alignment.TopStart) {
+        DropdownMenu(
+            expanded = expanded.value,
+            onDismissRequest = { expanded.value = false },
+        ) {
+            DropdownMenuItem(
+                { Text("Save image as png") },
+                {
+                    expanded.value = false
+                    openFileSaverAndGetPath(state.value.saveFramePath) { path ->
+                        saveBitmapAsPng(bitmap, path, state)
+                    }
+                },
+            )
+        }
     }
 }
 

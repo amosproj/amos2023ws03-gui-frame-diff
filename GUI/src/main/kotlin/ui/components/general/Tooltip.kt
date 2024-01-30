@@ -3,7 +3,6 @@ package ui.components.general
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,20 +20,21 @@ import androidx.compose.ui.window.Popup
  */
 @Composable
 fun Tooltip(text: String) {
-    val cornerSize = 16.dp
     Popup(
         alignment = Alignment.BottomEnd,
-        offset = IntOffset(-24, 0),
+        offset = IntOffset(-28, 0),
     ) {
         // Draw a rectangle shape with rounded corners inside the popup
         Box(
             Modifier
-                .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(cornerSize)),
+                .background(MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.shapes.medium),
         ) {
             Text(
                 text = text,
                 modifier = Modifier.padding(8.dp),
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
+                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                lineHeight = MaterialTheme.typography.labelLarge.lineHeight,
             )
         }
     }

@@ -1,24 +1,33 @@
 package ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.*
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
 import models.AppState
 import models.defaultOutputPath
 import ui.components.diffScreen.*
 import ui.components.general.HelpMenu
 import ui.components.general.ProjectMenu
-import ui.components.general.TextTitle
 import java.io.File
 
 /**
@@ -29,6 +38,7 @@ import java.io.File
  * @return [Unit]
  */
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiffScreen(state: MutableState<AppState>) {
     // create the navigator, which implements the jumping logic
@@ -57,38 +67,62 @@ fun DiffScreen(state: MutableState<AppState>) {
         }
 
         // #####   Top Bar   #####
-        TopAppBar(
-            backgroundColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.secondary,
-        ) {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                ProjectMenu(state, Modifier.weight(0.1f))
-                SaveCollageButton(navigator, Modifier.weight(0.1f), state)
-                SaveInsertedFramesButton(navigator, Modifier.weight(0.1f), state)
-                Spacer(modifier = Modifier.weight(0.6f))
-                HelpMenu(Modifier.weight(0.1f))
-            }
-        }
-
-        // #####   Titles   #####
-        Row(modifier = Modifier.fillMaxWidth().weight(0.08f)) {
-            TextTitle(text = "Reference Video")
-            TextTitle(text = "Diff")
-            TextTitle(text = "Current Video")
-        }
-
-        Row(modifier = Modifier.fillMaxWidth().weight(0.08f)) {
-            StatisticalInformation(navigator)
-        }
-
+        CenterAlignedTopAppBar(
+            title = {
+                Text(
+                    text = "Difference Screen",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.secondary,
+                    fontWeight = FontWeight.Bold,
+                )
+            },
+            navigationIcon = {
+                Row {
+                    IconButton(
+                        modifier = Modifier.padding(8.dp),
+                        content = { Icon(Icons.Default.ArrowBack, "back button") },
+                        onClick = { state.value = state.value.copy(screen = Screen.SelectVideoScreen) },
+                    )
+                    ProjectMenu(state)
+                    // Decide whether to show the menu as a dropdown or as a row of buttons
+                    BoxWithConstraints {
+                        if (maxWidth < 1200.dp) {
+                            var expanded by remember { mutableStateOf(false) }
+                            IconButton(
+                                modifier = Modifier.padding(8.dp),
+                                content = { Icon(Icons.Default.Menu, "Menu button") },
+                                onClick = { expanded = true },
+                            )
+                            DropdownMenu(
+                                content = {
+                                    SaveCollageButton(navigator = navigator, state = state)
+                                    SaveInsertedFramesButton(navigator = navigator, state = state)
+                                },
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false },
+                            )
+                        } else {
+                            Row {
+                                SaveCollageButton(navigator = navigator, state = state)
+                                SaveInsertedFramesButton(navigator = navigator, state = state)
+                            }
+                        }
+                    }
+                }
+            },
+            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
+            actions = {
+                HelpMenu()
+            },
+        )
         // #####   Difference Videos   #####
-        Row(modifier = Modifier.fillMaxWidth().fillMaxHeight().weight(0.45f)) {
+        Row(modifier = Modifier.fillMaxWidth().weight(0.45f), verticalAlignment = Alignment.Bottom) {
             DisplayDifferenceImage(bitmap = navigator.videoReferenceBitmap, navigator = navigator, title = "Reference Video", state = state)
-            DisplayDifferenceImage(bitmap = navigator.diffBitmap, navigator = navigator, title = "Diff", state = state)
+            DisplayDifferenceImage(bitmap = navigator.diffBitmap, navigator = navigator, title = "Difference", state = state)
             DisplayDifferenceImage(bitmap = navigator.videoCurrentBitmap, navigator = navigator, title = "Current Video", state = state)
         }
         // #####   Timeline   #####
-        Row(modifier = Modifier.fillMaxSize().weight(0.29f).background(color = Color.Red)) { Timeline(navigator) }
+        Row(modifier = Modifier.fillMaxSize().weight(0.29f)) { Timeline(navigator) }
 
         // #####   Navigation   #####
         NavigationButtons(navigator, Modifier.weight(1f), Modifier.weight(0.10f))

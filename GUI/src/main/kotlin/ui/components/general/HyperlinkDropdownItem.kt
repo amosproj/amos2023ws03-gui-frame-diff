@@ -1,6 +1,7 @@
 package ui.components.general
 
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalUriHandler
@@ -19,7 +20,7 @@ fun HyperlinkDropdownMenuItem(
     val uriHandler = LocalUriHandler.current
     DropdownMenuItem(
         {
-            Text(text)
+            Text(text, fontSize = MaterialTheme.typography.bodyMedium.fontSize)
         },
         onClick = {
             uriHandler.openUri(uri)

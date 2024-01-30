@@ -1,14 +1,21 @@
 package ui.screens
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import models.AppState
-import ui.components.general.TextTitle
+import ui.components.general.HelpMenu
+import ui.components.general.ProjectMenu
 import ui.components.general.TitleWithInfo
-import ui.components.selectVideoScreen.FileSelectorButton
-import ui.components.settingsScreen.BackButton
+import ui.components.selectVideoScreen.MaskSelectorButton
 import ui.components.settingsScreen.CustomSlider
 import ui.components.settingsScreen.SaveButton
 
@@ -17,6 +24,7 @@ import ui.components.settingsScreen.SaveButton
  *
  * @param state the state of the app
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(state: MutableState<AppState>) {
     val oldState = remember { mutableStateOf(state.value.copy()) }
@@ -37,52 +45,123 @@ fun SettingsScreen(state: MutableState<AppState>) {
             "The transparent areas will be included in the video difference computation \n" +
             "while the opaque areas will be excluded."
     // Contains the whole Screen
-    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-        // Title
-        Row(modifier = Modifier.weight(0.2f)) { TextTitle("Settings") }
-        TitleWithInfo(Modifier.weight(0.15f), "Hyperparameters", textForHyper)
-
-        // gap open penalty
-        Row(modifier = Modifier.weight(0.2f)) {
-            CustomSlider(
-                title = "gapOpenPenalty",
-                default = state.value.gapOpenPenalty,
-                minValue = -1.0,
-                maxValue = 0.5,
-                tooltipText = textForGapOpen,
-                onChange = { state.value = state.value.copy(gapOpenPenalty = it) },
-            )
-        }
-
-        // gap extend penalty
-        Row(modifier = Modifier.weight(0.2f)) {
-            CustomSlider(
-                title = "gapExtensionPenalty",
-                default = state.value.gapExtendPenalty,
-                minValue = -1.0,
-                maxValue = 0.5,
-                tooltipText = textForGapExtended,
-                onChange = { state.value = state.value.copy(gapExtendPenalty = it) },
-            )
-        }
-
-        // mask
-        Row(modifier = Modifier.weight(0.175f)) {
-            FileSelectorButton(
-                buttonText = "Upload Mask",
-                buttonPath = state.value.maskPath,
-                tooltipText = textForMask,
-                onUpdateResult = { selectedFilePath ->
-                    state.value =
-                        state.value.copy(maskPath = selectedFilePath)
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomEnd,
+    ) {
+        // Contains the whole Screen
+        Column {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "Settings",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.secondary,
+                        fontWeight = FontWeight.Bold,
+                    )
                 },
-                directoryPath = state.value.maskPath,
+                navigationIcon = {
+                    Row {
+                        IconButton(
+                            modifier = Modifier.padding(8.dp),
+                            content = {
+                                Icon(
+                                    Icons.Default
+                                        .ArrowBack,
+                                    "back button",
+                                )
+                            },
+                            onClick = {
+                                state.value =
+                                    state.value
+                                        .copy(
+                                            screen =
+                                                Screen.SelectVideoScreen,
+                                        )
+                            },
+                        )
+                        ProjectMenu(state)
+                    }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
+                actions = { HelpMenu() },
             )
-        }
 
+            Column(
+                modifier = Modifier.fillMaxHeight().verticalScroll(ScrollState(0)),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                TitleWithInfo(
+                    "Hyperparameters",
+                    textForHyper,
+                    MaterialTheme.typography.headlineMedium.fontSize,
+                    20.dp,
+                )
+
+                // gap open penalty
+                Row(modifier = Modifier.height(200.dp)) {
+                    CustomSlider(
+                        title = "gapOpenPenalty",
+                        default = state.value.gapOpenPenalty,
+                        minValue = -1.0,
+                        maxValue = 0.5,
+                        tooltipText = textForGapOpen,
+                        onChange = {
+                            state.value = state.value.copy(gapOpenPenalty = it)
+                        },
+                    )
+                }
+
+                // gap extend penalty
+                Row(modifier = Modifier.height(200.dp)) {
+                    CustomSlider(
+                        title = "gapExtensionPenalty",
+                        default = state.value.gapExtendPenalty,
+                        minValue = -1.0,
+                        maxValue = 0.5,
+                        tooltipText = textForGapExtended,
+                        onChange = {
+                            state.value =
+                                state.value.copy(
+                                    gapExtendPenalty =
+                                    it,
+                                )
+                        },
+                    )
+                }
+
+                // mask
+                Row(
+                    modifier = Modifier.height(200.dp),
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    Column(modifier = Modifier.weight(0.2f)) {}
+                    MaskSelectorButton(
+                        buttonText = "Upload Mask",
+                        buttonPath = state.value.maskPath,
+                        tooltipText = textForMask,
+                        onUpdateResult = { selectedFilePath ->
+                            state.value =
+                                state.value.copy(
+                                    maskPath =
+                                    selectedFilePath,
+                                )
+                        },
+                        directoryPath = state.value.maskPath,
+                    )
+                    Column(modifier = Modifier.weight(0.2f)) {
+                        // Implement remove mask button here
+                    }
+                    Column(modifier = Modifier.weight(0.2f)) {}
+                }
+            }
+        }
         // back and save button
-        Row(modifier = Modifier.weight(0.2f)) {
-            BackButton(state, oldState)
+        Row(
+            modifier = Modifier.padding(50.dp).fillMaxWidth(),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.End,
+        ) {
             SaveButton(state, oldState)
         }
     }

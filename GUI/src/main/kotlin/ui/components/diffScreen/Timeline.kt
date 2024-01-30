@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +23,7 @@ import frameNavigation.FrameNavigation
 import kotlinx.coroutines.launch
 import logic.caches.ThumbnailCache
 import ui.components.general.AutoSizeText
+import ui.components.general.TitleWithInfo
 
 /**
  * A Composable function that creates a box to display the timeline.
@@ -95,9 +97,32 @@ fun Timeline(navigator: FrameNavigation) {
     }
 
     Column(
-        modifier = Modifier.background(color = Color.Gray).fillMaxSize(),
+        modifier = Modifier.padding(16.dp).fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Row(
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 4.dp),
+        ) {
+            Box(modifier = Modifier.weight(0.1f)) {}
+            Box(modifier = Modifier.weight(0.2f)) {
+                val statisticalInformation =
+                    "Total Frames Reference Video: ${navigator.getSizeOfVideoReference()}\n" +
+                        "Total Frames Current Video: ${navigator.getSizeOfVideoCurrent()}\n" +
+                        "Frames with Differences: ${navigator.getFramesWithPixelDifferences()}\n" +
+                        "Inserted Frames: ${navigator.getInsertions()}\n" +
+                        "Deleted Frames: ${navigator.getDeletions()}"
+                TitleWithInfo(
+                    text = "Statistical Information",
+                    tooltipText = statisticalInformation,
+                    fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                    topSpace = 4.dp,
+                )
+            }
+
+            Box(modifier = Modifier.weight(0.7f)) {}
+        }
+
         Box(modifier = generalModifier.weight(0.3f)) {
             Row(
                 modifier =
@@ -203,13 +228,13 @@ fun Timeline(navigator: FrameNavigation) {
                 generalModifier
                     .fillMaxHeight(0.1f)
                     .padding(top = 5.dp)
-                    .border(width = 1.dp, color = Color.LightGray, shape = CircleShape),
+                    .border(width = 1.dp, color = MaterialTheme.colorScheme.primary, shape = CircleShape),
             adapter = rememberScrollbarAdapter(scrollState = scrollState),
             style =
                 LocalScrollbarStyle.current.copy(
                     hoverDurationMillis = 500,
-                    unhoverColor = Color.LightGray,
-                    hoverColor = Color.White,
+                    unhoverColor = MaterialTheme.colorScheme.secondary,
+                    hoverColor = MaterialTheme.colorScheme.primary,
                     shape = CircleShape,
                 ),
         )
@@ -330,14 +355,14 @@ private fun TimelineTopLabels(
                 continue
             }
 
-            // somehow, we need to manually convert the offset for text only dependening on the
+            // somehow, we need to manually convert the offset for text only depending on the
             // density of the device (e.g. on Windows: window scaling)
             val textOffset = with(LocalDensity.current) { (offset - textWidth / 2).toDp() }
 
             // draw label with diff index
             AutoSizeText(
                 text = i.toString(),
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.primary,
                 modifier =
                     Modifier
                         .onGloballyPositioned { coordinates ->
@@ -347,13 +372,13 @@ private fun TimelineTopLabels(
                         .offset(x = textOffset)
                         .align(Alignment.TopStart),
             )
-
+            val lineColor = MaterialTheme.colorScheme.primary
             // draw a tick for the text
             Canvas(modifier = Modifier.fillMaxSize()) {
                 drawLine(
                     start = Offset(offset, textHeight),
                     end = Offset(offset, size.height),
-                    color = Color.Black,
+                    color = lineColor,
                     strokeWidth = 1f,
                 )
             }

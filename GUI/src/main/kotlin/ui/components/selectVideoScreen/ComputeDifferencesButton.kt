@@ -65,6 +65,7 @@ fun RowScope.ComputeDifferencesButton(
             textAlign = TextAlign.Center,
             // remove default centering
             modifier = Modifier,
+            minimalFontSize = 27,
         )
 
         if (errorDialogText.value != null) {

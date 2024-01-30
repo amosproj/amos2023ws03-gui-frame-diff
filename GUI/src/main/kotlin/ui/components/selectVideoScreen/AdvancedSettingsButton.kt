@@ -5,10 +5,13 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import models.AppState
@@ -27,11 +30,13 @@ fun RowScope.AdvancedSettingsButton(state: MutableState<AppState>) {
             // set the screen
             state.value = state.value.copy(screen = Screen.SettingsScreen)
         },
+        shape = MaterialTheme.shapes.medium,
     ) {
         Image(
             painter = painterResource("settings.svg"),
             contentDescription = "settings",
             modifier = Modifier.fillMaxSize().alpha(0.8f).padding(4.dp),
+            colorFilter = ColorFilter.tint(LocalContentColor.current),
         )
     }
 }

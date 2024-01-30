@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 @Composable
 fun WrapTheming(content: @Composable () -> Unit) {
     defaultTheme {
-        Surface(color = MaterialTheme.colorScheme.background) {
+        Surface(color = MaterialTheme.colorScheme.surfaceVariant) {
             content()
         }
     }

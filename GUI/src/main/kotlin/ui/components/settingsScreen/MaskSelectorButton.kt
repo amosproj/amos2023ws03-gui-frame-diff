@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -15,7 +16,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ui.components.general.AutoSizeText
 import ui.components.general.InfoIconWithHover
 import ui.components.general.openFileChooserAndGetPath
 
@@ -25,54 +25,48 @@ import ui.components.general.openFileChooserAndGetPath
  * @param buttonText The text to be displayed on the button.
  * @param buttonPath The path to the selected file.
  * @param onUpdateResult A function that will be called with the selected file path as a parameter.
- * Should update the AppState with the selected file path for the chosen file(e.g.
- * VideoReferencePath).
+ * Should update the AppState with the selected file path for the chosen file(e.g. VideoReferencePath).
  * @param tooltipText The text to be displayed in the tooltip.
  * @param directoryPath The path to the directory to be opened in the file chooser.
  * @return [Unit]
  */
 @Composable
-fun RowScope.FileSelectorButton(
+fun RowScope.MaskSelectorButton(
     buttonText: String,
     buttonPath: String?,
     onUpdateResult: (String) -> Unit,
-    tooltipText: String? = null,
+    tooltipText: String,
     directoryPath: String? = null,
 ) {
     val scope = rememberCoroutineScope()
     Button(
-        modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f),
-        onClick = {
-            scope.launch(Dispatchers.IO) {
-                openFileChooserAndGetPath(directoryPath) { path -> onUpdateResult(path) }
-            }
-        },
+        onClick = { scope.launch(Dispatchers.IO) { openFileChooserAndGetPath(directoryPath) { path -> onUpdateResult(path) } } },
         shape = MaterialTheme.shapes.medium,
+        modifier = Modifier.padding(16.dp).weight(0.6f).fillMaxHeight(0.9f),
     ) {
         // column to display the button text and the selected file path
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             // row to display the upload icon
-            Row(modifier = Modifier.weight(0.75f)) {
+            Row(modifier = Modifier.weight(0.5f), horizontalArrangement = Arrangement.End) {
                 Image(
                     painter = painterResource("upload.svg"),
                     contentDescription = "Upload",
                     modifier = Modifier.alpha(0.8f),
                     colorFilter = ColorFilter.tint(LocalContentColor.current),
                 )
-                if (tooltipText != null) {
+            }
+            Column(modifier = Modifier.weight(0.5f), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.Start) {
+                // row to display the button text
+                Row {
+                    Text(text = buttonText, fontSize = MaterialTheme.typography.titleLarge.fontSize)
                     InfoIconWithHover(tooltipText)
                 }
-            }
-            // row to display the button text
-            Row(modifier = Modifier.weight(0.15f)) {
-                AutoSizeText(text = buttonText, minimalFontSize = 27)
-            }
-            // row to display the selected file path
-            Row(modifier = Modifier.weight(0.1f)) {
-                AutoSizeText(text = buttonPath ?: "No file selected", minimalFontSize = 25)
+                // row to display the selected file path
+                Row {
+                    if (buttonPath != null) {
+                        Text(text = buttonPath, fontSize = MaterialTheme.typography.bodyMedium.fontSize)
+                    }
+                }
             }
         }
     }
