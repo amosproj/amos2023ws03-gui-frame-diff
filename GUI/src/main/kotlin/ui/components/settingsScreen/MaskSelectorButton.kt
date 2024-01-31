@@ -40,7 +40,7 @@ fun RowScope.MaskSelectorButton(
 ) {
     val scope = rememberCoroutineScope()
     Button(
-        onClick = { scope.launch(Dispatchers.IO) { openFileChooserAndGetPath(directoryPath) { path -> onUpdateResult(path) } } },
+        onClick = { scope.launch(Dispatchers.IO) { openFileChooserAndGetPath(directoryPath,  {path -> onUpdateResult(path) }) } },
         shape = MaterialTheme.shapes.medium,
         modifier = Modifier.padding(16.dp).weight(0.6f).fillMaxHeight(0.9f),
     ) {

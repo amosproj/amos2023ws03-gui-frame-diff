@@ -17,5 +17,12 @@ class AcceptedCodecs {
                 "Uncompressed YUV 422 8-bit",
                 "FFV1 YUV 422 8-bit",
             )
+
+        val ACTIVE_CODECS =
+            setOf(
+                "ffv1",
+                "FFV1 YUV 422 8-bit",
+            )
+
     }
 }

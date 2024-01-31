@@ -1,15 +1,11 @@
 package ui.screens
 
+import AcceptedCodecs
 import algorithms.AlgorithmExecutionState
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import models.AppState
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import ui.components.general.ErrorDialog
@@ -25,7 +21,6 @@ import ui.components.selectVideoScreen.LoadingDialog
  * @param state [MutableState]<[AppState]> containing the global state.
  * @return [Unit]
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectVideoScreen(state: MutableState<AppState>) {
     val scope = rememberCoroutineScope()
@@ -36,23 +31,16 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
 
     Column(modifier = Modifier.fillMaxSize()) {
         // menu bar
-        CenterAlignedTopAppBar(
-            title = {
-                Text(
-                    text = "Select Video Screen",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.secondary,
-                    fontWeight = FontWeight.Bold,
-                )
-            },
-            navigationIcon = {
-                ProjectMenu(state)
-            },
-            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
-            actions = {
-                HelpMenu()
-            },
-        )
+        TopAppBar(
+            backgroundColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+            contentColor = androidx.compose.material3.MaterialTheme.colorScheme.secondary,
+        ) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                ProjectMenu(state, Modifier.weight(0.1f))
+                Spacer(modifier = Modifier.weight(0.8f))
+                HelpMenu(Modifier.weight(0.1f))
+            }
+        }
 
         // video selection
         Row(modifier = Modifier.weight(0.85f)) {
@@ -110,6 +98,7 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
     if (showLoadingDialog.value) {
         LoadingDialog(onCancel = {
             AlgorithmExecutionState.getInstance().stop()
+            showLoadingDialog.value = false
         })
     }
 }
@@ -127,7 +116,7 @@ private fun checkVideoFormatAndCodec(
     }
     val grabber = FFmpegFrameGrabber(selectedFilePath)
     grabber.start()
-    if (!(grabber.videoMetadata["encoder"] ?: grabber.videoCodecName).lowercase().contains("ffv1")) {
+    if (!(grabber.videoMetadata["encoder"] in AcceptedCodecs.ACTIVE_CODECS || grabber.videoCodecName in AcceptedCodecs.ACTIVE_CODECS)) {
         errorDialogText.value =
             "Uploaded Video is not in the correct codec. Please upload a video encoded with ffv1."
         return
