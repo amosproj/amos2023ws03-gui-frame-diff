@@ -69,7 +69,7 @@ fun ProjectMenu(
                         openFileChooserAndGetPath(
                             directoryPath = state.value.openProjectPath,
                             onResult = { path -> handleOpenProject(state, path, errorDialogText) },
-                            allowedFileExtensions = arrayOf("json"),
+                            allowedFileExtensions = arrayOf("mkv"),
                         )
                     }
                     expanded = false
