@@ -1,3 +1,5 @@
+import org.bytedeco.javacv.FFmpegFrameGrabber
+
 /**
  * A globally accessible object that contains a list of all accepted codecs. This list can be
  * expanded to include more codecs.
@@ -17,5 +19,20 @@ class AcceptedCodecs {
                 "Uncompressed YUV 422 8-bit",
                 "FFV1 YUV 422 8-bit",
             )
+
+        /**
+         * Checks if the given file is in an accepted codec.
+         */
+        public fun checkFile(path: String): Boolean {
+            val grabber = FFmpegFrameGrabber(path)
+            grabber.start()
+            val codecName = grabber.videoMetadata["encoder"] ?: grabber.videoCodecName
+            for (codec in ACCEPTED_CODECS) {
+                if (codecName.contains(codec, ignoreCase = true)) {
+                    return true
+                }
+            }
+            return false
+        }
     }
 }

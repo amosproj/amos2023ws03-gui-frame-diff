@@ -1,16 +1,14 @@
 package ui.screens
 
+import AcceptedCodecs
 import algorithms.AlgorithmExecutionState
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import models.AppState
+import ui.components.general.ErrorDialog
 import ui.components.general.HelpMenu
 import ui.components.general.ProjectMenu
 import ui.components.selectVideoScreen.AdvancedSettingsButton
@@ -28,6 +26,8 @@ import ui.components.selectVideoScreen.LoadingDialog
 fun SelectVideoScreen(state: MutableState<AppState>) {
     val scope = rememberCoroutineScope()
     val showLoadingDialog = remember { mutableStateOf(false) }
+
+    val errorDialogText = remember { mutableStateOf<String?>(null) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         // menu bar
@@ -48,27 +48,46 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
                 HelpMenu()
             },
         )
-
         // video selection
         Row(modifier = Modifier.weight(0.85f)) {
             FileSelectorButton(
                 buttonText = "Select Reference Video",
                 buttonPath = state.value.videoReferencePath,
                 onUpdateResult = { selectedFilePath ->
-                    state.value = state.value.copy(videoReferencePath = selectedFilePath)
+                    checkVideoFormatAndCodec(
+                        selectedFilePath,
+                        state,
+                        errorDialogText,
+                        true,
+                    )
                 },
                 directoryPath = state.value.videoReferencePath,
+                buttonDescription = "Please upload a video with format mkv or mov.",
+                allowedFileExtensions = arrayOf("mkv", "mov"),
             )
-
+            if (errorDialogText.value != null) {
+                ErrorDialog(
+                    onCloseRequest = { errorDialogText.value = null },
+                    text = errorDialogText.value!!,
+                )
+            }
             FileSelectorButton(
                 buttonText = "Select Current Video",
                 buttonPath = state.value.videoCurrentPath,
                 onUpdateResult = { selectedFilePath ->
-                    state.value = state.value.copy(videoCurrentPath = selectedFilePath)
+                    checkVideoFormatAndCodec(
+                        selectedFilePath,
+                        state,
+                        errorDialogText,
+                        false,
+                    )
                 },
                 directoryPath = state.value.videoCurrentPath,
+                buttonDescription = "Please upload a video with format mkv or mov.",
+                allowedFileExtensions = arrayOf("mkv", "mov"),
             )
         }
+
         // screen switch buttons
         Row(modifier = Modifier.weight(0.15f)) {
             ComputeDifferencesButton(state, scope, showLoadingDialog)
@@ -80,5 +99,31 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
         LoadingDialog(onCancel = {
             AlgorithmExecutionState.getInstance().stop()
         })
+    }
+}
+
+/**
+ * Checks if the selected file is in the correct format and codec.
+ */
+private fun checkVideoFormatAndCodec(
+    selectedFilePath: String,
+    state: MutableState<AppState>,
+    errorDialogText: MutableState<String?>,
+    isReference: Boolean,
+) {
+    if (!selectedFilePath.endsWith(".mkv") && !selectedFilePath.endsWith(".mov")) {
+        errorDialogText.value =
+            "Uploaded Video is not in the correct format. Please upload a video with format mkv or mov."
+        return
+    }
+    if (!AcceptedCodecs.checkFile(selectedFilePath)) {
+        errorDialogText.value =
+            "Uploaded Video is not in the correct codec. Please upload a video encoded with ffv1."
+        return
+    }
+    if (isReference) {
+        state.value = state.value.copy(videoReferencePath = selectedFilePath)
+    } else {
+        state.value = state.value.copy(videoCurrentPath = selectedFilePath)
     }
 }

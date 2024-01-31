@@ -46,7 +46,7 @@ class DifferenceGenerator(
      * @throws DifferenceGeneratorDimensionException if the videos' dimensions don't match.
      */
     init {
-        if (!isLosslessCodec(videoReferenceGrabber) || !isLosslessCodec(videoCurrentGrabber)) {
+        if (!AcceptedCodecs.checkFile(videoReferencePath) || !AcceptedCodecs.checkFile(videoCurrentPath)) {
             throw DifferenceGeneratorCodecException("Videos must be in a lossless codec")
         }
 
@@ -71,20 +71,6 @@ class DifferenceGenerator(
 
         // turn off verbose ffmpeg output
         avutil.av_log_set_level(avutil.AV_LOG_QUIET)
-    }
-
-    /**
-     * Determines whether the given video file is encoded using one of the
-     * [AcceptedCodecs.ACCEPTED_CODECS].
-     *
-     * @param grabber [MaskedImageGrabber] of the video to check
-     * @return true if the video file is encoded using one of the [AcceptedCodecs.ACCEPTED_CODECS],
-     * false otherwise
-     */
-    private fun isLosslessCodec(grabber: MaskedImageGrabber): Boolean {
-        grabber.start()
-        val codecName = grabber.videoMetadata["encoder"] ?: grabber.videoCodecName
-        return codecName in AcceptedCodecs.ACCEPTED_CODECS
     }
 
     /**
