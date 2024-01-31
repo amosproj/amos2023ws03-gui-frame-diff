@@ -28,7 +28,6 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
     val showLoadingDialog = remember { mutableStateOf(false) }
 
     val errorDialogText = remember { mutableStateOf<String?>(null) }
-    // val currentErrorDialogText = remember { mutableStateOf<String?>(null) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         // menu bar

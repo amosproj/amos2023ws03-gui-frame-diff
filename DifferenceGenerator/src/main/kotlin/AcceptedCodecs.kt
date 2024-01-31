@@ -21,9 +21,6 @@ class AcceptedCodecs {
             )
 
         public fun checkFile(path: String): Boolean {
-            if (!path.endsWith(".mkv") && !path.endsWith(".mov")) {
-                return false
-            }
             val grabber = FFmpegFrameGrabber(path)
             grabber.start()
             val codecName = grabber.videoMetadata["encoder"] ?: grabber.videoCodecName
