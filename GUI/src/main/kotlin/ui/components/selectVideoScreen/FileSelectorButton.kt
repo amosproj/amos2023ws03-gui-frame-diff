@@ -13,8 +13,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import ui.components.general.AutoSizeText
 import ui.components.general.InfoIconWithHover
 import ui.components.general.openFileChooserAndGetPath
@@ -45,13 +43,11 @@ fun RowScope.FileSelectorButton(
     Button(
         modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f),
         onClick = {
-            scope.launch(Dispatchers.IO) {
-                openFileChooserAndGetPath(
-                    directoryPath,
-                    { path -> onUpdateResult(path) },
-                    allowedFileExtensions,
-                )
-            }
+            openFileChooserAndGetPath(
+                directoryPath,
+                { path -> onUpdateResult(path) },
+                allowedFileExtensions,
+            )
         },
         shape = MaterialTheme.shapes.medium,
     ) {
