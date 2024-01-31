@@ -117,18 +117,19 @@ class DifferenceGenerator(
                     encoder.record(getDifferencesBetweenBufferedImages(videoReferenceGrabber.next(), videoCurrentGrabber.next()))
                 }
                 AlignmentElement.INSERTION -> {
-                    encoder.record(coloredFrameGenerator.getColoredFrame(Color.GREEN))
                     videoCurrentGrabber.next()
                 }
                 AlignmentElement.DELETION -> {
-                    encoder.record(coloredFrameGenerator.getColoredFrame(Color.RED))
                     videoReferenceGrabber.next()
                 }
                 AlignmentElement.PERFECT -> {
-                    encoder.record(coloredFrameGenerator.getColoredFrame(Color.BLACK))
                     videoReferenceGrabber.next()
                     videoCurrentGrabber.next()
                 }
+            }
+
+            if (el != AlignmentElement.MATCH) {
+                encoder.record(coloredFrameGenerator.getColoredFrame(el))
             }
         }
         encoder.stop()
@@ -154,7 +155,7 @@ class DifferenceGenerator(
         image1: BufferedImage,
         image2: BufferedImage,
     ): Frame {
-        val differences = coloredFrameGenerator.getColoredBufferedImage(Color.BLACK)
+        val differences = coloredFrameGenerator.getColoredBufferedImage(AlignmentElement.MATCH)
         val differencesData = (differences.raster.dataBuffer as DataBufferByte)
 
         val data1 = (image1.raster.dataBuffer as DataBufferByte).data

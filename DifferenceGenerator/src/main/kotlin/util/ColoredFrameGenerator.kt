@@ -1,5 +1,6 @@
 package util
 
+import algorithms.AlignmentElement
 import org.bytedeco.javacv.Frame
 import wrappers.Resettable2DFrameConverter
 import java.awt.Color
@@ -10,6 +11,16 @@ class ColoredFrameGenerator(val width: Int, val height: Int) {
     val converter = Resettable2DFrameConverter()
 
     /**
+     * Creates a colored Frame given a specific [AlignmentElement].
+     *
+     * @param element the alignment element to be encoded
+     * @return a frame colored in the right encoding
+     */
+    fun getColoredFrame(element: AlignmentElement): Frame {
+        return getColoredFrame(ColorEncoding.elementToColor[element]!!)
+    }
+
+    /**
      * Creates a Frame with a given color.
      *
      * @param color the color
@@ -17,6 +28,19 @@ class ColoredFrameGenerator(val width: Int, val height: Int) {
      */
     fun getColoredFrame(color: Color): Frame {
         return converter.getFrame(getColoredBufferedImage(color))
+    }
+
+    /**
+     * Creates a Buffered Image given a specific [AlignmentElement].
+     *
+     * @param element the alignment element to be encoded
+     * @return a Buffered Image colored in the right encoding
+     */
+    fun getColoredBufferedImage(
+        element: AlignmentElement,
+        type: Int = BufferedImage.TYPE_3BYTE_BGR,
+    ): BufferedImage {
+        return getColoredBufferedImage(ColorEncoding.elementToColor[element]!!, type)
     }
 
     /**
