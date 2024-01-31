@@ -20,6 +20,9 @@ class AcceptedCodecs {
                 "FFV1 YUV 422 8-bit",
             )
 
+        /**
+         * Checks if the given file is in an accepted codec.
+         */
         public fun checkFile(path: String): Boolean {
             val grabber = FFmpegFrameGrabber(path)
             grabber.start()

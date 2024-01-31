@@ -102,6 +102,9 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
     }
 }
 
+/**
+ * Checks if the selected file is in the correct format and codec.
+ */
 private fun checkVideoFormatAndCodec(
     selectedFilePath: String,
     state: MutableState<AppState>,
