@@ -127,7 +127,7 @@ class DivideAndConquerAligner<T>(private val algorithm: AlignmentAlgorithm<T>, p
             for (j in i + 1 until hashArray.size) {
                 // if two hashes are equal, put the indices of both in the duplicates set
                 if (hashArray[i].contentEquals(hashArray[j])) {
-                    duplicates.add(j)
+                    duplicates.add(i)
                     duplicates.add(j)
                 }
             }
