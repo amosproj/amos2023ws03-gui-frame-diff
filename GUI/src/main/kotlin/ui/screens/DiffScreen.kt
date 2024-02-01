@@ -26,6 +26,7 @@ import frameNavigation.FrameNavigation
 import models.AppState
 import models.defaultOutputPath
 import ui.components.diffScreen.*
+import ui.components.diffScreen.timeline.Timeline
 import ui.components.general.HelpMenu
 import ui.components.general.ProjectMenu
 import java.io.File
