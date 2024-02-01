@@ -6,6 +6,7 @@ import org.bytedeco.ffmpeg.global.avcodec.AV_CODEC_ID_FFV1
 import org.bytedeco.ffmpeg.global.avutil
 import org.bytedeco.javacv.FFmpegFrameRecorder
 import org.bytedeco.javacv.Frame
+import org.opencv.core.Size
 import util.ColoredFrameGenerator
 import wrappers.MaskedImageGrabber
 import wrappers.Resettable2DFrameConverter
@@ -46,14 +47,29 @@ class DifferenceGenerator(
      * @throws DifferenceGeneratorDimensionException if the videos' dimensions don't match.
      */
     init {
-        if (!AcceptedCodecs.checkFile(videoReferencePath) || !AcceptedCodecs.checkFile(videoCurrentPath)) {
-            throw DifferenceGeneratorCodecException("Videos must be in a lossless codec")
+        if (!AcceptedCodecs.checkFile(videoReferencePath)) {
+            throw DifferenceGeneratorCodecException(
+                "Reference video must be in a lossless codec",
+                actualCodec = AcceptedCodecs.getCodec(videoReferencePath),
+                expectedCodecs = AcceptedCodecs.ACCEPTED_CODECS.toList(),
+            )
+        }
+        if (!AcceptedCodecs.checkFile(videoCurrentPath)) {
+            throw DifferenceGeneratorCodecException(
+                "Current video must be in a lossless codec",
+                actualCodec = AcceptedCodecs.getCodec(videoCurrentPath),
+                expectedCodecs = AcceptedCodecs.ACCEPTED_CODECS.toList(),
+            )
         }
 
         if (this.videoReferenceGrabber.imageWidth != this.videoCurrentGrabber.imageWidth ||
             this.videoReferenceGrabber.imageHeight != this.videoCurrentGrabber.imageHeight
         ) {
-            throw DifferenceGeneratorDimensionException("Videos must have the same dimensions")
+            throw DifferenceGeneratorDimensionException(
+                "Videos must have the same dimensions",
+                referenceSize = Size(this.videoReferenceGrabber.imageWidth.toDouble(), this.videoReferenceGrabber.imageHeight.toDouble()),
+                currentSize = Size(this.videoCurrentGrabber.imageWidth.toDouble(), this.videoCurrentGrabber.imageHeight.toDouble()),
+            )
         }
 
         this.width = this.videoReferenceGrabber.imageWidth

@@ -1,4 +1,4 @@
-
+import org.opencv.core.Size
 
 /**
  * Base class for all exceptions thrown by the library.
@@ -18,9 +18,14 @@ open class DifferenceGeneratorException(message: String, cause: Throwable? = nul
  * @param message the detail message.
  * @param cause the cause.
  */
-class DifferenceGeneratorCodecException(message: String, cause: Throwable? = null) : DifferenceGeneratorException(message, cause) {
+class DifferenceGeneratorCodecException(
+    message: String,
+    cause: Throwable? = null,
+    val actualCodec: String,
+    val expectedCodecs: List<String>,
+) : DifferenceGeneratorException(message, cause) {
     override fun toString(): String {
-        return "CodecException(message=$message, cause=$cause)"
+        return "$message:\n The used codec: $actualCodec; expected codecs: ${expectedCodecs.joinToString(" | ")}})"
     }
 }
 
@@ -30,21 +35,14 @@ class DifferenceGeneratorCodecException(message: String, cause: Throwable? = nul
  * @param message the detail message.
  * @param cause the cause.
  */
-class DifferenceGeneratorDimensionException(message: String, cause: Throwable? = null) : DifferenceGeneratorException(message, cause) {
+class DifferenceGeneratorDimensionException(
+    message: String,
+    cause: Throwable? = null,
+    val referenceSize: Size,
+    val currentSize: Size,
+) : DifferenceGeneratorException(message, cause) {
     override fun toString(): String {
-        return "DimensionException(message=$message, cause=$cause)"
-    }
-}
-
-/**
- * Exception thrown when the video container is not supported.
- *
- * @param message the detail message.
- * @param cause the cause.
- */
-class DifferenceGeneratorContainerException(message: String, cause: Throwable? = null) : DifferenceGeneratorException(message, cause) {
-    override fun toString(): String {
-        return "ContainerException(message=$message, cause=$cause)"
+        return "$message:\nThe selected videos' dimensions don't match (Reference: $referenceSize; Current: $currentSize)."
     }
 }
 
@@ -56,9 +54,14 @@ class DifferenceGeneratorContainerException(message: String, cause: Throwable? =
  * @param message the detail message.
  * @param cause the cause.
  */
-class DifferenceGeneratorMaskException(message: String, cause: Throwable? = null) : DifferenceGeneratorException(message, cause) {
+class DifferenceGeneratorMaskException(
+    message: String,
+    cause: Throwable? = null,
+    val videoSize: Size,
+    val maskSize: Size,
+) : DifferenceGeneratorException(message, cause) {
     override fun toString(): String {
-        return "MaskException(message=$message, cause=$cause)"
+        return "The selected masks dimensions ($maskSize) don't match the videos' size ($videoSize)."
     }
 }
 

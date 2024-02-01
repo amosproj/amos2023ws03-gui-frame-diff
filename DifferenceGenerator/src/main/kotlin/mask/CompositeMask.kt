@@ -1,6 +1,7 @@
 package mask
 
 import DifferenceGeneratorMaskException
+import org.opencv.core.Size
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import java.io.File
@@ -32,7 +33,11 @@ class CompositeMask : Mask {
     constructor(maskFile: File, width: Int, height: Int) {
         maskImage = ImageIO.read(maskFile)
         if (maskImage.width != width || maskImage.height != height) {
-            throw DifferenceGeneratorMaskException("Mask must have the same dimensions as the videos")
+            throw DifferenceGeneratorMaskException(
+                "Mask must have the same dimensions as the videos",
+                videoSize = Size(width.toDouble(), height.toDouble()),
+                maskSize = Size(maskImage.width.toDouble(), maskImage.height.toDouble()),
+            )
         }
     }
 

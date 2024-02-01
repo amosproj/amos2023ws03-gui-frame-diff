@@ -102,7 +102,7 @@ private fun calculateVideoDifferences(
         try {
             generator = DifferenceGeneratorWrapper(state)
         } catch (e: DifferenceGeneratorException) {
-            errorDialogText.value = e.message
+            errorDialogText.value = e.toString()
             return@launch
         } catch (e: Exception) {
             errorDialogText.value = "An unexpected exception was thrown when creating" +
