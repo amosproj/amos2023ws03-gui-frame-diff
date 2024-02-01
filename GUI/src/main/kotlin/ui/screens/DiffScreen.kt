@@ -82,7 +82,13 @@ fun DiffScreen(state: MutableState<AppState>) {
                     IconButton(
                         modifier = Modifier.padding(8.dp),
                         content = { Icon(Icons.Default.ArrowBack, "back button") },
-                        onClick = { state.value = state.value.copy(screen = Screen.SelectVideoScreen) },
+                        onClick = {
+                            state.value =
+                                state.value.copy(
+                                    screen = Screen.SelectVideoScreen,
+                                    hasUnsavedChanges = false,
+                                )
+                        },
                     )
                     ProjectMenu(state)
                     // Decide whether to show the menu as a dropdown or as a row of buttons

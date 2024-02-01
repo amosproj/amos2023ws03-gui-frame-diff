@@ -127,7 +127,7 @@ private fun calculateVideoDifferences(
         }
 
         // set the sequence and screen
-        state.value = state.value.copy(sequenceObj = generator.getSequence(), screen = Screen.DiffScreen)
+        state.value = state.value.copy(sequenceObj = generator.getSequence(), screen = Screen.DiffScreen, hasUnsavedChanges = true)
     }.invokeOnCompletion {
         isLoading.value = false
     }

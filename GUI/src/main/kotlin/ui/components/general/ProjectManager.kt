@@ -113,6 +113,8 @@ fun handleOpenProject(
         state.value = JsonMapper.mapper.readValue<AppState>(metadata["APP-STATE"]!!)
         // in case the video moved, set the output path to the new location
         state.value.outputPath = path
+        // reset unsaved changes
+        state.value.hasUnsavedChanges = false
     } else {
         errorText.value = "The selected file does not contain a valid project."
     }
@@ -162,4 +164,7 @@ fun handleSaveProject(
 
     recorder.stop()
     recorder.release()
+
+    // reset unsaved changes
+    state.value.hasUnsavedChanges = false
 }
