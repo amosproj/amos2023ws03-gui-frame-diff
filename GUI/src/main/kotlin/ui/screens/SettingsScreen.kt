@@ -178,6 +178,7 @@ fun SettingsScreen(state: MutableState<AppState>) {
                 oldState = oldState,
                 state = state,
                 onConfirm = {
+                    state.value = oldState.value.copy()
                     state.value =
                         state.value
                             .copy(
