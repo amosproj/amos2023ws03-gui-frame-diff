@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import frameNavigation.FrameNavigation
+import util.ColorEncoding
 
 /**
  * A Composable function that displays an overview timeline showing all difference positions at once,

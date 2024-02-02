@@ -25,6 +25,21 @@ fun TitleWithInfo(
     fontSize: TextUnit,
     topSpace: Dp,
 ) {
+    TitleWithInfo(
+        text = text,
+        tooltipContent = { TooltipText(tooltipText) },
+        fontSize = fontSize,
+        topSpace = topSpace,
+    )
+}
+
+@Composable
+fun TitleWithInfo(
+    text: String,
+    tooltipContent: @Composable () -> Unit,
+    fontSize: TextUnit,
+    topSpace: Dp,
+) {
     Row(
         modifier = Modifier.padding(0.dp, topSpace, 0.dp, 0.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -35,6 +50,6 @@ fun TitleWithInfo(
             fontSize = fontSize,
         )
 
-        InfoIconWithHover(tooltipText)
+        InfoIconWithHover(tooltipContent)
     }
 }
