@@ -61,7 +61,7 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
                         true,
                     )
                 },
-                directoryPath = state.value.videoReferencePath,
+                directoryPath = state.value.videoReferencePath ?: state.value.videoCurrentPath,
                 buttonDescription = "Please upload a video with format mkv or mov.",
                 allowedFileExtensions = arrayOf("mkv", "mov"),
             )
@@ -82,7 +82,7 @@ fun SelectVideoScreen(state: MutableState<AppState>) {
                         false,
                     )
                 },
-                directoryPath = state.value.videoCurrentPath,
+                directoryPath = state.value.videoCurrentPath ?: state.value.videoReferencePath,
                 buttonDescription = "Please upload a video with format mkv or mov.",
                 allowedFileExtensions = arrayOf("mkv", "mov"),
             )
