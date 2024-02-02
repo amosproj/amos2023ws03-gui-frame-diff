@@ -2,6 +2,7 @@ package ui.components.diffScreen.timeline
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -13,7 +14,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -92,29 +95,54 @@ private fun ThumbnailRow(
     thumbnailCache: ThumbnailCache,
     nFrames: Int,
     scrollState: LazyListState,
+    thumbnailSize: Size,
 ) {
     LazyRow(
         state = scrollState,
         modifier = modifier.fillMaxSize(),
     ) {
         items(nFrames) { i ->
-            val images = thumbnailCache.get(i)
-            Column {
-                Box(modifier = Modifier.weight(0.5f)) {
-                    Image(
-                        bitmap = images[0],
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxHeight(),
-                    )
-                }
+            AsyncDiffColumn(thumbnailCache, i, thumbnailSize)
+        }
+    }
+}
 
-                Box(modifier = Modifier.weight(0.5f)) {
-                    Image(
-                        bitmap = images[1],
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxHeight(),
-                    )
-                }
+@Composable
+fun AsyncDiffColumn(
+    thumbnailCache: ThumbnailCache,
+    index: Int,
+    placeholderSize: Size,
+) {
+    val images = remember { mutableStateOf<List<ImageBitmap>?>(null) }
+
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(thumbnailCache, index) {
+        scope.launch {
+            images.value = thumbnailCache.get(index)
+        }
+    }
+
+    val modifier = Modifier.border(0.5.dp, Color.Black)
+
+    Column {
+        Box(modifier = modifier.weight(0.5f).background(Color.Gray).size(placeholderSize.width.dp, placeholderSize.height.dp)) {
+            if (images.value != null) {
+                Image(
+                    bitmap = images.value!![0],
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxHeight(),
+                )
+            }
+        }
+
+        Box(modifier = modifier.weight(0.5f).background(Color.Gray).size(placeholderSize.width.dp, placeholderSize.height.dp)) {
+            if (images.value != null) {
+                Image(
+                    bitmap = images.value!![1],
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxHeight(),
+                )
             }
         }
     }
@@ -205,6 +233,7 @@ private fun ThumbnailBar(
             thumbnailCache = thumbnailCache,
             nFrames = totalDiffFrames,
             scrollState = scrollState,
+            thumbnailSize = Size(thumbnailWidth.value / 2, height.value / 2),
         )
         if (indicatorOffset > 0 && indicatorOffset < componentWidth) {
             PositionIndicator(indicatorOffset)
