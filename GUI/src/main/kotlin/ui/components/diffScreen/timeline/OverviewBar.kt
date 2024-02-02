@@ -1,6 +1,5 @@
 package ui.components.diffScreen.timeline
 
-import algorithms.AlignmentElement
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -62,7 +61,7 @@ fun OverviewBar(
                         )
                     },
         ) {
-            for (item in 0 until navigator.diffSequence.size) {
+            for (item in navigator.diffSequence) {
                 Box(
                     modifier =
                         Modifier
@@ -77,14 +76,7 @@ fun OverviewBar(
                                     placeable1.placeRelative(0, 0)
                                 }
                             }
-                            .background(
-                                when (navigator.diffSequence[item]) {
-                                    AlignmentElement.DELETION -> Color.Red
-                                    AlignmentElement.INSERTION -> Color.Green
-                                    AlignmentElement.MATCH -> Color.Yellow
-                                    AlignmentElement.PERFECT -> Color.Black
-                                },
-                            ),
+                            .background(Color(ColorEncoding.elementToColor[item]!!.rgb)),
                 )
             }
         }

@@ -69,8 +69,8 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
         height = grabberDiff.imageHeight
 
         val coloredFrameGenerator = ColoredFrameGenerator(width, height)
-        insertionBitmap = coloredFrameGenerator.getColoredBufferedImage(Color.GREEN).toComposeImageBitmap()
-        deletionBitmap = coloredFrameGenerator.getColoredBufferedImage(Color.RED).toComposeImageBitmap()
+        insertionBitmap = coloredFrameGenerator.getColoredBufferedImage(AlignmentElement.INSERTION).toComposeImageBitmap()
+        deletionBitmap = coloredFrameGenerator.getColoredBufferedImage(AlignmentElement.DELETION).toComposeImageBitmap()
 
         // jump to the first frame
         jump()
