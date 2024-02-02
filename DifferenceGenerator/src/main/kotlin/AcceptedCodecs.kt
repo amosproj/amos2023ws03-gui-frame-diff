@@ -23,16 +23,22 @@ class AcceptedCodecs {
         /**
          * Checks if the given file is in an accepted codec.
          */
-        public fun checkFile(path: String): Boolean {
-            val grabber = FFmpegFrameGrabber(path)
-            grabber.start()
-            val codecName = grabber.videoMetadata["encoder"] ?: grabber.videoCodecName
+        fun checkFile(path: String): Boolean {
+            val codecName = getCodec(path)
             for (codec in ACCEPTED_CODECS) {
                 if (codecName.contains(codec, ignoreCase = true)) {
                     return true
                 }
             }
             return false
+        }
+
+        fun getCodec(path: String): String {
+            val grabber = FFmpegFrameGrabber(path)
+            grabber.start()
+            val codecName = grabber.videoMetadata["encoder"] ?: grabber.videoCodecName
+            grabber.close()
+            return codecName
         }
     }
 }
