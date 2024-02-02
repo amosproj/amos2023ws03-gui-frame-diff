@@ -191,6 +191,7 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
         // update the percentage and diff index used for rendering the timeline position
         currentRelativePosition.value = coercedIndex.toDouble() / (diffSequence.size - 1).toDouble()
         currentDiffIndex.value = coercedIndex
+        onNavigateCallback()
 
         // do nothing if locked
         if (jumpLock) {
@@ -241,8 +242,6 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
             currentIndex = coercedIndex
             currentDiffIndex.value = currentIndex
             jumpLock = false
-        }.invokeOnCompletion {
-            onNavigateCallback()
         }
     }
 
