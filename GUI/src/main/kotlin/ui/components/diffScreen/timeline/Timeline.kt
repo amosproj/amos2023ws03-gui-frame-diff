@@ -3,7 +3,6 @@ package ui.components.diffScreen.timeline
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -74,14 +73,14 @@ fun Timeline(navigator: FrameNavigation) {
                 generalModifier
                     .fillMaxHeight(0.1f)
                     .padding(top = 5.dp)
-                    .border(width = 1.dp, color = MaterialTheme.colorScheme.primary, shape = CircleShape),
+                    .border(width = 1.dp, color = MaterialTheme.colorScheme.primary, shape = MaterialTheme.shapes.large),
             adapter = rememberScrollbarAdapter(scrollState = scrollState),
             style =
                 LocalScrollbarStyle.current.copy(
                     hoverDurationMillis = 500,
                     unhoverColor = MaterialTheme.colorScheme.secondary,
                     hoverColor = MaterialTheme.colorScheme.primary,
-                    shape = CircleShape,
+                    shape = MaterialTheme.shapes.large,
                 ),
         )
     }
