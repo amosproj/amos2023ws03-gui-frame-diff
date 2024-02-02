@@ -48,9 +48,9 @@ fun Timeline(navigator: FrameNavigation) {
                 val statisticalInformation =
                     "Total Frames Reference Video: ${navigator.getSizeOfVideoReference()}\n" +
                         "Total Frames Current Video: ${navigator.getSizeOfVideoCurrent()}\n" +
-                        "Frames with Differences: ${navigator.getFramesWithPixelDifferences()}\n" +
-                        "Inserted Frames: ${navigator.getInsertions()}\n" +
-                        "Deleted Frames: ${navigator.getDeletions()}"
+                        "\uD83D\uDD34 Deleted Frames: ${navigator.getDeletions()}\n" +
+                        "\uD83D\uDFE1 Frames with Differences: ${navigator.getFramesWithPixelDifferences()}\n" +
+                        "\uD83D\uDFE2 Inserted Frames: ${navigator.getInsertions()}"
                 TitleWithInfo(
                     text = "Statistical Information",
                     tooltipText = statisticalInformation,
