@@ -70,7 +70,7 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
 
         val coloredFrameGenerator = ColoredFrameGenerator(width, height)
         insertionBitmap = coloredFrameGenerator.getColoredBufferedImage(Color.GREEN).toComposeImageBitmap()
-        deletionBitmap = coloredFrameGenerator.getColoredBufferedImage(Color.BLUE).toComposeImageBitmap()
+        deletionBitmap = coloredFrameGenerator.getColoredBufferedImage(Color.RED).toComposeImageBitmap()
 
         // jump to the first frame
         jump()

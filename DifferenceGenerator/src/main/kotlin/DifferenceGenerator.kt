@@ -121,7 +121,7 @@ class DifferenceGenerator(
                     videoCurrentGrabber.next()
                 }
                 AlignmentElement.DELETION -> {
-                    encoder.record(coloredFrameGenerator.getColoredFrame(Color.BLUE))
+                    encoder.record(coloredFrameGenerator.getColoredFrame(Color.RED))
                     videoReferenceGrabber.next()
                 }
                 AlignmentElement.PERFECT -> {
@@ -171,13 +171,15 @@ class DifferenceGenerator(
             val red2 = data2[index + 2] and 0xFF.toByte()
 
             differencesData.data[index] = 0x00.toByte() // blue
-            differencesData.data[index + 1] = 0x00.toByte() // green
 
             var differenceRed = 0x00.toByte()
+            var differenceGreen = 0x00.toByte()
             if (blue1 != blue2 || green1 != green2 || red1 != red2) {
                 differenceRed = 0xFF.toByte() // red
+                differenceGreen = 0xFF.toByte()
             }
 
+            differencesData.data[index + 1] = differenceGreen // green
             differencesData.data[index + 2] = differenceRed
             index += 3
         }

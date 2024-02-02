@@ -79,7 +79,7 @@ fun OverviewBar(
                             }
                             .background(
                                 when (navigator.diffSequence[item]) {
-                                    AlignmentElement.DELETION -> Color.Blue
+                                    AlignmentElement.DELETION -> Color.Red
                                     AlignmentElement.INSERTION -> Color.Green
                                     AlignmentElement.MATCH -> Color.Yellow
                                     AlignmentElement.PERFECT -> Color.Black
