@@ -125,8 +125,11 @@ fun AsyncDiffColumn(
 
     val modifier = Modifier.border(0.5.dp, Color.Black)
 
+    val width = with(LocalDensity.current) { placeholderSize.width.toDp() }
+    val height = with(LocalDensity.current) { placeholderSize.height.toDp() }
+
     Column {
-        Box(modifier = modifier.weight(0.5f).background(Color.Gray).size(placeholderSize.width.dp, placeholderSize.height.dp)) {
+        Box(modifier = modifier.weight(0.5f).background(Color.Gray).size(width, height)) {
             if (images.value != null) {
                 Image(
                     bitmap = images.value!![0],
@@ -136,7 +139,7 @@ fun AsyncDiffColumn(
             }
         }
 
-        Box(modifier = modifier.weight(0.5f).background(Color.Gray).size(placeholderSize.width.dp, placeholderSize.height.dp)) {
+        Box(modifier = modifier.weight(0.5f).background(Color.Gray).size(width, height)) {
             if (images.value != null) {
                 Image(
                     bitmap = images.value!![1],
@@ -233,7 +236,7 @@ private fun ThumbnailBar(
             thumbnailCache = thumbnailCache,
             nFrames = totalDiffFrames,
             scrollState = scrollState,
-            thumbnailSize = Size(thumbnailWidth.value / 2, height.value / 2),
+            thumbnailSize = Size(thumbnailWidth.value, height.value / 2),
         )
         if (indicatorOffset > 0 && indicatorOffset < componentWidth) {
             PositionIndicator(indicatorOffset)
