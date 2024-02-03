@@ -9,6 +9,17 @@ import java.awt.image.BufferedImage
 
 class ColoredFrameGenerator(val width: Int, val height: Int) {
     val converter = Resettable2DFrameConverter()
+    val coloredFrameBuffer = mutableMapOf<AlignmentElement, Frame>()
+
+    /**
+     * Initializes a new instance of the class.
+     * Caches the colored frames for each [AlignmentElement].
+     */
+    init {
+        for (element in AlignmentElement.values()) {
+            coloredFrameBuffer[element] = getColoredFrame(ColorEncoding.elementToColor[element]!!)
+        }
+    }
 
     /**
      * Creates a colored Frame given a specific [AlignmentElement].
@@ -17,7 +28,7 @@ class ColoredFrameGenerator(val width: Int, val height: Int) {
      * @return a frame colored in the right encoding
      */
     fun getColoredFrame(element: AlignmentElement): Frame {
-        return getColoredFrame(ColorEncoding.elementToColor[element]!!)
+        return coloredFrameBuffer[element]!!
     }
 
     /**
