@@ -64,7 +64,6 @@ fun ProjectMenu(
                     if (state.value.hasUnsavedChanges) {
                         showConfirmationDialog.value = true
                     } else {
-
                         openFileChooserAndGetPath(
                             directoryPath = state.value.openProjectPath,
                             onResult = { path ->

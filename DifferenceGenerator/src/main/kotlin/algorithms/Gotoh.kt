@@ -1,7 +1,9 @@
 package algorithms
 
 import MetricInterface
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import wrappers.ResettableIterable
 
 /**
@@ -101,7 +103,7 @@ class Gotoh<T>(
         // fill the similarity matrix
         runBlocking {
             for (i in 1..m) {
-                launch (Dispatchers.Default) {
+                launch(Dispatchers.Default) {
                     for (j in 1..n) {
                         similarityM[i - 1][j - 1] = 1 - metric.measureDistance(a[i - 1], b[j - 1])
                     }
