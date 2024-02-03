@@ -1,6 +1,5 @@
 package ui.components.diffScreen.timeline
 
-import algorithms.AlignmentElement
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -15,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import frameNavigation.FrameNavigation
+import util.ColorEncoding
 
 /**
  * A Composable function that displays an overview timeline showing all difference positions at once,
@@ -62,7 +62,7 @@ fun OverviewBar(
                         )
                     },
         ) {
-            for (item in 0 until navigator.diffSequence.size) {
+            for (item in navigator.diffSequence) {
                 Box(
                     modifier =
                         Modifier
@@ -77,14 +77,7 @@ fun OverviewBar(
                                     placeable1.placeRelative(0, 0)
                                 }
                             }
-                            .background(
-                                when (navigator.diffSequence[item]) {
-                                    AlignmentElement.DELETION -> Color.Blue
-                                    AlignmentElement.INSERTION -> Color.Green
-                                    AlignmentElement.MATCH -> Color.Yellow
-                                    AlignmentElement.PERFECT -> Color.Black
-                                },
-                            ),
+                            .background(Color(ColorEncoding.elementToColor[item]!!.rgb)),
                 )
             }
         }

@@ -1,5 +1,6 @@
 package ui.components.diffScreen.timeline
 
+import StatisticalInformation
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -44,18 +45,12 @@ fun Timeline(navigator: FrameNavigation) {
             horizontalArrangement = Arrangement.Start,
             modifier = generalModifier.padding(0.dp, 0.dp, 0.dp, 4.dp),
         ) {
-            Box {
-                val statisticalInformation =
-                    "Total Frames Reference Video: ${navigator.getSizeOfVideoReference()}\n" +
-                        "Total Frames Current Video: ${navigator.getSizeOfVideoCurrent()}\n" +
-                        "Frames with Differences: ${navigator.getFramesWithPixelDifferences()}\n" +
-                        "Inserted Frames: ${navigator.getInsertions()}\n" +
-                        "Deleted Frames: ${navigator.getDeletions()}"
+            Box(modifier = Modifier.weight(0.2f)) {
                 TitleWithInfo(
                     text = "Statistical Information",
-                    tooltipText = statisticalInformation,
+                    tooltipContent = { StatisticalInformation(navigator) },
                     fontSize = MaterialTheme.typography.titleMedium.fontSize,
-                    topSpace = 4.dp,
+                    topSpace = 0.dp,
                 )
             }
         }

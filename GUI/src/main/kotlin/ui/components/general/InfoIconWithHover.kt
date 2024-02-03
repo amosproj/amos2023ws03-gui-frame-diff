@@ -20,9 +20,14 @@ import androidx.compose.ui.unit.dp
  * @param text The text to show in the tooltip.
  * @return A [Icon] with a tooltip that shows when the mouse hovers over it.
  */
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InfoIconWithHover(text: String) {
+    InfoIconWithHover(content = { TooltipText(text) })
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun InfoIconWithHover(content: @Composable () -> Unit) {
     var isHovered by remember { mutableStateOf(false) }
 
     Box(
@@ -53,7 +58,7 @@ fun InfoIconWithHover(text: String) {
 
         // Use Popup to show the tooltip
         if (isHovered) {
-            Tooltip(text = text)
+            Tooltip(content = content)
         }
     }
 }

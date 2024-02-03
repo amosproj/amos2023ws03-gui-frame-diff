@@ -7,6 +7,7 @@ import org.bytedeco.ffmpeg.global.avutil
 import org.bytedeco.javacv.FFmpegFrameRecorder
 import org.bytedeco.javacv.Frame
 import org.opencv.core.Size
+import util.ColorEncoding
 import util.ColoredFrameGenerator
 import wrappers.MaskedImageGrabber
 import wrappers.Resettable2DFrameConverter
@@ -117,18 +118,19 @@ class DifferenceGenerator(
                     encoder.record(getDifferencesBetweenBufferedImages(videoReferenceGrabber.next(), videoCurrentGrabber.next()))
                 }
                 AlignmentElement.INSERTION -> {
-                    encoder.record(coloredFrameGenerator.getColoredFrame(Color.GREEN))
                     videoCurrentGrabber.next()
                 }
                 AlignmentElement.DELETION -> {
-                    encoder.record(coloredFrameGenerator.getColoredFrame(Color.BLUE))
                     videoReferenceGrabber.next()
                 }
                 AlignmentElement.PERFECT -> {
-                    encoder.record(coloredFrameGenerator.getColoredFrame(Color.BLACK))
                     videoReferenceGrabber.next()
                     videoCurrentGrabber.next()
                 }
+            }
+
+            if (el != AlignmentElement.MATCH) {
+                encoder.record(coloredFrameGenerator.getColoredFrame(el))
             }
         }
         encoder.stop()
@@ -154,12 +156,14 @@ class DifferenceGenerator(
         image1: BufferedImage,
         image2: BufferedImage,
     ): Frame {
-        val differences = coloredFrameGenerator.getColoredBufferedImage(Color.BLACK)
+        val differences = coloredFrameGenerator.getColoredBufferedImage(AlignmentElement.MATCH)
         val differencesData = (differences.raster.dataBuffer as DataBufferByte)
 
         val data1 = (image1.raster.dataBuffer as DataBufferByte).data
         val data2 = (image2.raster.dataBuffer as DataBufferByte).data
         var index = 0
+
+        val diffPixelColor = ColorEncoding.elementToColor[AlignmentElement.MATCH]!!
 
         while (index < this.height * this.width * 3) {
             val blue1 = data1[index] and 0xFF.toByte()
@@ -170,14 +174,18 @@ class DifferenceGenerator(
             val green2 = data2[index + 1] and 0xFF.toByte()
             val red2 = data2[index + 2] and 0xFF.toByte()
 
-            differencesData.data[index] = 0x00.toByte() // blue
-            differencesData.data[index + 1] = 0x00.toByte() // green
-
             var differenceRed = 0x00.toByte()
+            var differenceGreen = 0x00.toByte()
+            var differenceBlue = 0x00.toByte()
+
             if (blue1 != blue2 || green1 != green2 || red1 != red2) {
-                differenceRed = 0xFF.toByte() // red
+                differenceRed = diffPixelColor.red.toByte()
+                differenceGreen = diffPixelColor.green.toByte()
+                differenceBlue = diffPixelColor.blue.toByte()
             }
 
+            differencesData.data[index] = differenceBlue
+            differencesData.data[index + 1] = differenceGreen
             differencesData.data[index + 2] = differenceRed
             index += 3
         }
