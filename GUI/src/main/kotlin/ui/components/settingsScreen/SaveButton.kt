@@ -44,5 +44,6 @@ fun RowScope.SaveButton(
             oldState.value = state.value
             state.value = oldState.value.copy(screen = Screen.SelectVideoScreen)
         },
+        enabled = oldState.value != state.value,
     )
 }

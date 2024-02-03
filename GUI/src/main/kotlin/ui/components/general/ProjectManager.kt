@@ -10,8 +10,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.fasterxml.jackson.module.kotlin.readValue
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import logic.getVideoMetadata
 import models.AppState
 import models.JsonMapper
@@ -34,6 +32,7 @@ fun ProjectMenu(
     var errorDialogText = remember { mutableStateOf<String?>(null) }
     var expanded by remember { mutableStateOf(false) }
     val padding = 8.dp
+    var showConfirmationDialog = remember { mutableStateOf(false) }
 
     if (errorDialogText.value != null) {
         ErrorDialog(onCloseRequest = { errorDialogText.value = null }, text = errorDialogText.value!!)
@@ -57,40 +56,58 @@ fun ProjectMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
         ) {
-            val openScope = rememberCoroutineScope()
             DropdownMenuItem(
                 {
                     Text("Open Project", fontSize = MaterialTheme.typography.bodyMedium.fontSize)
                 },
                 onClick = {
-                    openScope.launch(
-                        Dispatchers.Default,
-                    ) {
+                    if (state.value.hasUnsavedChanges) {
+                        showConfirmationDialog.value = true
+                    } else {
+
                         openFileChooserAndGetPath(
                             directoryPath = state.value.openProjectPath,
-                            onResult = { path -> handleOpenProject(state, path, errorDialogText) },
+                            onResult = { path ->
+                                handleOpenProject(state, path, errorDialogText)
+                                expanded = false
+                                showConfirmationDialog.value = false
+                            },
                             allowedFileExtensions = arrayOf("mkv"),
                         )
                     }
-                    expanded = false
                 },
             )
-
-            val saveScope = rememberCoroutineScope()
             DropdownMenuItem(
                 {
                     Text("Save Project", fontSize = MaterialTheme.typography.bodyMedium.fontSize)
                 },
                 onClick = {
-                    saveScope.launch(
-                        Dispatchers.Default,
-                    ) { openFileSaverAndGetPath(state.value.saveProjectPath) { path -> handleSaveProject(state, path) } }
+                    openFileSaverAndGetPath(state.value.saveProjectPath) { path -> handleSaveProject(state, path) }
                     expanded = false
                 },
                 enabled = state.value.screen == Screen.DiffScreen,
             )
         }
     }
+    ConfirmationPopup(
+        showDialog = showConfirmationDialog.value,
+        onCancel = {
+            expanded = false
+            showConfirmationDialog.value = false
+        },
+        onConfirm = {
+            openFileChooserAndGetPath(
+                directoryPath = state.value.openProjectPath,
+                onResult = { path ->
+                    handleOpenProject(state, path, errorDialogText)
+                    expanded = false
+                    showConfirmationDialog.value = false
+                },
+                allowedFileExtensions = arrayOf("mkv"),
+            )
+        },
+        text = "Are you sure to open a project? The existing Difference Video will not be saved.",
+    )
 }
 
 /**
@@ -113,6 +130,8 @@ fun handleOpenProject(
         state.value = JsonMapper.mapper.readValue<AppState>(metadata["APP-STATE"]!!)
         // in case the video moved, set the output path to the new location
         state.value.outputPath = path
+        // reset unsaved changes
+        state.value.hasUnsavedChanges = false
     } else {
         errorText.value = "The selected file does not contain a valid project."
     }
@@ -162,4 +181,7 @@ fun handleSaveProject(
 
     recorder.stop()
     recorder.release()
+
+    // reset unsaved changes
+    state.value.hasUnsavedChanges = false
 }

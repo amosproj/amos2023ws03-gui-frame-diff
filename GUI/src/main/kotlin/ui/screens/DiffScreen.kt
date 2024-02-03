@@ -27,24 +27,25 @@ import models.AppState
 import models.defaultOutputPath
 import ui.components.diffScreen.*
 import ui.components.diffScreen.timeline.Timeline
+import ui.components.general.ConfirmationPopup
 import ui.components.general.HelpMenu
 import ui.components.general.ProjectMenu
 import java.io.File
 
 /**
- * A Composable function that creates a screen to display the differences between two videos.
- * Shows 3 videos: the reference video, the difference between the two videos, and the current video.
- * Gets recomposed when the state object changes, not when state properties change.
+ * A Composable function that creates a screen to display the differences between two videos. Shows
+ * 3 videos: the reference video, the difference between the two videos, and the current video. Gets
+ * recomposed when the state object changes, not when state properties change.
  * @param state [MutableState]<[AppState]> containing the global state.
  * @return [Unit]
  */
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiffScreen(state: MutableState<AppState>) {
     // create the navigator, which implements the jumping logic
     val scope = rememberCoroutineScope()
     val navigator = FrameNavigation(state, scope)
+    val showConfirmationDialog = remember { mutableStateOf(false) }
     DisposableEffect(Unit) {
         onDispose {
             navigator.close()
@@ -59,13 +60,13 @@ fun DiffScreen(state: MutableState<AppState>) {
     Column(
         // grab focus, fill all available space, assign key press handler
         modifier =
-            Modifier.fillMaxSize().focusRequester(focusRequester).focusable()
-                .onKeyEvent { event -> keyEventHandler(event, navigator) },
+            Modifier.fillMaxSize().focusRequester(focusRequester).focusable().onKeyEvent {
+                    event ->
+                keyEventHandler(event, navigator)
+            },
     ) {
         // #####   Focus   #####
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
-        }
+        LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
         // #####   Top Bar   #####
         CenterAlignedTopAppBar(
@@ -82,7 +83,16 @@ fun DiffScreen(state: MutableState<AppState>) {
                     IconButton(
                         modifier = Modifier.padding(8.dp),
                         content = { Icon(Icons.Default.ArrowBack, "back button") },
-                        onClick = { state.value = state.value.copy(screen = Screen.SelectVideoScreen) },
+                        onClick = {
+                            if (state.value.hasUnsavedChanges) {
+                                showConfirmationDialog.value = true
+                            } else {
+                                state.value =
+                                    state.value.copy(
+                                        screen = Screen.SelectVideoScreen,
+                                    )
+                            }
+                        },
                     )
                     ProjectMenu(state)
                     // Decide whether to show the menu as a dropdown or as a row of buttons
@@ -97,7 +107,10 @@ fun DiffScreen(state: MutableState<AppState>) {
                             DropdownMenu(
                                 content = {
                                     SaveCollageButton(navigator = navigator, state = state)
-                                    SaveInsertedFramesButton(navigator = navigator, state = state)
+                                    SaveInsertedFramesButton(
+                                        navigator = navigator,
+                                        state = state,
+                                    )
                                 },
                                 expanded = expanded,
                                 onDismissRequest = { expanded = false },
@@ -112,15 +125,31 @@ fun DiffScreen(state: MutableState<AppState>) {
                 }
             },
             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
-            actions = {
-                HelpMenu()
-            },
+            actions = { HelpMenu() },
         )
         // #####   Difference Videos   #####
-        Row(modifier = Modifier.fillMaxWidth().weight(0.45f), verticalAlignment = Alignment.Bottom) {
-            DisplayDifferenceImage(bitmap = navigator.videoReferenceBitmap, navigator = navigator, title = "Reference Video", state = state)
-            DisplayDifferenceImage(bitmap = navigator.diffBitmap, navigator = navigator, title = "Difference", state = state)
-            DisplayDifferenceImage(bitmap = navigator.videoCurrentBitmap, navigator = navigator, title = "Current Video", state = state)
+        Row(
+            modifier = Modifier.fillMaxWidth().weight(0.45f),
+            verticalAlignment = Alignment.Bottom,
+        ) {
+            DisplayDifferenceImage(
+                bitmap = navigator.videoReferenceBitmap,
+                navigator = navigator,
+                title = "Reference Video",
+                state = state,
+            )
+            DisplayDifferenceImage(
+                bitmap = navigator.diffBitmap,
+                navigator = navigator,
+                title = "Difference",
+                state = state,
+            )
+            DisplayDifferenceImage(
+                bitmap = navigator.videoCurrentBitmap,
+                navigator = navigator,
+                title = "Current Video",
+                state = state,
+            )
         }
         // #####   Timeline   #####
         Row(modifier = Modifier.fillMaxSize().weight(0.29f)) { Timeline(navigator) }
@@ -128,4 +157,19 @@ fun DiffScreen(state: MutableState<AppState>) {
         // #####   Navigation   #####
         NavigationButtons(navigator, Modifier.weight(1f), Modifier.weight(0.10f))
     }
+    // #####   Confirmation Dialog   #####
+    ConfirmationPopup(
+        showDialog = showConfirmationDialog.value,
+        onConfirm = {
+            navigator.close()
+            state.value =
+                state.value.copy(
+                    screen = Screen.SelectVideoScreen,
+                    hasUnsavedChanges = false,
+                )
+        },
+        onCancel = { showConfirmationDialog.value = false },
+        text =
+            "Are you sure you want to go back to the main screen without saving the Difference Video?",
+    )
 }
