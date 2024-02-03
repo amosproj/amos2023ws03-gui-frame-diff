@@ -112,9 +112,9 @@ fun DiffScreen(state: MutableState<AppState>) {
                             )
                             DropdownMenu(
                                 content = {
-                                    SaveCollageButton(navigator = navigator, state = state)
+                                    SaveCollageButton(frameGrabber, navigator.currentDiffIndex.value, state = state)
                                     SaveInsertedFramesButton(
-                                        navigator = navigator,
+                                        frameGrabber = frameGrabber,
                                         state = state,
                                     )
                                 },
@@ -123,8 +123,8 @@ fun DiffScreen(state: MutableState<AppState>) {
                             )
                         } else {
                             Row {
-                                SaveCollageButton(navigator = navigator, state = state)
-                                SaveInsertedFramesButton(navigator = navigator, state = state)
+                                SaveCollageButton(frameGrabber, navigator.currentDiffIndex.value, state = state)
+                                SaveInsertedFramesButton(frameGrabber = frameGrabber, state = state)
                             }
                         }
                     }

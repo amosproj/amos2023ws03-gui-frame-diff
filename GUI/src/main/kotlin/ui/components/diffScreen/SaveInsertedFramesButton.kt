@@ -7,27 +7,25 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import frameNavigation.FrameNavigation
+import logic.FrameGrabber
+import logic.createInsertionsExport
 import models.AppState
 import ui.components.general.openFileSaverAndGetPath
 import ui.components.general.showOverwriteConfirmation
 import java.io.File
-import javax.imageio.ImageIO
 
 /**
  * Button to save all inserted frames as pngs to a zip File Archive.
  *
- * @param navigator The navigator to use to create the archive
+ * @param frameGrabber The frame grabber to use to get the inserted frames
  * @param modifier The modifier for the button
  * @return [Unit]
  */
 @Composable
 fun SaveInsertedFramesButton(
-    navigator: FrameNavigation,
+    frameGrabber: FrameGrabber,
     modifier: Modifier = Modifier,
     state: MutableState<AppState>,
 ) {
@@ -36,7 +34,7 @@ fun SaveInsertedFramesButton(
         onClick = {
             openFileSaverAndGetPath(
                 state.value.saveInsertionsPath,
-            ) { path -> saveInsertedFramesCallback(navigator, path, state) }
+            ) { path -> saveInsertedFramesCallback(frameGrabber = frameGrabber, path, state) }
         },
     ) {
         Text(
@@ -50,12 +48,12 @@ fun SaveInsertedFramesButton(
 /**
  * Callback for when the user selects a file to save.
  * Saves the path and creates the zip archive.
- * @param navigator The navigator to use to create the archive
+ * @param frameGrabber The frame grabber to use to get the inserted frames
  * @param path The path to the file to save to
  * @param state The state of the app
  */
 fun saveInsertedFramesCallback(
-    navigator: FrameNavigation,
+    frameGrabber: FrameGrabber,
     path: String,
     state: MutableState<AppState>,
 ) {
@@ -72,26 +70,5 @@ fun saveInsertedFramesCallback(
     }
     state.value.saveInsertionsPath = savePath
 
-    createInsertionsExport(savePath, navigator.getInsertedFrames())
-}
-
-/**
- * Creates a zip archive containing all inserted frames as pngs.
- * @param outputPath The path to the zip archive
- * @param frames The frames to save
- */
-fun createInsertionsExport(
-    outputPath: String,
-    frames: List<ImageBitmap>,
-) {
-    val zipFile = File(outputPath)
-
-    val zip = java.util.zip.ZipOutputStream(zipFile.outputStream())
-
-    for (i in frames.indices) {
-        zip.putNextEntry(java.util.zip.ZipEntry("insertion_$i.png"))
-        val awtInsertImage = frames[i].toAwtImage()
-        ImageIO.write(awtInsertImage, "PNG", zip)
-    }
-    zip.close()
+    createInsertionsExport(savePath, frameGrabber.getInsertedFrames())
 }

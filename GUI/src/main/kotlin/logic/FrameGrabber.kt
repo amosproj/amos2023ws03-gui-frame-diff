@@ -160,6 +160,22 @@ class FrameGrabber(state: MutableState<AppState>) {
         return listOf(videoReferenceBitmap, videoCurrentBitmap)
     }
 
+    /**
+     * Filters all inserted frames.
+     * @return [List]<[ImageBitmap]> containing the inserted frames.
+     */
+    fun getInsertedFrames(): List<ImageBitmap> {
+        val insertedFrames = mutableListOf<ImageBitmap>()
+
+        for (i in diffSequence.indices) {
+            if (diffSequence[i] == AlignmentElement.INSERTION) {
+                insertedFrames.add(getCurrentVideoFrame(i))
+            }
+        }
+
+        return insertedFrames
+    }
+
     /** Close the grabbers. */
     fun close() {
         videoReferenceGrabber.stop()
