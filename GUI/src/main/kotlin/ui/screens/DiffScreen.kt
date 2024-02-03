@@ -23,7 +23,6 @@ import androidx.compose.ui.input.key.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
-import java.io.File
 import models.AppState
 import models.defaultOutputPath
 import ui.components.diffScreen.*
@@ -31,6 +30,7 @@ import ui.components.diffScreen.timeline.Timeline
 import ui.components.general.ConfirmationPopup
 import ui.components.general.HelpMenu
 import ui.components.general.ProjectMenu
+import java.io.File
 
 /**
  * A Composable function that creates a screen to display the differences between two videos. Shows
@@ -58,97 +58,97 @@ fun DiffScreen(state: MutableState<AppState>) {
 
     // ################################   Complete Screen   ################################
     Column(
-            // grab focus, fill all available space, assign key press handler
-            modifier =
-                    Modifier.fillMaxSize().focusRequester(focusRequester).focusable().onKeyEvent {
-                            event ->
-                        keyEventHandler(event, navigator)
-                    },
+        // grab focus, fill all available space, assign key press handler
+        modifier =
+            Modifier.fillMaxSize().focusRequester(focusRequester).focusable().onKeyEvent {
+                    event ->
+                keyEventHandler(event, navigator)
+            },
     ) {
         // #####   Focus   #####
         LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
         // #####   Top Bar   #####
         CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                            text = "Difference Screen",
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.secondary,
-                            fontWeight = FontWeight.Bold,
-                    )
-                },
-                navigationIcon = {
-                    Row {
-                        IconButton(
-                                modifier = Modifier.padding(8.dp),
-                                content = { Icon(Icons.Default.ArrowBack, "back button") },
-                                onClick = {
-                                    if (state.value.hasUnsavedChanges) {
-                                        showConfirmationDialog.value = true
-                                    } else {
-                                        state.value =
-                                                state.value.copy(
-                                                        screen = Screen.SelectVideoScreen,
-                                                )
-                                    }
-                                },
-                        )
-                        ProjectMenu(state)
-                        // Decide whether to show the menu as a dropdown or as a row of buttons
-                        BoxWithConstraints {
-                            if (maxWidth < 1200.dp) {
-                                var expanded by remember { mutableStateOf(false) }
-                                IconButton(
-                                        modifier = Modifier.padding(8.dp),
-                                        content = { Icon(Icons.Default.Menu, "Menu button") },
-                                        onClick = { expanded = true },
-                                )
-                                DropdownMenu(
-                                        content = {
-                                            SaveCollageButton(navigator = navigator, state = state)
-                                            SaveInsertedFramesButton(
-                                                    navigator = navigator,
-                                                    state = state
-                                            )
-                                        },
-                                        expanded = expanded,
-                                        onDismissRequest = { expanded = false },
-                                )
+            title = {
+                Text(
+                    text = "Difference Screen",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.secondary,
+                    fontWeight = FontWeight.Bold,
+                )
+            },
+            navigationIcon = {
+                Row {
+                    IconButton(
+                        modifier = Modifier.padding(8.dp),
+                        content = { Icon(Icons.Default.ArrowBack, "back button") },
+                        onClick = {
+                            if (state.value.hasUnsavedChanges) {
+                                showConfirmationDialog.value = true
                             } else {
-                                Row {
+                                state.value =
+                                    state.value.copy(
+                                        screen = Screen.SelectVideoScreen,
+                                    )
+                            }
+                        },
+                    )
+                    ProjectMenu(state)
+                    // Decide whether to show the menu as a dropdown or as a row of buttons
+                    BoxWithConstraints {
+                        if (maxWidth < 1200.dp) {
+                            var expanded by remember { mutableStateOf(false) }
+                            IconButton(
+                                modifier = Modifier.padding(8.dp),
+                                content = { Icon(Icons.Default.Menu, "Menu button") },
+                                onClick = { expanded = true },
+                            )
+                            DropdownMenu(
+                                content = {
                                     SaveCollageButton(navigator = navigator, state = state)
-                                    SaveInsertedFramesButton(navigator = navigator, state = state)
-                                }
+                                    SaveInsertedFramesButton(
+                                        navigator = navigator,
+                                        state = state,
+                                    )
+                                },
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false },
+                            )
+                        } else {
+                            Row {
+                                SaveCollageButton(navigator = navigator, state = state)
+                                SaveInsertedFramesButton(navigator = navigator, state = state)
                             }
                         }
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
-                actions = { HelpMenu() },
+                }
+            },
+            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
+            actions = { HelpMenu() },
         )
         // #####   Difference Videos   #####
         Row(
-                modifier = Modifier.fillMaxWidth().weight(0.45f),
-                verticalAlignment = Alignment.Bottom
+            modifier = Modifier.fillMaxWidth().weight(0.45f),
+            verticalAlignment = Alignment.Bottom,
         ) {
             DisplayDifferenceImage(
-                    bitmap = navigator.videoReferenceBitmap,
-                    navigator = navigator,
-                    title = "Reference Video",
-                    state = state
+                bitmap = navigator.videoReferenceBitmap,
+                navigator = navigator,
+                title = "Reference Video",
+                state = state,
             )
             DisplayDifferenceImage(
-                    bitmap = navigator.diffBitmap,
-                    navigator = navigator,
-                    title = "Difference",
-                    state = state
+                bitmap = navigator.diffBitmap,
+                navigator = navigator,
+                title = "Difference",
+                state = state,
             )
             DisplayDifferenceImage(
-                    bitmap = navigator.videoCurrentBitmap,
-                    navigator = navigator,
-                    title = "Current Video",
-                    state = state
+                bitmap = navigator.videoCurrentBitmap,
+                navigator = navigator,
+                title = "Current Video",
+                state = state,
             )
         }
         // #####   Timeline   #####
@@ -159,17 +159,17 @@ fun DiffScreen(state: MutableState<AppState>) {
     }
     // #####   Confirmation Dialog   #####
     ConfirmationPopup(
-            showDialog = showConfirmationDialog.value,
-            onConfirm = {
-                navigator.close()
-                state.value =
-                        state.value.copy(
-                                screen = Screen.SelectVideoScreen,
-                                hasUnsavedChanges = false,
-                        )
-            },
-            onCancel = { showConfirmationDialog.value = false },
-            text =
-                    "Are you sure you want to go back to the main screen without saving the Difference Video?",
+        showDialog = showConfirmationDialog.value,
+        onConfirm = {
+            navigator.close()
+            state.value =
+                state.value.copy(
+                    screen = Screen.SelectVideoScreen,
+                    hasUnsavedChanges = false,
+                )
+        },
+        onCancel = { showConfirmationDialog.value = false },
+        text =
+            "Are you sure you want to go back to the main screen without saving the Difference Video?",
     )
 }
