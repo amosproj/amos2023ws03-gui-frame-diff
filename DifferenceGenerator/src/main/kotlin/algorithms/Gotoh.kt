@@ -1,6 +1,9 @@
 package algorithms
 
 import MetricInterface
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import wrappers.ResettableIterable
 
 /**
@@ -97,6 +100,17 @@ class Gotoh<T>(
         a: ArrayList<T>,
         b: ArrayList<T>,
     ) {
+        // fill the similarity matrix
+        runBlocking {
+            for (i in 1..m) {
+                launch(Dispatchers.Default) {
+                    for (j in 1..n) {
+                        similarityM[i - 1][j - 1] = 1 - metric.measureDistance(a[i - 1], b[j - 1])
+                    }
+                }
+            }
+        }
+
         // main calculation loop, iterating over all rows and columns of the matrices
         for (i in 1..m) {
             for (j in 1..n) {
@@ -121,11 +135,8 @@ class Gotoh<T>(
                         gapB[i][j - 1] + gapExtensionPenalty,
                     )
 
-                // calculate the score for having choosing matching alignment instead of gaps
-                similarityM[i - 1][j - 1] = 1 - metric.measureDistance(a[i - 1], b[j - 1])
                 val similarity = similarityM[i - 1][j - 1]
-                val matchScore =
-                    score[i - 1][j - 1] + similarity // last pair was match and this one too
+                val matchScore = score[i - 1][j - 1] + similarity // two matches in a row
                 val gapAScore = gapA[i - 1][j - 1] + similarity // gap in A and then a match
                 val gapBScore = gapB[i - 1][j - 1] + similarity // gap in B and then a match
 

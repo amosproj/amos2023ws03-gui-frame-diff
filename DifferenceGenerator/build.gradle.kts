@@ -21,6 +21,7 @@ dependencies {
     testImplementation(kotlin("test"))
     implementation("org.bytedeco:javacv-platform:1.5.7")
     implementation(project(path = ":VideoGenerator"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0-RC")
 }
 
 tasks.test {

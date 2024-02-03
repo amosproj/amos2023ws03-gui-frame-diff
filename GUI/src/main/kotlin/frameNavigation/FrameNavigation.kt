@@ -201,7 +201,7 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
         // set unrealistic goal to force an update
         var goal = -1
         // launch a coroutine to update the bitmaps
-        scope.launch(Dispatchers.IO) {
+        scope.launch(Dispatchers.Default) {
             // temp variables to hold the bitmaps and update all at once
             var b1: ImageBitmap? = null
             var b2: ImageBitmap? = null
