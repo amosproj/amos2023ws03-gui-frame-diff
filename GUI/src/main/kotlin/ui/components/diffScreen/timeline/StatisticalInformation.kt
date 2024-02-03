@@ -9,6 +9,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
+import logic.FrameGrabber
 import ui.components.general.TooltipText
 import util.ColorEncoding
 
@@ -19,7 +20,10 @@ import util.ColorEncoding
  * @param navigator [FrameNavigation] containing the navigation logic.
  */
 @Composable
-fun StatisticalInformation(navigator: FrameNavigation) {
+fun StatisticalInformation(
+    navigator: FrameNavigation,
+    frameGrabber: FrameGrabber,
+) {
     @Composable
     fun ColoredCircle(alignmentElement: AlignmentElement) {
         Box(
@@ -43,8 +47,8 @@ fun StatisticalInformation(navigator: FrameNavigation) {
     }
 
     Column(modifier = Modifier.padding(8.dp)) {
-        TooltipText("Total Frames Reference Video: ${navigator.getSizeOfVideoReference()}", modifier = Modifier)
-        TooltipText("Total Frames Current Video: ${navigator.getSizeOfVideoCurrent()}", modifier = Modifier)
+        TooltipText("Total Frames Reference Video: ${frameGrabber.getSizeOfVideoReference()}", modifier = Modifier)
+        TooltipText("Total Frames Current Video: ${frameGrabber.getSizeOfVideoCurrent()}", modifier = Modifier)
         RowWithCircle(AlignmentElement.DELETION, "Deleted Frames: ${navigator.getDeletions()}")
         RowWithCircle(AlignmentElement.MATCH, "Frames with Differences: ${navigator.getFramesWithPixelDifferences()}")
         RowWithCircle(AlignmentElement.INSERTION, "Inserted Frames: ${navigator.getInsertions()}")

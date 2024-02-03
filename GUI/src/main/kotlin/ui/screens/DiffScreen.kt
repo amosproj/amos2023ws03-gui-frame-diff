@@ -23,6 +23,7 @@ import androidx.compose.ui.input.key.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
+import logic.FrameGrabber
 import models.AppState
 import models.defaultOutputPath
 import ui.components.diffScreen.*
@@ -46,9 +47,12 @@ fun DiffScreen(state: MutableState<AppState>) {
     val scope = rememberCoroutineScope()
     val navigator = FrameNavigation(state, scope)
     val showConfirmationDialog = remember { mutableStateOf(false) }
+    val frameGrabber = FrameGrabber(state)
+
     DisposableEffect(Unit) {
         onDispose {
             navigator.close()
+            frameGrabber.close()
             val f = File(defaultOutputPath)
             if (f.exists()) f.delete()
         }
@@ -127,6 +131,7 @@ fun DiffScreen(state: MutableState<AppState>) {
             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
             actions = { HelpMenu() },
         )
+
         // #####   Difference Videos   #####
         Row(
             modifier = Modifier.fillMaxWidth().weight(0.45f),
@@ -135,24 +140,27 @@ fun DiffScreen(state: MutableState<AppState>) {
             DisplayDifferenceImage(
                 bitmap = navigator.videoReferenceBitmap,
                 navigator = navigator,
+                frameGrabber = frameGrabber,
                 title = "Reference Video",
                 state = state,
             )
             DisplayDifferenceImage(
                 bitmap = navigator.diffBitmap,
                 navigator = navigator,
+                frameGrabber = frameGrabber,
                 title = "Difference",
                 state = state,
             )
             DisplayDifferenceImage(
                 bitmap = navigator.videoCurrentBitmap,
                 navigator = navigator,
+                frameGrabber = frameGrabber,
                 title = "Current Video",
                 state = state,
             )
         }
         // #####   Timeline   #####
-        Row(modifier = Modifier.fillMaxSize().weight(0.29f)) { Timeline(navigator) }
+        Row(modifier = Modifier.fillMaxSize().weight(0.29f)) { Timeline(navigator, frameGrabber = frameGrabber) }
 
         // #####   Navigation   #####
         NavigationButtons(navigator, Modifier.weight(1f), Modifier.weight(0.10f))

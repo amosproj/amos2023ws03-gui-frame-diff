@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
+import logic.FrameGrabber
 import ui.components.general.TitleWithInfo
 
 /**
@@ -24,7 +25,10 @@ import ui.components.general.TitleWithInfo
  * @return [Unit]
  */
 @Composable
-fun Timeline(navigator: FrameNavigation) {
+fun Timeline(
+    navigator: FrameNavigation,
+    frameGrabber: FrameGrabber,
+) {
     val fillWidth = 0.8f
     val navigatorUpdated by rememberUpdatedState(navigator)
 
@@ -33,6 +37,8 @@ fun Timeline(navigator: FrameNavigation) {
 
     // set the modifier applied to all timeline components
     val generalModifier = Modifier.fillMaxWidth(fillWidth)
+
+    println("timeline")
 
     Column(
         modifier =
@@ -48,7 +54,7 @@ fun Timeline(navigator: FrameNavigation) {
             Box(modifier = Modifier.weight(0.2f)) {
                 TitleWithInfo(
                     text = "Statistical Information",
-                    tooltipContent = { StatisticalInformation(navigator) },
+                    tooltipContent = { StatisticalInformation(navigator, frameGrabber) },
                     fontSize = MaterialTheme.typography.titleMedium.fontSize,
                     topSpace = 0.dp,
                 )
@@ -58,6 +64,7 @@ fun Timeline(navigator: FrameNavigation) {
         OverviewBar(navigatorUpdated, modifier = generalModifier.weight(0.3f))
 
         LabeledThumbnailPreview(
+            frameGrabber,
             navigatorUpdated,
             scrollState,
             modifier = generalModifier.weight(0.8f),

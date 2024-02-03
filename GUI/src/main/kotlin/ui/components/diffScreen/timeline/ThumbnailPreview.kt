@@ -23,7 +23,9 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import logic.FrameGrabber
 import logic.caches.ThumbnailCache
 import ui.components.general.AutoSizeText
 
@@ -36,6 +38,7 @@ import ui.components.general.AutoSizeText
  */
 @Composable
 fun LabeledThumbnailPreview(
+    frameGrabber: FrameGrabber,
     navigator: FrameNavigation,
     scrollState: LazyListState,
     modifier: Modifier = Modifier,
@@ -70,6 +73,7 @@ fun LabeledThumbnailPreview(
         // #### timeline box ####
         ThumbnailBar(
             navigator,
+            frameGrabber,
             thumbnailWidth,
             componentWidth.value,
             scrollState,
@@ -118,7 +122,8 @@ fun AsyncDiffColumn(
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(thumbnailCache, index) {
-        scope.launch {
+        scope.launch(Dispatchers.IO) {
+            println("thumbnail $index")
             images.value = thumbnailCache.get(index)
         }
     }
@@ -163,6 +168,7 @@ fun AsyncDiffColumn(
 @Composable
 private fun ThumbnailBar(
     navigator: FrameNavigation,
+    frameGrabber: FrameGrabber,
     thumbnailWidth: MutableState<Float>,
     componentWidth: Float,
     scrollState: LazyListState,
@@ -172,7 +178,7 @@ private fun ThumbnailBar(
     val height = remember { mutableStateOf(0.0f) }
 
     // thumbnail cache
-    val thumbnailCache = remember { ThumbnailCache(maxCacheSize = 30, navigator::getImagesAtDiff) }
+    val thumbnailCache = remember { ThumbnailCache(maxCacheSize = 30, frameGrabber::getImagesAtDiff) }
 
     var indicatorOffset by remember { mutableStateOf(0.0f) }
     indicatorOffset = getCenteredThumbnailOffset(scrollState, navigator.currentDiffIndex.value, thumbnailWidth.value)
@@ -197,7 +203,7 @@ private fun ThumbnailBar(
     }
 
     fun getThumbnailWidth(): Float {
-        return navigator.width.toFloat() / navigator.height * height.value * 0.5f
+        return frameGrabber.width.toFloat() / frameGrabber.height * height.value * 0.5f
     }
 
     fun jumpOffsetHandler(offset: Offset) {

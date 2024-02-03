@@ -1,6 +1,7 @@
 package logic.caches
 
 import androidx.compose.ui.graphics.ImageBitmap
+import org.bytedeco.opencv.opencv_core.Mutex
 
 /**
  * A class that caches thumbnails for the timeline.
@@ -9,6 +10,7 @@ import androidx.compose.ui.graphics.ImageBitmap
  */
 class ThumbnailCache(val maxCacheSize: Int, val getImages: (Int) -> List<ImageBitmap>) {
     private val cache = mutableMapOf<Int, List<ImageBitmap>>()
+    private val mutex = Mutex()
 
     // kind of a queue of diff indices ordered by most recently used
     private val recentlyUsed = mutableListOf<Int>()
@@ -23,9 +25,12 @@ class ThumbnailCache(val maxCacheSize: Int, val getImages: (Int) -> List<ImageBi
      */
     fun get(index: Int): List<ImageBitmap> {
         recentlyUsed.remove(index)
+        println(index)
 
         if (!cache.containsKey(index)) {
+            mutex.lock()
             cache[index] = getImages(index)
+            mutex.unlock()
         }
 
         // if the queue is full, remove the least recently used item

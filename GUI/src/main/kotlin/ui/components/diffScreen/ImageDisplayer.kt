@@ -14,6 +14,7 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
+import logic.FrameGrabber
 import models.AppState
 import ui.components.general.SaveableImage
 
@@ -32,6 +33,7 @@ fun RowScope.DisplayDifferenceImage(
     bitmap: MutableState<ImageBitmap>,
     modifier: Modifier = Modifier,
     navigator: FrameNavigation,
+    frameGrabber: FrameGrabber,
     title: String,
     state: MutableState<AppState>,
 ) {
