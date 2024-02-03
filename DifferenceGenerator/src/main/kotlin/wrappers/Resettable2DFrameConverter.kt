@@ -7,7 +7,6 @@ import java.awt.image.BufferedImage
 class Resettable2DFrameConverter : Java2DFrameConverter() {
     private fun reset() {
         this.bufferedImage = null
-        System.gc()
     }
 
     fun getImage(frame: Frame): BufferedImage {
