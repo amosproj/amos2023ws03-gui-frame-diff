@@ -4,6 +4,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import models.createAppState
+import ui.components.general.ConfirmationPopup
 import ui.screens.DiffScreen
 import ui.screens.SelectVideoScreen
 import ui.screens.SettingsScreen
@@ -16,13 +17,14 @@ import ui.themes.WrapTheming
  */
 fun main(): Unit =
     application {
+        var isAskingToClose = remember { mutableStateOf(false) }
         Window(
             title = "GUI Frame Diff v${AppConfig.VERSION}",
-            onCloseRequest = ::exitApplication,
+            onCloseRequest = { isAskingToClose.value = true },
             state = WindowState(width = 1800.dp, height = 1000.dp),
         ) {
             // applies the default Theme to the application
-            WrapTheming { App() }
+            WrapTheming { App(isAskingToClose) }
         }
     }
 
@@ -32,7 +34,7 @@ fun main(): Unit =
  * @return Unit
  */
 @Composable
-fun App() {
+fun App(isAskingToClose: MutableState<Boolean>) {
     // create the global state
     val globalState =
         remember {
@@ -48,6 +50,20 @@ fun App() {
         is Screen.DiffScreen -> DiffScreen(globalState)
         is Screen.SettingsScreen -> SettingsScreen(globalState)
         else -> throw Exception("Screen not implemented")
+    }
+    // Warn if the user tries to close the application but has unsaved changes or calculations
+    if (isAskingToClose.value) {
+        // check if the user has unsaved changes
+        if (globalState.value.hasUnsavedChanges) {
+            ConfirmationPopup(
+                text = "Are you sure you want to close the application without saving the computed difference video?",
+                onConfirm = { System.exit(0) },
+                onCancel = { isAskingToClose.value = false },
+                showDialog = isAskingToClose.value,
+            )
+        } else {
+            System.exit(0)
+        }
     }
 }
 

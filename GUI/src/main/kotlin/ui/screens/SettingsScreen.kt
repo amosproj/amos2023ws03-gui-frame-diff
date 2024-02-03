@@ -31,6 +31,7 @@ import ui.components.settingsScreen.SaveButton
 @Composable
 fun SettingsScreen(state: MutableState<AppState>) {
     val oldState = remember { mutableStateOf(state.value.copy()) }
+    var showConfirmationDialog = remember { mutableStateOf(false) }
     val textForHyper =
         "Settings to adjust behavior of the Gotoh alignment algorithm,\n" +
             "which determines the matches between frames from both input videos."
@@ -74,14 +75,7 @@ fun SettingsScreen(state: MutableState<AppState>) {
                                     "back button",
                                 )
                             },
-                            onClick = {
-                                state.value =
-                                    state.value
-                                        .copy(
-                                            screen =
-                                                Screen.SelectVideoScreen,
-                                        )
-                            },
+                            onClick = { showConfirmationDialog.value = true },
                         )
                         ProjectMenu(state)
                     }
@@ -176,6 +170,25 @@ fun SettingsScreen(state: MutableState<AppState>) {
             horizontalArrangement = Arrangement.End,
         ) {
             SaveButton(state, oldState)
+        }
+
+        if (showConfirmationDialog.value) {
+            CheckIfSavedDialog(
+                text = "You have unsaved changes. Are you sure you want to go back?",
+                oldState = oldState,
+                state = state,
+                onConfirm = {
+                    state.value = oldState.value.copy()
+                    state.value =
+                        state.value
+                            .copy(
+                                screen =
+                                    Screen.SelectVideoScreen,
+                            )
+                },
+                onCancel = { showConfirmationDialog.value = false },
+                showDialog = showConfirmationDialog.value,
+            )
         }
     }
 }

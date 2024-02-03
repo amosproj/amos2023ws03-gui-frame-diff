@@ -20,6 +20,7 @@ val defaultOutputPath = getPath("output.mkv")
  * @param saveCollagePath the last path where a collage was saved
  * @param saveProjectPath the last path where a project was saved
  * @param openProjectPath the last path where a project was opened
+ * @param hasUnsavedChanges whether the current project has unsaved changes
  * @param saveInsertionsPath the last path where insertions were saved
  * @param saveFramePath the last path where a frame was saved
  * @param maskPath the path of the mask
@@ -36,6 +37,7 @@ data class AppState(
     var saveCollagePath: String? = null,
     var saveProjectPath: String? = null,
     var openProjectPath: String? = null,
+    var hasUnsavedChanges: Boolean = false,
     var saveFramePath: String? = null,
     var saveInsertionsPath: String? = null,
     var maskPath: String? = null,
