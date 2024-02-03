@@ -9,7 +9,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
-import logic.FrameGrabber
+import logic.DiffSequenceInfo
 import ui.components.general.TooltipText
 import util.ColorEncoding
 
@@ -20,10 +20,7 @@ import util.ColorEncoding
  * @param navigator [FrameNavigation] containing the navigation logic.
  */
 @Composable
-fun StatisticalInformation(
-    navigator: FrameNavigation,
-    frameGrabber: FrameGrabber,
-) {
+fun StatisticalInformation(diffSequenceInfo: DiffSequenceInfo) {
     @Composable
     fun ColoredCircle(alignmentElement: AlignmentElement) {
         Box(
@@ -47,10 +44,10 @@ fun StatisticalInformation(
     }
 
     Column(modifier = Modifier.padding(8.dp)) {
-        TooltipText("Total Frames Reference Video: ${frameGrabber.getSizeOfVideoReference()}", modifier = Modifier)
-        TooltipText("Total Frames Current Video: ${frameGrabber.getSizeOfVideoCurrent()}", modifier = Modifier)
-        RowWithCircle(AlignmentElement.DELETION, "Deleted Frames: ${navigator.getDeletions()}")
-        RowWithCircle(AlignmentElement.MATCH, "Frames with Differences: ${navigator.getFramesWithPixelDifferences()}")
-        RowWithCircle(AlignmentElement.INSERTION, "Inserted Frames: ${navigator.getInsertions()}")
+        TooltipText("Total Frames Reference Video: ${diffSequenceInfo.getSizeOfVideoReference()}", modifier = Modifier)
+        TooltipText("Total Frames Current Video: ${diffSequenceInfo.getSizeOfVideoCurrent()}", modifier = Modifier)
+        RowWithCircle(AlignmentElement.DELETION, "Deleted Frames: ${diffSequenceInfo.getDeletions()}")
+        RowWithCircle(AlignmentElement.MATCH, "Frames with Differences: ${diffSequenceInfo.getFramesWithPixelDifferences()}")
+        RowWithCircle(AlignmentElement.INSERTION, "Inserted Frames: ${diffSequenceInfo.getInsertions()}")
     }
 }

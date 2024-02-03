@@ -112,14 +112,6 @@ class FrameGrabber(state: MutableState<AppState>) {
     }
 
     /**
-     * Get count of frames in diff
-     * @return [Int] containing the number of frames in the diff.
-     */
-    fun getSizeOfDiff(): Int {
-        return diffSequence.size
-    }
-
-    /**
      * Get the bitmap of the current frame of the grabber.
      * @param grabber [FFmpegFrameGrabber] containing the grabber to get the bitmap from.
      * @return [ImageBitmap] containing the bitmap of the current frame.
@@ -166,46 +158,6 @@ class FrameGrabber(state: MutableState<AppState>) {
                 getBitmap(videoCurrentGrabber)
             }
         return listOf(videoReferenceBitmap, videoCurrentBitmap)
-    }
-
-    /**
-     * Get count of frames in reference video
-     * @return [Int] containing the number of frames in the reference video.
-     */
-    fun getSizeOfVideoReference(): Int {
-        return videoReferenceGrabber.lengthInFrames
-    }
-
-    /**
-     * Get count of frames in current video
-     * @return [Int] containing the number of frames in the current video.
-     */
-    fun getSizeOfVideoCurrent(): Int {
-        return videoCurrentGrabber.lengthInFrames
-    }
-
-    /**
-     * Get count of insertions
-     * @return [Int] containing the number of insertions.
-     */
-    fun getInsertions(): Int {
-        return diffSequence.count { it == AlignmentElement.INSERTION }
-    }
-
-    /**
-     * Get count of deletions
-     * @return [Int] containing the number of deletions.
-     */
-    fun getDeletions(): Int {
-        return diffSequence.count { it == AlignmentElement.DELETION }
-    }
-
-    /**
-     * Get count of frames with pixel differences
-     * @return [Int] containing the number of frames with pixel differences.
-     */
-    fun getFramesWithPixelDifferences(): Int {
-        return diffSequence.count { it == AlignmentElement.MATCH }
     }
 
     /** Close the grabbers. */

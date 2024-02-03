@@ -172,38 +172,6 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
     }
 
     /**
-     * Get count of frames in diff
-     * @return [Int] containing the number of frames in the diff.
-     */
-    override fun getSizeOfDiff(): Int {
-        return diffSequence.size
-    }
-
-    /**
-     * Get count of insertions
-     * @return [Int] containing the number of insertions.
-     */
-    fun getInsertions(): Int {
-        return diffSequence.count { it == AlignmentElement.INSERTION }
-    }
-
-    /**
-     * Get count of deletions
-     * @return [Int] containing the number of deletions.
-     */
-    fun getDeletions(): Int {
-        return diffSequence.count { it == AlignmentElement.DELETION }
-    }
-
-    /**
-     * Get count of frames with pixel differences
-     * @return [Int] containing the number of frames with pixel differences.
-     */
-    fun getFramesWithPixelDifferences(): Int {
-        return diffSequence.count { it == AlignmentElement.MATCH }
-    }
-
-    /**
      * Creates a collage of the 3 videos and saves it to a file.
      * @param outputPath [String] containing the path to save the collage to.
      * @param border [Int] containing the width of the border between the videos.

@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
+import logic.DiffSequenceInfo
 import logic.FrameGrabber
 import ui.components.general.TitleWithInfo
 
@@ -38,6 +39,8 @@ fun Timeline(
     // set the modifier applied to all timeline components
     val generalModifier = Modifier.fillMaxWidth(fillWidth)
 
+    val diffSequenceInfo = DiffSequenceInfo(navigator.diffSequence)
+
     println("timeline")
 
     Column(
@@ -54,7 +57,7 @@ fun Timeline(
             Box(modifier = Modifier.weight(0.2f)) {
                 TitleWithInfo(
                     text = "Statistical Information",
-                    tooltipContent = { StatisticalInformation(navigator, frameGrabber) },
+                    tooltipContent = { StatisticalInformation(diffSequenceInfo) },
                     fontSize = MaterialTheme.typography.titleMedium.fontSize,
                     topSpace = 0.dp,
                 )

@@ -184,7 +184,7 @@ private fun ThumbnailBar(
     indicatorOffset = getCenteredThumbnailOffset(scrollState, navigator.currentDiffIndex.value, thumbnailWidth.value)
 
     val scope = rememberCoroutineScope()
-    val totalDiffFrames = navigator.getSizeOfDiff()
+    val totalDiffFrames = navigator.diffSequence.size
 
     navigator.setOnNavigateCallback {
         indicatorOffset = getCenteredThumbnailOffset(scrollState, navigator.currentDiffIndex.value, thumbnailWidth.value)
