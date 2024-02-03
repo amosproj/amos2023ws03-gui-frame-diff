@@ -14,31 +14,32 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
-import logic.FrameGrabber
 import models.AppState
 import ui.components.general.SaveableImage
 
 /**
  * A Composable function that displays a differenceImage with a button to open the image in a
  * full screen window.
- * @param bitmap [MutableState]<[ImageBitmap]> containing the bitmap to display.
  * @param modifier [Modifier] to apply to the element.
  * @param navigator [FrameNavigation] containing the navigation logic.
+ * @param grabImage [Function]<[Int], [ImageBitmap]> containing the function to grab the image at a diff index.
  * @param title [String] containing the title of the window.
  * @param state [mutableStateOf]<[AppState]> containing the global state of the application.
  * @return [Unit]
  */
 @Composable
 fun RowScope.DisplayDifferenceImage(
-    bitmap: MutableState<ImageBitmap>,
     modifier: Modifier = Modifier,
     navigator: FrameNavigation,
-    frameGrabber: FrameGrabber,
+    grabImage: (Int) -> ImageBitmap,
     title: String,
     state: MutableState<AppState>,
 ) {
     // pop-out window
     val window = remember { mutableStateOf<Unit?>(null) }
+    val bitmap = remember { mutableStateOf(ImageBitmap(1, 1)) }
+
+    bitmap.value = grabImage(navigator.currentDiffIndex.value)
 
     // handles the window creation if the window is not null
     WindowCreator(window, title) { FullScreenContent(bitmap = bitmap, navigator = navigator, state) }

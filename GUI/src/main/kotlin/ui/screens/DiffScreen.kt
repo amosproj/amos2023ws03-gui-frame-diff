@@ -44,19 +44,21 @@ import java.io.File
 @Composable
 fun DiffScreen(state: MutableState<AppState>) {
     // create the navigator, which implements the jumping logic
-    val scope = rememberCoroutineScope()
-    val navigator = FrameNavigation(state, scope)
+    val navigator = FrameNavigation(state)
     val showConfirmationDialog = remember { mutableStateOf(false) }
     val frameGrabber = FrameGrabber(state)
+    val thumbnailGrabber = FrameGrabber(state)
 
     DisposableEffect(Unit) {
         onDispose {
             navigator.close()
             frameGrabber.close()
+            thumbnailGrabber.close()
             val f = File(defaultOutputPath)
             if (f.exists()) f.delete()
         }
     }
+
     // force into focus to intercept key presses
     val focusRequester = FocusRequester()
 
@@ -138,29 +140,26 @@ fun DiffScreen(state: MutableState<AppState>) {
             verticalAlignment = Alignment.Bottom,
         ) {
             DisplayDifferenceImage(
-                bitmap = navigator.videoReferenceBitmap,
                 navigator = navigator,
-                frameGrabber = frameGrabber,
+                grabImage = frameGrabber::getReferenceVideoFrame,
                 title = "Reference Video",
                 state = state,
             )
             DisplayDifferenceImage(
-                bitmap = navigator.diffBitmap,
                 navigator = navigator,
-                frameGrabber = frameGrabber,
+                grabImage = frameGrabber::getDiffVideoFrame,
                 title = "Difference",
                 state = state,
             )
             DisplayDifferenceImage(
-                bitmap = navigator.videoCurrentBitmap,
                 navigator = navigator,
-                frameGrabber = frameGrabber,
+                grabImage = frameGrabber::getCurrentVideoFrame,
                 title = "Current Video",
                 state = state,
             )
         }
         // #####   Timeline   #####
-        Row(modifier = Modifier.fillMaxSize().weight(0.29f)) { Timeline(navigator, frameGrabber = frameGrabber) }
+        Row(modifier = Modifier.fillMaxSize().weight(0.29f)) { Timeline(navigator, frameGrabber = thumbnailGrabber) }
 
         // #####   Navigation   #####
         NavigationButtons(navigator, Modifier.weight(1f), Modifier.weight(0.10f))

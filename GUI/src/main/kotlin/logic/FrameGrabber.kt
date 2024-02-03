@@ -2,7 +2,6 @@ package logic
 
 import algorithms.AlignmentElement
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import models.AppState
@@ -20,33 +19,18 @@ class FrameGrabber(state: MutableState<AppState>) {
     private val grabberDiff: FFmpegFrameGrabber = FFmpegFrameGrabber(state.value.outputPath)
 
     // create the sequences
-    var diffSequence: Array<AlignmentElement> = state.value.sequenceObj
+    private val diffSequence: Array<AlignmentElement> = state.value.sequenceObj
     private var videoReferenceFrames: MutableList<Int> = mutableListOf()
     private var videoCurrentFrames: MutableList<Int> = mutableListOf()
 
     // create the converter
     private val converter = Resettable2DFrameConverter()
 
-    // create the bitmaps
-    var videoReferenceBitmap: MutableState<ImageBitmap> =
-        mutableStateOf(BufferedImage(1, 1, 1).toComposeImageBitmap())
-    var videoCurrentBitmap: MutableState<ImageBitmap> =
-        mutableStateOf(BufferedImage(1, 1, 1).toComposeImageBitmap())
-    var diffBitmap: MutableState<ImageBitmap> =
-        mutableStateOf(BufferedImage(1, 1, 1).toComposeImageBitmap())
-
-    // state variables for the current frame index
-    var currentIndex: Int = 0
-    var currentDiffIndex: MutableState<Int> = mutableStateOf(0)
-    var jumpLock = false
-
     private var insertionBitmap: ImageBitmap
     private var deletionBitmap: ImageBitmap
 
     var width: Int = 0
     var height: Int = 0
-
-    private var onNavigateCallback: () -> Unit = {}
 
     init {
         // start the grabbers
@@ -182,10 +166,6 @@ class FrameGrabber(state: MutableState<AppState>) {
                 getBitmap(videoCurrentGrabber)
             }
         return listOf(videoReferenceBitmap, videoCurrentBitmap)
-    }
-
-    fun setOnNavigateCallback(callback: () -> Unit) {
-        onNavigateCallback = callback
     }
 
     /**

@@ -5,7 +5,6 @@ import algorithms.AlignmentElement
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toAwtImage
-import androidx.compose.ui.graphics.toComposeImageBitmap
 import kotlinx.coroutines.*
 import logic.FrameGrabber
 import models.AppState
@@ -17,21 +16,15 @@ import kotlin.math.roundToInt
  * A class that implements the [FrameNavigationInterface] interface.
  * @param state [MutableState]<[AppState]> containing the global state.
  */
-class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) : FrameNavigationInterface {
-    val frameGrabber = FrameGrabber(state)
+class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface {
+    private val frameGrabber = FrameGrabber(state)
 
     // create the sequences
     var diffSequence: Array<AlignmentElement> = state.value.sequenceObj
 
-    // create the bitmaps
-    var videoReferenceBitmap: MutableState<ImageBitmap> = mutableStateOf(BufferedImage(1, 1, 1).toComposeImageBitmap())
-    var videoCurrentBitmap: MutableState<ImageBitmap> = mutableStateOf(BufferedImage(1, 1, 1).toComposeImageBitmap())
-    var diffBitmap: MutableState<ImageBitmap> = mutableStateOf(BufferedImage(1, 1, 1).toComposeImageBitmap())
-
     // state variables for the current frame index
-    var currentIndex: Int = 0
+    private var currentIndex: Int = 0
     var currentDiffIndex: MutableState<Int> = mutableStateOf(0)
-    var jumpLock = false
 
     // holds the relative position of the current frame in the diff video
     // 0.0 means the first frame, 1.0 means the last frame
@@ -57,7 +50,7 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
      * @return [Unit]
      */
     override fun jumpFrames(frames: Int) {
-        currentIndex = currentIndex + frames
+        currentIndex += frames
         jump()
     }
 
@@ -111,51 +104,13 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
     private fun jump() {
         println("jump")
         // calculate the index to jump to; round to the nearest whole integer
-        var coercedIndex = currentIndex.coerceIn(0, diffSequence.size - 1)
+        val coercedIndex = currentIndex.coerceIn(0, diffSequence.size - 1)
 
         // update the percentage and diff index used for rendering the timeline position
         currentRelativePosition.value = coercedIndex.toDouble() / (diffSequence.size - 1).toDouble()
         currentDiffIndex.value = coercedIndex
+
         onNavigateCallback()
-
-        // do nothing if locked
-        if (jumpLock) {
-            return
-        }
-        // lock the jump to prevent multiple updates from running at the same time
-        jumpLock = true
-        // set unrealistic goal to force an update
-        var goal = -1
-        // launch a coroutine to update the bitmaps
-        scope.launch(Dispatchers.Default) {
-            // temp variables to hold the bitmaps and update all at once
-            var b1: ImageBitmap? = null
-            var b2: ImageBitmap? = null
-            var b3: ImageBitmap? = null
-
-            // coercedIndex can be updated outside of the coroutine, so check it every iteration
-            while (goal != coercedIndex) {
-                // if current rendering does not match the selected frame, update the rendering
-                goal = coercedIndex
-
-                // update the bitmaps
-                b1 = frameGrabber.getReferenceVideoFrame(goal)
-                b2 = frameGrabber.getCurrentVideoFrame(goal)
-                b3 = frameGrabber.getDiffVideoFrame(goal)
-
-                // update the selected frame in case it changed while the coroutine was running
-                coercedIndex = currentIndex.coerceIn(0, diffSequence.size - 1)
-            }
-            // after goal was met update the rendered bitmaps in UI thread and unlock the jump
-            withContext(Dispatchers.Main) {
-                videoReferenceBitmap.value = b1!!
-                videoCurrentBitmap.value = b2!!
-                diffBitmap.value = b3!!
-            }
-            currentIndex = coercedIndex
-            currentDiffIndex.value = currentIndex
-            jumpLock = false
-        }
     }
 
     /**
@@ -278,18 +233,24 @@ class FrameNavigation(state: MutableState<AppState>, val scope: CoroutineScope) 
             )
         val g = collage.createGraphics()
         // fill the background with white
-        g.color = java.awt.Color.WHITE
+        g.color = Color.WHITE
         g.fillRect(0, 0, collage.width, collage.height)
 
         // draw the images
-        for (item in listOf(videoReferenceBitmap, diffBitmap, videoCurrentBitmap)) {
-            val img = item.value.toAwtImage()
+        val images =
+            listOf(
+                frameGrabber.getReferenceVideoFrame(currentIndex),
+                frameGrabber.getDiffVideoFrame(currentIndex),
+                frameGrabber.getCurrentVideoFrame(currentIndex),
+            )
+        for (item in images) {
+            val img = item.toAwtImage()
             g.drawImage(img, xOffset, titleHeight, null)
             xOffset += width + border
         }
 
         // draw the titles
-        g.color = java.awt.Color.BLACK
+        g.color = Color.BLACK
         g.font = font
         xOffset = 0
         for (item in listOf("Reference Video", "Diff", "Current Video")) {
