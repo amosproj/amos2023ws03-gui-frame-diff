@@ -64,7 +64,7 @@ fun ProjectMenu(
                 },
                 onClick = {
                     openScope.launch(
-                        Dispatchers.IO,
+                        Dispatchers.Default,
                     ) {
                         openFileChooserAndGetPath(
                             directoryPath = state.value.openProjectPath,
@@ -83,7 +83,7 @@ fun ProjectMenu(
                 },
                 onClick = {
                     saveScope.launch(
-                        Dispatchers.IO,
+                        Dispatchers.Default,
                     ) { openFileSaverAndGetPath(state.value.saveProjectPath) { path -> handleSaveProject(state, path) } }
                     expanded = false
                 },

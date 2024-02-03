@@ -93,7 +93,7 @@ private fun calculateVideoDifferences(
     errorDialogText: MutableState<String?>,
     isLoading: MutableState<Boolean>,
 ) {
-    scope.launch(Dispatchers.IO) {
+    scope.launch(Dispatchers.Default) {
         isLoading.value = true
         AlgorithmExecutionState.getInstance().reset()
 
