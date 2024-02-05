@@ -5,13 +5,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ui.components.general.AutoSizeText
 import ui.components.general.InfoIconWithHover
@@ -39,9 +40,8 @@ fun RowScope.FileSelectorButton(
     buttonDescription: String? = null,
     allowedFileExtensions: Array<String>? = null,
 ) {
-    val scope = rememberCoroutineScope()
     Button(
-        modifier = Modifier.weight(1f).padding(8.dp).fillMaxHeight(1f),
+        modifier = Modifier.weight(1f).fillMaxHeight().padding(8.dp),
         onClick = {
             openFileChooserAndGetPath(
                 directoryPath,
@@ -52,16 +52,14 @@ fun RowScope.FileSelectorButton(
         shape = MaterialTheme.shapes.medium,
     ) {
         // column to display the button text and the selected file path
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
+
+        Column(modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             // row to display the upload icon
-            Row(modifier = Modifier.weight(0.75f)) {
+            Row(modifier = Modifier) {
                 Image(
                     painter = painterResource("upload.svg"),
                     contentDescription = "Upload",
-                    modifier = Modifier.alpha(0.8f),
+                    modifier = Modifier.alpha(0.8f).height(150.dp),
                     colorFilter = ColorFilter.tint(LocalContentColor.current),
                 )
                 if (tooltipText != null) {
@@ -71,17 +69,38 @@ fun RowScope.FileSelectorButton(
 
             if (buttonDescription != null) {
                 // row to display the button text
-                Row(modifier = Modifier.weight(0.1f)) { AutoSizeText(text = buttonText, minimalFontSize = 27) }
+                Row(modifier = Modifier) {
+                    Text(
+                        buttonText,
+                        fontSize = MaterialTheme.typography.headlineLarge.fontSize,
+                        textAlign = TextAlign.Center,
+                    )
+                }
                 // row to display the button description
-                Row(modifier = Modifier.weight(0.05f)) { AutoSizeText(text = buttonDescription) }
+                Row(modifier = Modifier) {
+                    Text(
+                        buttonDescription,
+                        fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                        textAlign = TextAlign.Center,
+                    )
+                }
             } else {
                 // row to display the button text
-                Row(modifier = Modifier.weight(0.15f)) { AutoSizeText(text = buttonText, minimalFontSize = 27) }
+                Row(modifier = Modifier) {
+                    Text(
+                        buttonText,
+                        fontSize = MaterialTheme.typography.headlineLarge.fontSize,
+                        textAlign = TextAlign.Center,
+                    )
+                }
             }
-
             // row to display the selected file path
-            Row(modifier = Modifier.weight(0.1f)) {
-                AutoSizeText(text = buttonPath ?: "No file selected", minimalFontSize = 25)
+            Row(modifier = Modifier.padding(8.dp)) {
+                AutoSizeText(
+                    text = buttonPath ?: "No file selected",
+                    color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.6f),
+                    fixedFontSize = 20,
+                )
             }
         }
     }
