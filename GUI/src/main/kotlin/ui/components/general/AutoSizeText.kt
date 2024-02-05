@@ -1,6 +1,6 @@
 package ui.components.general
 
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
@@ -40,13 +40,14 @@ import androidx.compose.ui.unit.TextUnit
  * @param overflow [TextOverflow] to apply to the text.
  * @param maxLines [Int] to apply to the text.
  * @param style [TextStyle] to apply to the text.
+ * @param fixedFontSize [Int] to apply to the text. Defaults to null.
  * @return [Unit]
  */
 @OptIn(ExperimentalTextApi::class)
 @Composable
 fun AutoSizeText(
     text: String,
-    modifier: Modifier = Modifier.fillMaxSize(),
+    modifier: Modifier = Modifier.fillMaxWidth(),
     color: Color = LocalContentColor.current,
     fontStyle: FontStyle? = null,
     fontWeight: FontWeight? = null,
@@ -59,6 +60,7 @@ fun AutoSizeText(
     maxLines: Int = 1,
     style: TextStyle = LocalTextStyle.current,
     minimalFontSize: Int = 1,
+    fixedFontSize: Int? = null,
 ) {
     // create a state variable to hold the current text
     var currentText by remember { mutableStateOf(text) }
@@ -101,7 +103,11 @@ fun AutoSizeText(
                     result.layoutInput.constraints.maxWidth / result.layoutInput.text.length
                 }
             // choose limit based on height or width or minimalFontSize
-            scaled = scaled.copy(fontSize = with(localDensity) { maxOf(minOf(height, width), minimalFontSize).toSp() })
+            if (fixedFontSize != null) {
+                scaled = scaled.copy(fontSize = with(localDensity) { fixedFontSize.toSp() })
+            } else {
+                scaled = scaled.copy(fontSize = with(localDensity) { maxOf(minOf(height, width), minimalFontSize).toSp() })
+            }
             // on overflow trim start
             // measure the text with the scaled style
             var data = textMeasurer.measure(currentText, scaled, overflow = TextOverflow.Visible)
