@@ -12,17 +12,21 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 /**
  * A vertical line with different colored outline that indicates the current position in the timeline.
  *
- * @param offset [Float] The offset of the line from the left side of the timeline.
+ * @param xOffset [Float] The offset of the line from the left side of the timeline.
+ * @param yStartOffset [Float] The offset of the line from the top side of the timeline.
  * @return [Unit]
  */
 @Composable
-fun PositionIndicator(offset: Float) {
+fun PositionIndicator(
+    xOffset: Float,
+    yStartOffset: Float = 0f,
+) {
     val strokeWidth = 6f
     Canvas(modifier = Modifier.fillMaxSize()) {
         // indicator line
         drawLine(
-            start = Offset(offset, 0f),
-            end = Offset(offset, size.height),
+            start = Offset(xOffset, yStartOffset),
+            end = Offset(xOffset, size.height),
             color = Color.Cyan,
             strokeWidth = strokeWidth,
         )
@@ -30,8 +34,8 @@ fun PositionIndicator(offset: Float) {
         // outline of the indicator
         drawRect(
             color = Color.Black,
-            topLeft = Offset(offset - strokeWidth / 2, 0f),
-            size = Size(strokeWidth, size.height),
+            topLeft = Offset(xOffset - strokeWidth / 2, yStartOffset),
+            size = Size(strokeWidth, size.height - yStartOffset),
             style = Stroke(width = 0.5f),
         )
     }

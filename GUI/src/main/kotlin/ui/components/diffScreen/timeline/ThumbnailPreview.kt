@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,60 +28,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import logic.FrameGrabber
 import logic.caches.ThumbnailCache
-import ui.components.general.AutoSizeText
-
-/**
- * A vertical line that indicates the current position in the timeline.
- *
- * @param navigator [FrameNavigation] containing the logic to jump to a specific frame.
- * @param scrollState [LazyListState] containing the scroll state of the timeline.
- * @param modifier [Modifier] to apply to the element.
- */
-@Composable
-fun LabeledThumbnailPreview(
-    frameGrabber: FrameGrabber,
-    navigator: FrameNavigation,
-    scrollState: LazyListState,
-    modifier: Modifier = Modifier,
-) {
-    // display width of a single thumbnail in the timeline (2 thumbnails are stacked)
-    val thumbnailWidth = remember { mutableStateOf(0.0f) }
-
-    // set the width of the timeline box
-    val componentWidth = remember { mutableStateOf(0.0f) }
-
-    Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                // calculate the width of the timeline-box
-                .layout { measurable, constraints ->
-                    val placeable = measurable.measure(constraints)
-                    // Store the width
-                    componentWidth.value = placeable.width.toFloat()
-
-                    layout(placeable.width, placeable.height) { placeable.placeRelative(0, 0) }
-                },
-    ) {
-        // #### timeline labeling ####
-        ThumbnailLabels(
-            scrollState,
-            thumbnailWidth.value,
-            componentWidth.value,
-            modifier = Modifier.weight(1f),
-        )
-
-        // #### timeline box ####
-        ThumbnailBar(
-            navigator,
-            frameGrabber,
-            thumbnailWidth,
-            componentWidth.value,
-            scrollState,
-            modifier = Modifier.weight(4f),
-        )
-    }
-}
 
 /**
  * A [LazyRow] that displays the thumbnails of the aligned input videos.
@@ -100,22 +47,39 @@ private fun ThumbnailRow(
     nFrames: Int,
     scrollState: LazyListState,
     thumbnailSize: Size,
+    verticalLabelSpace: Float,
 ) {
     LazyRow(
         state = scrollState,
         modifier = modifier.fillMaxSize(),
     ) {
         items(nFrames) { i ->
-            AsyncDiffColumn(thumbnailCache, i, thumbnailSize)
+            AsyncDiffColumn(
+                thumbnailCache = thumbnailCache,
+                index = i,
+                placeholderSize = thumbnailSize,
+                verticalLabelSpace = verticalLabelSpace,
+            )
         }
     }
 }
 
+/**
+ * A [Column] that displays the two thumbnails of the aligned input videos at a given index.
+ *
+ * Thumbnails are only loaded when they are visible.
+ *
+ * @param thumbnailCache [ThumbnailCache] that contains logic to grab and cache thumbnails.
+ * @param index [Int] contains the index of the displayed column.
+ * @param placeholderSize [size] contains the size of the gray placeholder.
+ * @return [Unit]
+ */
 @Composable
 fun AsyncDiffColumn(
     thumbnailCache: ThumbnailCache,
     index: Int,
     placeholderSize: Size,
+    verticalLabelSpace: Float,
 ) {
     val images = remember { mutableStateOf<List<ImageBitmap>?>(null) }
 
@@ -134,21 +98,26 @@ fun AsyncDiffColumn(
     val height = with(LocalDensity.current) { placeholderSize.height.toDp() }
 
     Column {
-        Box(modifier = modifier.weight(0.5f).background(Color.Gray).size(width, height)) {
+        ThumbnailLabel(
+            index = index,
+            modifier = Modifier.weight(verticalLabelSpace).padding(top = 5.dp).align(Alignment.CenterHorizontally).fillMaxSize(),
+        )
+
+        Box(modifier = modifier.weight((1 - verticalLabelSpace) / 2).background(Color.Gray).size(width, height)) {
             if (images.value != null) {
                 Image(
-                    bitmap = images.value!![0],
-                    contentDescription = null,
+                    bitmap = (images.value ?: return@Box)[0],
+                    contentDescription = "Frame Index: $index",
                     modifier = Modifier.fillMaxHeight(),
                 )
             }
         }
 
-        Box(modifier = modifier.weight(0.5f).background(Color.Gray).size(width, height)) {
+        Box(modifier = modifier.weight((1 - verticalLabelSpace) / 2).background(Color.Gray).size(width, height)) {
             if (images.value != null) {
                 Image(
-                    bitmap = images.value!![1],
-                    contentDescription = null,
+                    bitmap = (images.value ?: return@Box)[1],
+                    contentDescription = "Frame Index Line",
                     modifier = Modifier.fillMaxHeight(),
                 )
             }
@@ -166,7 +135,7 @@ fun AsyncDiffColumn(
  * @param modifier [Modifier] to apply to the element.
  */
 @Composable
-private fun ThumbnailBar(
+fun ThumbnailBar(
     navigator: FrameNavigation,
     frameGrabber: FrameGrabber,
     thumbnailWidth: MutableState<Float>,
@@ -176,6 +145,7 @@ private fun ThumbnailBar(
 ) {
     var cursorOffset = Offset.Zero
     val height = remember { mutableStateOf(0.0f) }
+    val width = remember { mutableStateOf(0.0f) }
 
     // thumbnail cache
     val thumbnailCache = remember { ThumbnailCache(maxCacheSize = 30, frameGrabber::getImagesAtDiff) }
@@ -202,8 +172,10 @@ private fun ThumbnailBar(
         }
     }
 
+    val verticalLabelSpace = 0.3f
+
     fun getThumbnailWidth(): Float {
-        return frameGrabber.width.toFloat() / frameGrabber.height * height.value * 0.5f
+        return frameGrabber.width.toFloat() / frameGrabber.height * height.value * (1 - verticalLabelSpace) / 2
     }
 
     fun jumpOffsetHandler(offset: Offset) {
@@ -218,7 +190,6 @@ private fun ThumbnailBar(
     Box(
         modifier =
             modifier
-                .border(width = 2.dp, color = Color.Black)
                 // handle clicks and drags on the timeline
                 .pointerInput(Unit) { detectTapGestures { offset -> jumpOffsetHandler(offset) } }
                 .pointerInput(Unit) {
@@ -226,11 +197,12 @@ private fun ThumbnailBar(
                         onDragStart = { offset -> jumpOffsetHandler(offset) },
                         onDrag = { _, dragAmount -> jumpOffsetHandler(cursorOffset + dragAmount) },
                     )
-                }
+                }.fillMaxSize()
                 .layout { measurable, constraints ->
                     val placeable = measurable.measure(constraints)
                     // Store the height
                     height.value = placeable.height.toFloat()
+                    width.value = placeable.width.toFloat()
 
                     thumbnailWidth.value = getThumbnailWidth()
                     layout(placeable.width, placeable.height) { placeable.placeRelative(0, 0) }
@@ -243,9 +215,10 @@ private fun ThumbnailBar(
             nFrames = totalDiffFrames,
             scrollState = scrollState,
             thumbnailSize = Size(thumbnailWidth.value, height.value / 2),
+            verticalLabelSpace = verticalLabelSpace,
         )
         if (indicatorOffset > 0 && indicatorOffset < componentWidth) {
-            PositionIndicator(indicatorOffset)
+            PositionIndicator(indicatorOffset, height.value * verticalLabelSpace)
         }
     }
 }
@@ -253,62 +226,42 @@ private fun ThumbnailBar(
 /**
  * Labels that are drawn above the center points of timeline thumbnails.
  *
- * @param scrollState [LazyListState] containing the scroll state of the timeline.
- * @param thumbnailWidth [Float] containing the width of all thumbnails.
- * @param componentWidth [Float] containing the width of the timeline component.
+ * @param index [Int] containing the index to be written.
  * @param modifier [Modifier] to apply to the element.
  * @return [Unit]
  */
 @Composable
-private fun ThumbnailLabels(
-    scrollState: LazyListState,
-    thumbnailWidth: Float,
-    componentWidth: Float,
+private fun ThumbnailLabel(
+    index: Int,
     modifier: Modifier = Modifier,
 ) {
     var textWidth by remember { mutableStateOf(0f) }
-    var textHeight by remember { mutableStateOf(0f) }
-
     // Labels Container
-    Box(modifier = modifier) {
-        val lastVisibleIndex = scrollState.firstVisibleItemIndex + scrollState.layoutInfo.visibleItemsInfo.size - 1
-
-        // thumbnail labels with ticks over thumbnail centers
-        for (i in scrollState.firstVisibleItemIndex..lastVisibleIndex) {
-            val offset = getCenteredThumbnailOffset(scrollState, i, thumbnailWidth)
-
-            // don't draw a label if thumbnail center outside of timeline
-            if (offset < 0 || offset > componentWidth) {
-                continue
-            }
-
-            // somehow, we need to manually convert the offset for text only depending on the
-            // density of the device (e.g. on Windows: window scaling)
-            val textOffset = with(LocalDensity.current) { (offset - textWidth / 2).toDp() }
-
-            // draw label with diff index
-            AutoSizeText(
-                text = i.toString(),
-                color = MaterialTheme.colorScheme.primary,
-                modifier =
-                    Modifier
-                        .onGloballyPositioned { coordinates ->
-                            textWidth = coordinates.size.width.toFloat()
-                            textHeight = coordinates.size.height.toFloat()
-                        }
-                        .offset(x = textOffset)
-                        .align(Alignment.TopStart),
+    Column(modifier = modifier) {
+        val fontSize = MaterialTheme.typography.titleLarge.fontSize
+        // draw label with diff index
+        Text(
+            text = index.toString(),
+            color = MaterialTheme.colorScheme.primary,
+            modifier =
+                Modifier
+                    .onGloballyPositioned { coordinates ->
+                        textWidth = coordinates.size.width.toFloat()
+                    }
+                    .padding(bottom = 6.dp),
+            fontSize = fontSize,
+        )
+        val lineColor = MaterialTheme.colorScheme.primary
+        // draw a tick for the text
+        Canvas(
+            modifier = Modifier.fillMaxSize(1f),
+        ) {
+            drawLine(
+                start = Offset(textWidth / 2, 0f),
+                end = Offset(textWidth / 2, size.height),
+                color = lineColor,
+                strokeWidth = 3f,
             )
-            val lineColor = MaterialTheme.colorScheme.primary
-            // draw a tick for the text
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                drawLine(
-                    start = Offset(offset, textHeight),
-                    end = Offset(offset, size.height),
-                    color = lineColor,
-                    strokeWidth = 1f,
-                )
-            }
         }
     }
 }
