@@ -4,7 +4,6 @@ import FrameNavigationInterface
 import algorithms.AlignmentElement
 import androidx.compose.runtime.*
 import kotlinx.coroutines.*
-import logic.FrameGrabber
 import models.AppState
 import kotlin.math.roundToInt
 
@@ -13,8 +12,6 @@ import kotlin.math.roundToInt
  * @param state [MutableState]<[AppState]> containing the global state.
  */
 class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface {
-    private val frameGrabber = FrameGrabber(state)
-
     // create the sequences
     var diffSequence: Array<AlignmentElement> = state.value.sequenceObj
 
@@ -31,13 +28,6 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
     init {
         // jump to the first frame
         jump()
-    }
-
-    /**
-     * Close the grabbers.
-     */
-    fun close() {
-        frameGrabber.close()
     }
 
     /**
@@ -86,19 +76,10 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
     /**
      * Jump to the frame with the previously set index.
      *
-     * This function launches a coroutine to update the bitmaps. The coroutine runs in an IO thread
-     * so that the UI thread is not blocked by waiting for the bitmaps to be generated.
-     * This leads to a more seamless experience when jumping through the video. Especially, the timeline
-     * can be updated while the coroutine is running, leading to a more responsive UI.
-     *
-     * A lock variable is used to prevent multiple coroutines from running at the same time. Instead, the first called
-     * coroutine will run to completion and the others will be ignored. The only running coroutine will run until the
-     * index is not changed anymore. This is done to prevent the UI from being flooded with updates.
-     *
+     * Triggers the onNavigateCallback at the end.
      * @return [Unit]
      */
     private fun jump() {
-        println("jump")
         // calculate the index to jump to; round to the nearest whole integer
         val coercedIndex = currentIndex.coerceIn(0, diffSequence.size - 1)
 
@@ -106,6 +87,7 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
         currentRelativePosition.value = coercedIndex.toDouble() / (diffSequence.size - 1).toDouble()
         currentDiffIndex.value = coercedIndex
 
+        // trigger specific actions for the new navigation index
         onNavigateCallback()
     }
 
@@ -167,6 +149,11 @@ class FrameNavigation(state: MutableState<AppState>) : FrameNavigationInterface 
         }
     }
 
+    /**
+     * Set the callback to be triggered when the navigator jumps.
+     * @param callback [Function0]<[Unit]> containing the callback to be triggered.
+     * @return [Unit]
+     */
     fun setOnNavigateCallback(callback: () -> Unit) {
         onNavigateCallback = callback
     }

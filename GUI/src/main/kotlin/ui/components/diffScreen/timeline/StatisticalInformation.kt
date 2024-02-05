@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import frameNavigation.FrameNavigation
 import logic.DiffSequenceInfo
 import ui.components.general.TooltipText
 import util.ColorEncoding
@@ -17,7 +16,7 @@ import util.ColorEncoding
  * A Composable function that creates a tooltip hover box with statistical information about the selected videos
  * and their differences.
  *
- * @param navigator [FrameNavigation] containing the navigation logic.
+ * @param diffSequenceInfo [DiffSequenceInfo] containing the information about the input videos and their differences.
  */
 @Composable
 fun StatisticalInformation(diffSequenceInfo: DiffSequenceInfo) {

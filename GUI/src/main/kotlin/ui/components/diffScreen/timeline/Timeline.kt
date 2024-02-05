@@ -8,7 +8,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
 import logic.DiffSequenceInfo
@@ -42,8 +41,6 @@ fun Timeline(
 
     val diffSequenceInfo = DiffSequenceInfo(navigator.diffSequence)
 
-    println("timeline")
-
     Column(
         modifier =
             Modifier
@@ -67,30 +64,11 @@ fun Timeline(
 
         OverviewBar(navigatorUpdated, modifier = generalModifier.weight(0.3f))
 
-        // display width of a single thumbnail in the timeline (2 thumbnails are stacked)
-        val thumbnailWidth = remember { mutableStateOf(0.0f) }
-
-        // set the width of the timeline box
-        val componentWidth = remember { mutableStateOf(0.0f) }
-
         ThumbnailBar(
             navigator = navigatorUpdated,
             frameGrabber = frameGrabber,
-            thumbnailWidth = thumbnailWidth,
-            componentWidth = componentWidth.value,
             scrollState = scrollState,
-            modifier =
-                generalModifier
-                    .weight(0.9f)
-                    .fillMaxSize()
-                    // calculate the width of the timeline-box
-                    .layout { measurable, constraints ->
-                        val placeable = measurable.measure(constraints)
-                        // Store the width
-                        componentWidth.value = placeable.width.toFloat()
-
-                        layout(placeable.width, placeable.height) { placeable.placeRelative(0, 0) }
-                    },
+            modifier = generalModifier.weight(0.9f).fillMaxSize(),
         )
 
         HorizontalScrollbar(

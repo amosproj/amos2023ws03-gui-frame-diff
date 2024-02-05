@@ -2,6 +2,10 @@ package logic
 
 import algorithms.AlignmentElement
 
+/**
+ * Utility class to get information about a diff sequence.
+ * @param diffSequence The diff sequence to get information about.
+ */
 class DiffSequenceInfo(private val diffSequence: Array<AlignmentElement>) {
     /**
      * Get count of insertions

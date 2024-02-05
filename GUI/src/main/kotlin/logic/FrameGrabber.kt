@@ -10,6 +10,14 @@ import util.ColoredFrameGenerator
 import wrappers.Resettable2DFrameConverter
 import java.awt.image.BufferedImage
 
+/**
+ * Class to grab frames from the input and difference videos.
+ *
+ * Warning: Grabbing a frame of any video is not thread-safe. Do not call any of the grabbing
+ * functions from different threads at the same time! Use a locking mechanism to prevent race conditions.
+ *
+ * @param state [MutableState]<[AppState]> containing the global state. Needed to get the file paths to the videos.
+ */
 class FrameGrabber(state: MutableState<AppState>) {
     // create the grabbers
     private val videoReferenceGrabber: FFmpegFrameGrabber =
@@ -56,24 +64,39 @@ class FrameGrabber(state: MutableState<AppState>) {
                 .toComposeImageBitmap()
     }
 
+    /**
+     * Get the reference video frame at a certain index.
+     * @param index [Int] containing the index of the frame.
+     * @return [ImageBitmap] containing the bitmap of the frame.
+     */
     fun getReferenceVideoFrame(index: Int): ImageBitmap {
-        if (videoReferenceFrames[index] != -1) {
+        return if (videoReferenceFrames[index] != -1) {
             videoReferenceGrabber.setVideoFrameNumber(videoReferenceFrames[index])
-            return getBitmap(videoReferenceGrabber)
+            getBitmap(videoReferenceGrabber)
         } else {
-            return insertionBitmap
+            insertionBitmap
         }
     }
 
+    /**
+     * Get the current video frame at a certain index.
+     * @param index [Int] containing the index of the frame.
+     * @return [ImageBitmap] containing the bitmap of the frame.
+     */
     fun getCurrentVideoFrame(index: Int): ImageBitmap {
-        if (videoCurrentFrames[index] != -1) {
+        return if (videoCurrentFrames[index] != -1) {
             videoCurrentGrabber.setVideoFrameNumber(videoCurrentFrames[index])
-            return getBitmap(videoCurrentGrabber)
+            getBitmap(videoCurrentGrabber)
         } else {
-            return deletionBitmap
+            deletionBitmap
         }
     }
 
+    /**
+     * Get the difference video frame at a certain index.
+     * @param index [Int] containing the index of the frame.
+     * @return [ImageBitmap] containing the bitmap of the frame.
+     */
     fun getDiffVideoFrame(index: Int): ImageBitmap {
         grabberDiff.setVideoFrameNumber(index)
         return getBitmap(grabberDiff)

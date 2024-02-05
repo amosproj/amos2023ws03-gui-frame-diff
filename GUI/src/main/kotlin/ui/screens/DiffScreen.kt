@@ -51,7 +51,6 @@ fun DiffScreen(state: MutableState<AppState>) {
 
     DisposableEffect(Unit) {
         onDispose {
-            navigator.close()
             frameGrabber.close()
             thumbnailGrabber.close()
             val f = File(defaultOutputPath)
@@ -168,7 +167,6 @@ fun DiffScreen(state: MutableState<AppState>) {
     ConfirmationPopup(
         showDialog = showConfirmationDialog.value,
         onConfirm = {
-            navigator.close()
             state.value =
                 state.value.copy(
                     screen = Screen.SelectVideoScreen,

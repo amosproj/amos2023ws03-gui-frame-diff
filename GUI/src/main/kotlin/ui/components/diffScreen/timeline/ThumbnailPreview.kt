@@ -129,8 +129,7 @@ fun AsyncDiffColumn(
  * A [Box] containing the thumbnails of the aligned input videos and the indicator to where the current frame is.
  *
  * @param navigator [FrameNavigation] containing the logic to jump to a specific frame.
- * @param thumbnailWidth [MutableState]<[Float]> containing the width of all thumbnails.
- * @param componentWidth [Float] containing the width of the timeline component.
+ * @param frameGrabber [FrameGrabber] containing the logic to grab thumbnails from the input videos.
  * @param scrollState [LazyListState] containing the scroll state of the timeline.
  * @param modifier [Modifier] to apply to the element.
  */
@@ -138,14 +137,15 @@ fun AsyncDiffColumn(
 fun ThumbnailBar(
     navigator: FrameNavigation,
     frameGrabber: FrameGrabber,
-    thumbnailWidth: MutableState<Float>,
-    componentWidth: Float,
     scrollState: LazyListState,
     modifier: Modifier = Modifier,
 ) {
     var cursorOffset = Offset.Zero
     val height = remember { mutableStateOf(0.0f) }
     val width = remember { mutableStateOf(0.0f) }
+
+    // display width of a single thumbnail in the timeline (2 thumbnails are stacked)
+    val thumbnailWidth = remember { mutableStateOf(0.0f) }
 
     // thumbnail cache
     val thumbnailCache = remember { ThumbnailCache(maxCacheSize = 30, frameGrabber::getImagesAtDiff) }
@@ -159,9 +159,9 @@ fun ThumbnailBar(
     navigator.setOnNavigateCallback {
         indicatorOffset = getCenteredThumbnailOffset(scrollState, navigator.currentDiffIndex.value, thumbnailWidth.value)
 
-        if (indicatorOffset < 0 || indicatorOffset > componentWidth) {
+        if (indicatorOffset < 0 || indicatorOffset > width.value) {
             scope.launch {
-                val thumbnailsInView = (componentWidth / thumbnailWidth.value).toInt()
+                val thumbnailsInView = (width.value / thumbnailWidth.value).toInt()
                 scrollState.animateScrollToItem(
                     (navigator.currentDiffIndex.value - thumbnailsInView / 2).coerceIn(
                         0,
@@ -172,6 +172,7 @@ fun ThumbnailBar(
         }
     }
 
+    // decides which portion of the vertical space the labels get
     val verticalLabelSpace = 0.3f
 
     fun getThumbnailWidth(): Float {
@@ -203,8 +204,8 @@ fun ThumbnailBar(
                     // Store the height
                     height.value = placeable.height.toFloat()
                     width.value = placeable.width.toFloat()
-
                     thumbnailWidth.value = getThumbnailWidth()
+
                     layout(placeable.width, placeable.height) { placeable.placeRelative(0, 0) }
                 },
     ) {
@@ -214,10 +215,10 @@ fun ThumbnailBar(
             thumbnailCache = thumbnailCache,
             nFrames = totalDiffFrames,
             scrollState = scrollState,
-            thumbnailSize = Size(thumbnailWidth.value, height.value / 2),
+            thumbnailSize = Size(thumbnailWidth.value, (1 - verticalLabelSpace) / 2 * height.value),
             verticalLabelSpace = verticalLabelSpace,
         )
-        if (indicatorOffset > 0 && indicatorOffset < componentWidth) {
+        if (indicatorOffset > 0 && indicatorOffset < width.value) {
             PositionIndicator(indicatorOffset, height.value * verticalLabelSpace)
         }
     }
@@ -236,9 +237,12 @@ private fun ThumbnailLabel(
     modifier: Modifier = Modifier,
 ) {
     var textWidth by remember { mutableStateOf(0f) }
+
     // Labels Container
     Column(modifier = modifier) {
         val fontSize = MaterialTheme.typography.titleLarge.fontSize
+        val lineColor = MaterialTheme.colorScheme.primary
+
         // draw label with diff index
         Text(
             text = index.toString(),
@@ -251,11 +255,9 @@ private fun ThumbnailLabel(
                     .padding(bottom = 6.dp),
             fontSize = fontSize,
         )
-        val lineColor = MaterialTheme.colorScheme.primary
+
         // draw a tick for the text
-        Canvas(
-            modifier = Modifier.fillMaxSize(1f),
-        ) {
+        Canvas(modifier = Modifier.fillMaxSize(1f)) {
             drawLine(
                 start = Offset(textWidth / 2, 0f),
                 end = Offset(textWidth / 2, size.height),
