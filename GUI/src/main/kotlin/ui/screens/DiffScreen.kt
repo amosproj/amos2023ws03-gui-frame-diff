@@ -44,7 +44,7 @@ import java.io.File
 fun DiffScreen(state: MutableState<AppState>) {
     // create the navigator, which implements the jumping logic
     val scope = rememberCoroutineScope()
-    val navigator = FrameNavigation(state, scope)
+    val navigator = remember { FrameNavigation(state, scope) }
     val showConfirmationDialog = remember { mutableStateOf(false) }
     DisposableEffect(Unit) {
         onDispose {
