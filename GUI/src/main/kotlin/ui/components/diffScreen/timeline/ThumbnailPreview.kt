@@ -28,6 +28,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import logic.FrameGrabber
 import logic.caches.ThumbnailCache
+import kotlin.math.round
 
 /**
  * A [LazyRow] that displays the thumbnails of the aligned input videos.
@@ -151,13 +152,13 @@ fun ThumbnailBar(
     val thumbnailCache = remember { ThumbnailCache(maxCacheSize = 30, frameGrabber::getImagesAtDiff) }
 
     var indicatorOffset by remember { mutableStateOf(0.0f) }
-    indicatorOffset = getCenteredThumbnailOffset(scrollState, navigator.currentDiffIndex.value, thumbnailWidth.value)
+    indicatorOffset = getCenteredThumbnailOffset(scrollState, navigator.currentDiffIndex.value, round(thumbnailWidth.value))
 
     val scope = rememberCoroutineScope()
     val totalDiffFrames = navigator.diffSequence.size
 
     navigator.setOnNavigateCallback {
-        indicatorOffset = getCenteredThumbnailOffset(scrollState, navigator.currentDiffIndex.value, thumbnailWidth.value)
+        indicatorOffset = getCenteredThumbnailOffset(scrollState, navigator.currentDiffIndex.value, round(thumbnailWidth.value))
 
         if (indicatorOffset < 0 || indicatorOffset > width.value) {
             scope.launch {
