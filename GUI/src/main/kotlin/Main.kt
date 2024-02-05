@@ -1,4 +1,5 @@
 import androidx.compose.runtime.*
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
@@ -19,6 +20,7 @@ fun main(): Unit =
     application {
         var isAskingToClose = remember { mutableStateOf(false) }
         Window(
+            icon = painterResource("icon.png"),
             title = "GUI Frame Diff v${AppConfig.VERSION}",
             onCloseRequest = { isAskingToClose.value = true },
             state = WindowState(width = 1800.dp, height = 1000.dp),

@@ -51,6 +51,15 @@ compose.desktop {
             packageName = "GUI"
             packageVersion = "1.0.0"
             includeAllModules = true
+            macOS {
+                iconFile.set(project.file("src/main/resources/icon.icns"))
+            }
+            windows {
+                iconFile.set(project.file("src/main/resources/icon.ico"))
+            }
+            linux {
+                iconFile.set(project.file("src/main/resources/icon.png"))
+            }
         }
     }
 }
