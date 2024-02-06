@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import frameNavigation.FrameNavigation
+import logic.DiffSequenceInfo
 import ui.components.general.TooltipText
 import util.ColorEncoding
 
@@ -16,10 +16,10 @@ import util.ColorEncoding
  * A Composable function that creates a tooltip hover box with statistical information about the selected videos
  * and their differences.
  *
- * @param navigator [FrameNavigation] containing the navigation logic.
+ * @param diffSequenceInfo [DiffSequenceInfo] containing the information about the input videos and their differences.
  */
 @Composable
-fun StatisticalInformation(navigator: FrameNavigation) {
+fun StatisticalInformation(diffSequenceInfo: DiffSequenceInfo) {
     @Composable
     fun ColoredCircle(alignmentElement: AlignmentElement) {
         Box(
@@ -43,10 +43,10 @@ fun StatisticalInformation(navigator: FrameNavigation) {
     }
 
     Column(modifier = Modifier.padding(8.dp)) {
-        TooltipText("Total Frames Reference Video: ${navigator.getSizeOfVideoReference()}", modifier = Modifier)
-        TooltipText("Total Frames Current Video: ${navigator.getSizeOfVideoCurrent()}", modifier = Modifier)
-        RowWithCircle(AlignmentElement.DELETION, "Deleted Frames: ${navigator.getDeletions()}")
-        RowWithCircle(AlignmentElement.MATCH, "Frames with Differences: ${navigator.getFramesWithPixelDifferences()}")
-        RowWithCircle(AlignmentElement.INSERTION, "Inserted Frames: ${navigator.getInsertions()}")
+        TooltipText("Total Frames Reference Video: ${diffSequenceInfo.getSizeOfVideoReference()}", modifier = Modifier)
+        TooltipText("Total Frames Current Video: ${diffSequenceInfo.getSizeOfVideoCurrent()}", modifier = Modifier)
+        RowWithCircle(AlignmentElement.DELETION, "Deleted Frames: ${diffSequenceInfo.getDeletions()}")
+        RowWithCircle(AlignmentElement.MATCH, "Frames with Differences: ${diffSequenceInfo.getFramesWithPixelDifferences()}")
+        RowWithCircle(AlignmentElement.INSERTION, "Inserted Frames: ${diffSequenceInfo.getInsertions()}")
     }
 }

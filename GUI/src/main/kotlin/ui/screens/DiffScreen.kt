@@ -23,6 +23,7 @@ import androidx.compose.ui.input.key.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
+import logic.FrameGrabber
 import models.AppState
 import models.defaultOutputPath
 import ui.components.diffScreen.*
@@ -43,16 +44,20 @@ import java.io.File
 @Composable
 fun DiffScreen(state: MutableState<AppState>) {
     // create the navigator, which implements the jumping logic
-    val scope = rememberCoroutineScope()
-    val navigator = remember { FrameNavigation(state, scope) }
+    val navigator = remember { FrameNavigation(state) }
     val showConfirmationDialog = remember { mutableStateOf(false) }
+    val frameGrabber = FrameGrabber(state)
+    val thumbnailGrabber = FrameGrabber(state)
+
     DisposableEffect(Unit) {
         onDispose {
-            navigator.close()
+            frameGrabber.close()
+            thumbnailGrabber.close()
             val f = File(defaultOutputPath)
             if (f.exists()) f.delete()
         }
     }
+
     // force into focus to intercept key presses
     val focusRequester = FocusRequester()
 
@@ -87,10 +92,7 @@ fun DiffScreen(state: MutableState<AppState>) {
                             if (state.value.hasUnsavedChanges) {
                                 showConfirmationDialog.value = true
                             } else {
-                                state.value =
-                                    state.value.copy(
-                                        screen = Screen.SelectVideoScreen,
-                                    )
+                                state.value = state.value.copy(screen = Screen.SelectVideoScreen)
                             }
                         },
                     )
@@ -106,9 +108,9 @@ fun DiffScreen(state: MutableState<AppState>) {
                             )
                             DropdownMenu(
                                 content = {
-                                    SaveCollageButton(navigator = navigator, state = state)
+                                    SaveCollageButton(frameGrabber, navigator.currentDiffIndex.value, state = state)
                                     SaveInsertedFramesButton(
-                                        navigator = navigator,
+                                        frameGrabber = frameGrabber,
                                         state = state,
                                     )
                                 },
@@ -117,8 +119,8 @@ fun DiffScreen(state: MutableState<AppState>) {
                             )
                         } else {
                             Row {
-                                SaveCollageButton(navigator = navigator, state = state)
-                                SaveInsertedFramesButton(navigator = navigator, state = state)
+                                SaveCollageButton(frameGrabber, navigator.currentDiffIndex.value, state = state)
+                                SaveInsertedFramesButton(frameGrabber = frameGrabber, state = state)
                             }
                         }
                     }
@@ -127,32 +129,33 @@ fun DiffScreen(state: MutableState<AppState>) {
             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
             actions = { HelpMenu() },
         )
+
         // #####   Difference Videos   #####
         Row(
             modifier = Modifier.fillMaxWidth().weight(0.45f),
             verticalAlignment = Alignment.Bottom,
         ) {
             DisplayDifferenceImage(
-                bitmap = navigator.videoReferenceBitmap,
                 navigator = navigator,
+                grabImage = frameGrabber::getReferenceVideoFrame,
                 title = "Reference Video",
                 state = state,
             )
             DisplayDifferenceImage(
-                bitmap = navigator.diffBitmap,
                 navigator = navigator,
+                grabImage = frameGrabber::getDiffVideoFrame,
                 title = "Difference",
                 state = state,
             )
             DisplayDifferenceImage(
-                bitmap = navigator.videoCurrentBitmap,
                 navigator = navigator,
+                grabImage = frameGrabber::getCurrentVideoFrame,
                 title = "Current Video",
                 state = state,
             )
         }
         // #####   Timeline   #####
-        Row(modifier = Modifier.fillMaxSize().weight(0.29f)) { Timeline(navigator) }
+        Row(modifier = Modifier.fillMaxSize().weight(0.29f)) { Timeline(navigator, frameGrabber = thumbnailGrabber) }
 
         // #####   Navigation   #####
         NavigationButtons(navigator, Modifier.weight(1f), Modifier.weight(0.10f))
@@ -161,7 +164,6 @@ fun DiffScreen(state: MutableState<AppState>) {
     ConfirmationPopup(
         showDialog = showConfirmationDialog.value,
         onConfirm = {
-            navigator.close()
             state.value =
                 state.value.copy(
                     screen = Screen.SelectVideoScreen,
