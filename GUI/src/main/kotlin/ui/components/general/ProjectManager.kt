@@ -36,10 +36,10 @@ fun ProjectMenu(
     state: MutableState<AppState>,
     modifier: Modifier = Modifier,
 ) {
-    var errorDialogText = remember { mutableStateOf<String?>(null) }
+    val errorDialogText = remember { mutableStateOf<String?>(null) }
     var expanded by remember { mutableStateOf(false) }
     val padding = 8.dp
-    var showConfirmationDialog = remember { mutableStateOf(false) }
+    val showConfirmationDialog = remember { mutableStateOf(false) }
 
     if (errorDialogText.value != null) {
         ErrorDialog(onCloseRequest = { errorDialogText.value = null }, text = errorDialogText.value!!)
@@ -88,7 +88,7 @@ fun ProjectMenu(
                     Text("Save Project", fontSize = MaterialTheme.typography.bodyMedium.fontSize)
                 },
                 onClick = {
-                    openFileSaverAndGetPath(state.value.saveProjectPath) { path -> handleSaveProject(state, path) }
+                    openFileSaverAndGetPath(state.value.saveProjectPath) { path -> handleSaveProject(state, path, errorDialogText) }
                     expanded = false
                 },
                 enabled = state.value.screen == Screen.DiffScreen,
@@ -152,11 +152,18 @@ fun handleOpenProject(
 fun handleSaveProject(
     state: MutableState<AppState>,
     path: String,
+    saveError: MutableState<String?>,
 ) {
     var savePath = path
+
     // add .mkv extension if not present
     if (!savePath.endsWith(".mkv")) {
         savePath = "$savePath.mkv"
+    }
+
+    if (state.value.outputPath == savePath) {
+        saveError.value = "The project cannot be saved to the same location as the loaded project. Please choose a different location."
+        return
     }
     // set save path
     state.value.saveProjectPath = savePath
