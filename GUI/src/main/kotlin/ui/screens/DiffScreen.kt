@@ -92,10 +92,7 @@ fun DiffScreen(state: MutableState<AppState>) {
                             if (state.value.hasUnsavedChanges) {
                                 showConfirmationDialog.value = true
                             } else {
-                                state.value =
-                                    state.value.copy(
-                                        screen = Screen.SelectVideoScreen,
-                                    )
+                                state.value = state.value.copy(screen = Screen.SelectVideoScreen)
                             }
                         },
                     )

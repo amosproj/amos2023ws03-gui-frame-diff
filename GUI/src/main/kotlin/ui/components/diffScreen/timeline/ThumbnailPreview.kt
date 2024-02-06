@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import frameNavigation.FrameNavigation
@@ -86,39 +85,41 @@ fun AsyncDiffColumn(
 
     val scope = rememberCoroutineScope()
 
+    // load thumbnails in an IO coroutine which is cancelled when the composable is disposed (out of view)
     LaunchedEffect(thumbnailCache, index) {
         scope.launch(Dispatchers.IO) {
-            println("thumbnail $index")
             images.value = thumbnailCache.get(index)
         }
     }
 
-    val modifier = Modifier.border(0.5.dp, Color.Black)
-
     val width = with(LocalDensity.current) { placeholderSize.width.toDp() }
     val height = with(LocalDensity.current) { placeholderSize.height.toDp() }
 
-    Column {
+    val boxModifier = Modifier.border(0.5.dp, Color.Black).background(Color.Gray).height(height).fillMaxWidth()
+    val verticalBoxSpace = (1 - verticalLabelSpace) / 2
+
+    Column(modifier = Modifier.width(width)) {
         ThumbnailLabel(
             index = index,
-            modifier = Modifier.weight(verticalLabelSpace).padding(top = 5.dp).align(Alignment.CenterHorizontally).fillMaxSize(),
+            width = width.value,
+            modifier = Modifier.weight(verticalLabelSpace).padding(top = 5.dp),
         )
 
-        Box(modifier = modifier.weight((1 - verticalLabelSpace) / 2).background(Color.Gray).size(width, height)) {
+        Box(modifier = boxModifier.weight(verticalBoxSpace)) {
             if (images.value != null) {
                 Image(
                     bitmap = (images.value ?: return@Box)[0],
-                    contentDescription = "Frame Index: $index",
+                    contentDescription = "Reference Thumbnail index $index",
                     modifier = Modifier.fillMaxHeight(),
                 )
             }
         }
 
-        Box(modifier = modifier.weight((1 - verticalLabelSpace) / 2).background(Color.Gray).size(width, height)) {
+        Box(modifier = boxModifier.weight(verticalBoxSpace)) {
             if (images.value != null) {
                 Image(
                     bitmap = (images.value ?: return@Box)[1],
-                    contentDescription = "Frame Index Line",
+                    contentDescription = "Current Thumbnail index $index",
                     modifier = Modifier.fillMaxHeight(),
                 )
             }
@@ -229,18 +230,21 @@ fun ThumbnailBar(
  * Labels that are drawn above the center points of timeline thumbnails.
  *
  * @param index [Int] containing the index to be written.
+ * @param width [Float] describing the width of the column to fill.
  * @param modifier [Modifier] to apply to the element.
  * @return [Unit]
  */
 @Composable
 private fun ThumbnailLabel(
     index: Int,
+    width: Float,
     modifier: Modifier = Modifier,
 ) {
-    var textWidth by remember { mutableStateOf(0f) }
-
     // Labels Container
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         val fontSize = MaterialTheme.typography.titleLarge.fontSize
         val lineColor = MaterialTheme.colorScheme.primary
 
@@ -248,20 +252,15 @@ private fun ThumbnailLabel(
         Text(
             text = index.toString(),
             color = MaterialTheme.colorScheme.primary,
-            modifier =
-                Modifier
-                    .onGloballyPositioned { coordinates ->
-                        textWidth = coordinates.size.width.toFloat()
-                    }
-                    .padding(bottom = 6.dp),
+            modifier = Modifier.padding(bottom = 6.dp),
             fontSize = fontSize,
         )
 
         // draw a tick for the text
-        Canvas(modifier = Modifier.fillMaxSize(1f)) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
             drawLine(
-                start = Offset(textWidth / 2, 0f),
-                end = Offset(textWidth / 2, size.height),
+                start = Offset(width / 2, 0f),
+                end = Offset(width / 2, size.height),
                 color = lineColor,
                 strokeWidth = 3f,
             )
