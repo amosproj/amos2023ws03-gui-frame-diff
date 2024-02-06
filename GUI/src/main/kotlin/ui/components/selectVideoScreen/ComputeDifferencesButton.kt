@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.*
-import logic.createThumbnailVideo
+import logic.createThumbnailVideos
 import logic.differenceGeneratorWrapper.DifferenceGeneratorWrapper
 import logic.getVideoMetadata
 import models.AppState
@@ -115,14 +115,6 @@ suspend fun runComputation(
     listOf(computeJob, videoScaleJob).joinAll()
 
     state.value = state.value.copy(screen = Screen.DiffScreen, hasUnsavedChanges = true)
-}
-
-fun createThumbnailVideos(state: MutableState<AppState>) {
-    // create the thumbnail videos
-    val tempReference = createThumbnailVideo(state.value.videoReferencePath!!, 0.25f)
-    val tempCurrent = createThumbnailVideo(state.value.videoCurrentPath!!, 0.25f)
-
-    state.value = state.value.copy(thumbnailVideoPathReference = tempReference, thumbnailVideoPathCurrent = tempCurrent)
 }
 
 private fun calculateVideoDifferences(
