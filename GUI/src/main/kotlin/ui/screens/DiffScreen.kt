@@ -59,7 +59,7 @@ fun DiffScreen(state: MutableState<AppState>) {
     val frameGrabber = FrameGrabber(state)
     val thumbnailGrabber = FrameGrabber(state)
 
-    DisposableEffect(Unit) {
+    DisposableEffect(state.value) {
         onDispose {
             frameGrabber.close()
             thumbnailGrabber.close()
