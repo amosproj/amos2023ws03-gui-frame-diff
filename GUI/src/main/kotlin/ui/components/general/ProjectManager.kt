@@ -36,10 +36,10 @@ fun ProjectMenu(
     state: MutableState<AppState>,
     modifier: Modifier = Modifier,
 ) {
-    var errorDialogText = remember { mutableStateOf<String?>(null) }
+    val errorDialogText = remember { mutableStateOf<String?>(null) }
     var expanded by remember { mutableStateOf(false) }
     val padding = 8.dp
-    var showConfirmationDialog = remember { mutableStateOf(false) }
+    val showConfirmationDialog = remember { mutableStateOf(false) }
 
     if (errorDialogText.value != null) {
         ErrorDialog(onCloseRequest = { errorDialogText.value = null }, text = errorDialogText.value!!)
