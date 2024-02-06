@@ -54,7 +54,7 @@ import java.io.File
 @Composable
 fun DiffScreen(state: MutableState<AppState>) {
     // create the navigator, which implements the jumping logic
-    val navigator = remember { FrameNavigation(state) }
+    val navigator = FrameNavigation(state)
     val showConfirmationDialog = remember { mutableStateOf(false) }
     val frameGrabber = FrameGrabber(state)
     val thumbnailGrabber = FrameGrabber(state)
@@ -97,7 +97,23 @@ fun DiffScreen(state: MutableState<AppState>) {
                 Row {
                     IconButton(
                         modifier = Modifier.padding(8.dp),
-                        content = { Icon(Icons.Default.ArrowBack, "back button") },
+                        content = {
+                            Icon(Icons.Default.ArrowBack, "back button")
+                            // #####   Confirmation Dialog   #####
+                            ConfirmationPopup(
+                                showDialog = showConfirmationDialog.value,
+                                onConfirm = {
+                                    state.value =
+                                        state.value.copy(
+                                            screen = Screen.SelectVideoScreen,
+                                            hasUnsavedChanges = false,
+                                        )
+                                },
+                                onCancel = { showConfirmationDialog.value = false },
+                                text =
+                                    "Are you sure you want to go back to the main screen without saving the Difference Video?",
+                            )
+                        },
                         onClick = {
                             if (state.value.hasUnsavedChanges) {
                                 showConfirmationDialog.value = true
@@ -170,18 +186,4 @@ fun DiffScreen(state: MutableState<AppState>) {
         // #####   Navigation   #####
         NavigationButtons(navigator, Modifier.weight(1f), Modifier.weight(0.10f))
     }
-    // #####   Confirmation Dialog   #####
-    ConfirmationPopup(
-        showDialog = showConfirmationDialog.value,
-        onConfirm = {
-            state.value =
-                state.value.copy(
-                    screen = Screen.SelectVideoScreen,
-                    hasUnsavedChanges = false,
-                )
-        },
-        onCancel = { showConfirmationDialog.value = false },
-        text =
-            "Are you sure you want to go back to the main screen without saving the Difference Video?",
-    )
 }
