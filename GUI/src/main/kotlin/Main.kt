@@ -79,5 +79,5 @@ fun App(isAskingToClose: MutableState<Boolean>) {
 }
 
 object AppConfig {
-    const val VERSION = "1.12.0" // has to be updated manually, when new version is released
+    const val VERSION = "1.13.0" // has to be updated manually, when new version is released
 }
