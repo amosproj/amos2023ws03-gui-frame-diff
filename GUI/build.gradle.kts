@@ -56,6 +56,9 @@ compose.desktop {
             }
             windows {
                 iconFile.set(project.file("src/main/resources/icon.ico"))
+                menuGroup = "start-menu-group"
+                dirChooser = true
+                perUserInstall = true
             }
             linux {
                 iconFile.set(project.file("src/main/resources/icon.png"))
