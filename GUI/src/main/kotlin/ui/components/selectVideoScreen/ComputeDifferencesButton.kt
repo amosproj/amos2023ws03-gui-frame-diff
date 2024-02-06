@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.*
+import logic.createThumbnailVideo
 import logic.differenceGeneratorWrapper.DifferenceGeneratorWrapper
 import logic.getVideoMetadata
 import models.AppState
@@ -45,12 +46,13 @@ fun RowScope.ComputeDifferencesButton(
         onClick = {
             try {
                 if (referenceIsOlderThanCurrent(state)) {
+                    createThumbnailVideos(state)
                     calculateVideoDifferences(scope, state, errorDialogText, showDialog)
                 } else {
                     showConfirmDialog.value = true
                 }
             } catch (e: Exception) {
-                errorDialogText.value = "An unexpected exception was thrown when checking" +
+                errorDialogText.value = "An unexpected exception was thrown when checking " +
                     "video creation timestamps:\n\n${e.message}"
             }
         },
@@ -78,6 +80,7 @@ fun RowScope.ComputeDifferencesButton(
         text = "The reference video is newer than the current video. Are you sure you want to continue?",
         showDialog = showConfirmDialog.value,
         onConfirm = {
+            createThumbnailVideos(state)
             calculateVideoDifferences(scope, state, errorDialogText, showDialog)
             showConfirmDialog.value = false
         },
@@ -85,6 +88,14 @@ fun RowScope.ComputeDifferencesButton(
             showConfirmDialog.value = false
         },
     )
+}
+
+fun createThumbnailVideos(state: MutableState<AppState>) {
+    // create the thumbnail videos
+    val tempReference = createThumbnailVideo(state.value.videoReferencePath!!, 0.25f)
+    val tempCurrent = createThumbnailVideo(state.value.videoCurrentPath!!, 0.25f)
+
+    state.value = state.value.copy(thumbnailVideoPathReference = tempReference, thumbnailVideoPathCurrent = tempCurrent)
 }
 
 private fun calculateVideoDifferences(

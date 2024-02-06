@@ -40,6 +40,8 @@ data class AppState(
     var hasUnsavedChanges: Boolean = false,
     var saveFramePath: String? = null,
     var saveInsertionsPath: String? = null,
+    var thumbnailVideoPathReference: String? = null,
+    var thumbnailVideoPathCurrent: String? = null,
     var maskPath: String? = null,
     var sequenceObj: Array<AlignmentElement> = arrayOf(),
     var gapOpenPenalty: Double = 0.2,

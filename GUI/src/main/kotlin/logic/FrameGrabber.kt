@@ -18,16 +18,20 @@ import java.awt.image.BufferedImage
  *
  * @param state [MutableState]<[AppState]> containing the global state. Needed to get the file paths to the videos.
  */
-class FrameGrabber(state: MutableState<AppState>) {
+class FrameGrabber(
+    referencePath: String,
+    currentPath: String,
+    diffPath: String? = null,
+    private val diffSequence: Array<AlignmentElement>,
+) {
     // create the grabbers
     private val videoReferenceGrabber: FFmpegFrameGrabber =
-        FFmpegFrameGrabber(state.value.videoReferencePath)
+        FFmpegFrameGrabber(referencePath)
     private val videoCurrentGrabber: FFmpegFrameGrabber =
-        FFmpegFrameGrabber(state.value.videoCurrentPath)
-    private val grabberDiff: FFmpegFrameGrabber = FFmpegFrameGrabber(state.value.outputPath)
+        FFmpegFrameGrabber(currentPath)
+    private val grabberDiff: FFmpegFrameGrabber? = if (diffPath == null) null else FFmpegFrameGrabber(diffPath)
 
     // create the sequences
-    private val diffSequence: Array<AlignmentElement> = state.value.sequenceObj
     private var videoReferenceFrames: MutableList<Int> = mutableListOf()
     private var videoCurrentFrames: MutableList<Int> = mutableListOf()
 
@@ -44,14 +48,14 @@ class FrameGrabber(state: MutableState<AppState>) {
         // start the grabbers
         videoReferenceGrabber.start()
         videoCurrentGrabber.start()
-        grabberDiff.start()
+        grabberDiff?.start()
 
         // generate the sequences for video 1 and video 2
         // diffSequence is already generated
         generateSequences()
 
-        width = grabberDiff.imageWidth
-        height = grabberDiff.imageHeight
+        width = grabberDiff?.imageWidth ?: videoReferenceGrabber.imageWidth
+        height = grabberDiff?.imageHeight ?: videoReferenceGrabber.imageHeight
 
         val coloredFrameGenerator = ColoredFrameGenerator(width, height)
         insertionBitmap =
@@ -98,6 +102,10 @@ class FrameGrabber(state: MutableState<AppState>) {
      * @return [ImageBitmap] containing the bitmap of the frame.
      */
     fun getDiffVideoFrame(index: Int): ImageBitmap {
+        if (grabberDiff == null) {
+            throw IllegalStateException("No difference video was provided.")
+        }
+
         grabberDiff.setVideoFrameNumber(index)
         return getBitmap(grabberDiff)
     }
@@ -203,9 +211,9 @@ class FrameGrabber(state: MutableState<AppState>) {
     fun close() {
         videoReferenceGrabber.stop()
         videoCurrentGrabber.stop()
-        grabberDiff.stop()
+        grabberDiff?.stop()
         videoReferenceGrabber.close()
         videoCurrentGrabber.close()
-        grabberDiff.close()
+        grabberDiff?.close()
     }
 }
