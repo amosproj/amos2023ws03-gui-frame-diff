@@ -251,6 +251,8 @@ private fun ThumbnailLabel(
     width: Float,
     modifier: Modifier = Modifier,
 ) {
+    val densityCorrectedWidth = with(LocalDensity.current) { width.toDp() }
+
     // Labels Container
     Column(
         modifier = modifier.fillMaxSize(),
@@ -268,10 +270,10 @@ private fun ThumbnailLabel(
         )
 
         // draw a tick for the text
-        Canvas(modifier = Modifier.fillMaxSize()) {
+        Canvas(modifier = Modifier.width(densityCorrectedWidth).fillMaxHeight()) {
             drawLine(
-                start = Offset(width / 2, 0f),
-                end = Offset(width / 2, size.height),
+                start = Offset(densityCorrectedWidth.toPx() / 2, 0f),
+                end = Offset(densityCorrectedWidth.toPx() / 2, size.height),
                 color = lineColor,
                 strokeWidth = 3f,
             )
