@@ -30,104 +30,6 @@ import logic.caches.ThumbnailCache
 import kotlin.math.round
 
 /**
- * A [LazyRow] that displays the thumbnails of the aligned input videos.
- *
- * Thumbnails are only loaded when they are visible.
- *
- * @param modifier [Modifier] to apply to the [LazyRow].
- * @param thumbnailCache [ThumbnailCache] that contains logic to grab and cache thumbnails.
- * @param nFrames [Int] The number of frames in the diff sequence.
- * @param scrollState [LazyListState] containing the scroll state of the timeline.
- * @return [Unit]
- */
-@Composable
-private fun ThumbnailRow(
-    modifier: Modifier,
-    thumbnailCache: ThumbnailCache,
-    nFrames: Int,
-    scrollState: LazyListState,
-    thumbnailSize: Size,
-    verticalLabelSpace: Float,
-) {
-    LazyRow(
-        state = scrollState,
-        modifier = modifier.fillMaxSize(),
-    ) {
-        items(nFrames) { i ->
-            AsyncDiffColumn(
-                thumbnailCache = thumbnailCache,
-                index = i,
-                placeholderSize = thumbnailSize,
-                verticalLabelSpace = verticalLabelSpace,
-            )
-        }
-    }
-}
-
-/**
- * A [Column] that displays the two thumbnails of the aligned input videos at a given index.
- *
- * Thumbnails are only loaded when they are visible.
- *
- * @param thumbnailCache [ThumbnailCache] that contains logic to grab and cache thumbnails.
- * @param index [Int] contains the index of the displayed column.
- * @param placeholderSize [size] contains the size of the gray placeholder.
- * @return [Unit]
- */
-@Composable
-fun AsyncDiffColumn(
-    thumbnailCache: ThumbnailCache,
-    index: Int,
-    placeholderSize: Size,
-    verticalLabelSpace: Float,
-) {
-    val images = remember { mutableStateOf<List<ImageBitmap>?>(null) }
-
-    val scope = rememberCoroutineScope()
-
-    // load thumbnails in an IO coroutine which is cancelled when the composable is disposed (out of view)
-    LaunchedEffect(thumbnailCache, index) {
-        scope.launch(Dispatchers.IO) {
-            images.value = thumbnailCache.get(index)
-        }
-    }
-
-    val width = with(LocalDensity.current) { placeholderSize.width.toDp() }
-    val height = with(LocalDensity.current) { placeholderSize.height.toDp() }
-
-    val boxModifier = Modifier.border(0.5.dp, Color.Black).background(Color.Gray).height(height).fillMaxWidth()
-    val verticalBoxSpace = (1 - verticalLabelSpace) / 2
-
-    Column(modifier = Modifier.width(width)) {
-        ThumbnailLabel(
-            index = index,
-            width = width.value,
-            modifier = Modifier.weight(verticalLabelSpace).padding(top = 5.dp),
-        )
-
-        Box(modifier = boxModifier.weight(verticalBoxSpace)) {
-            if (images.value != null) {
-                Image(
-                    bitmap = (images.value ?: return@Box)[0],
-                    contentDescription = "Reference Thumbnail index $index",
-                    modifier = Modifier.fillMaxHeight(),
-                )
-            }
-        }
-
-        Box(modifier = boxModifier.weight(verticalBoxSpace)) {
-            if (images.value != null) {
-                Image(
-                    bitmap = (images.value ?: return@Box)[1],
-                    contentDescription = "Current Thumbnail index $index",
-                    modifier = Modifier.fillMaxHeight(),
-                )
-            }
-        }
-    }
-}
-
-/**
  * A [Box] containing the thumbnails of the aligned input videos and the indicator to where the current frame is.
  *
  * @param navigator [FrameNavigation] containing the logic to jump to a specific frame.
@@ -222,6 +124,104 @@ fun ThumbnailBar(
         )
         if (indicatorOffset > 0 && indicatorOffset < width.value) {
             PositionIndicator(indicatorOffset, height.value * verticalLabelSpace)
+        }
+    }
+}
+
+/**
+ * A [LazyRow] that displays the thumbnails of the aligned input videos.
+ *
+ * Thumbnails are only loaded when they are visible.
+ *
+ * @param modifier [Modifier] to apply to the [LazyRow].
+ * @param thumbnailCache [ThumbnailCache] that contains logic to grab and cache thumbnails.
+ * @param nFrames [Int] The number of frames in the diff sequence.
+ * @param scrollState [LazyListState] containing the scroll state of the timeline.
+ * @return [Unit]
+ */
+@Composable
+private fun ThumbnailRow(
+    modifier: Modifier,
+    thumbnailCache: ThumbnailCache,
+    nFrames: Int,
+    scrollState: LazyListState,
+    thumbnailSize: Size,
+    verticalLabelSpace: Float,
+) {
+    LazyRow(
+        state = scrollState,
+        modifier = modifier.fillMaxSize(),
+    ) {
+        items(nFrames) { i ->
+            AsyncDiffColumn(
+                thumbnailCache = thumbnailCache,
+                index = i,
+                placeholderSize = thumbnailSize,
+                verticalLabelSpace = verticalLabelSpace,
+            )
+        }
+    }
+}
+
+/**
+ * A [Column] that displays the two thumbnails of the aligned input videos at a given index.
+ *
+ * Thumbnails are only loaded when they are visible.
+ *
+ * @param thumbnailCache [ThumbnailCache] that contains logic to grab and cache thumbnails.
+ * @param index [Int] contains the index of the displayed column.
+ * @param placeholderSize [size] contains the size of the gray placeholder.
+ * @return [Unit]
+ */
+@Composable
+fun AsyncDiffColumn(
+    thumbnailCache: ThumbnailCache,
+    index: Int,
+    placeholderSize: Size,
+    verticalLabelSpace: Float,
+) {
+    val images = remember { mutableStateOf<List<ImageBitmap>?>(null) }
+
+    val scope = rememberCoroutineScope()
+
+    // load thumbnails in an IO coroutine which is cancelled when the composable is disposed (out of view)
+    LaunchedEffect(thumbnailCache, index) {
+        scope.launch(Dispatchers.IO) {
+            images.value = thumbnailCache.get(index)
+        }
+    }
+
+    val width = with(LocalDensity.current) { placeholderSize.width.toDp() }
+    val height = with(LocalDensity.current) { placeholderSize.height.toDp() }
+
+    val boxModifier = Modifier.border(0.5.dp, Color.Black).background(Color.Gray).height(height).fillMaxWidth()
+    val verticalBoxSpace = (1 - verticalLabelSpace) / 2
+
+    Column(modifier = Modifier.width(width)) {
+        ThumbnailLabel(
+            index = index,
+            width = width.value,
+            modifier = Modifier.weight(verticalLabelSpace).padding(top = 5.dp),
+        )
+
+        Box(modifier = boxModifier.weight(verticalBoxSpace)) {
+            if (images.value != null) {
+                Image(
+                    bitmap = (images.value ?: return@Box)[0],
+                    contentDescription = "Reference Thumbnail index $index",
+                    modifier = Modifier.fillMaxHeight(),
+                )
+            }
+        }
+
+        Box(modifier = boxModifier.weight(verticalBoxSpace)) {
+            if (images.value != null) {
+                Image(
+                    bitmap = (images.value ?: return@Box)[1],
+                    contentDescription = "Current Thumbnail index $index",
+                    modifier = Modifier.fillMaxHeight(),
+                )
+            }
         }
     }
 }
