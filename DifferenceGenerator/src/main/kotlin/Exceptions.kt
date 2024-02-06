@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: Anton Kriese <anton.kriese@fu-berlin.de>
 import org.opencv.core.Size
 
 /**

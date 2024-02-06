@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: simonsasse <simonsasse97@gmail.com>
 import algorithms.AlignmentElement
 
 /**

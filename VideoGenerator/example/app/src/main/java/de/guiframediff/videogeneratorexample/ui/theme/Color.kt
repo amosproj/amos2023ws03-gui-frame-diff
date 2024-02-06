@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: Anton Kriese <anton.kriese@fu-berlin.de>
 package de.guiframediff.videogeneratorexample.ui.theme
 
 import androidx.compose.ui.graphics.Color

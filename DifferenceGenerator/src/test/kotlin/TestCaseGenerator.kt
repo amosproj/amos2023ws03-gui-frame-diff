@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: a-miscellaneous <96189996+a-miscellaneous@users.noreply.github.com>
+// SPDX-FileCopyrightText: simonsasse <simonsasse97@gmail.com>
 import algorithms.AlignmentElement
 import java.io.File
 import java.io.FilenameFilter

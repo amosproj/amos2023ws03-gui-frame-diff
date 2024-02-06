@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: Anton Kriese <anton.kriese@fu-berlin.de>
+// SPDX-FileCopyrightText: Simon Sasse <simonsasse97@gmail.com>
+
 /**
  * Represents a metric interface that measures the distance between two objects of type T.
  *

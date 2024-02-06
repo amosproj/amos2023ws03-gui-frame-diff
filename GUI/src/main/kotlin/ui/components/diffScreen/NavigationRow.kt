@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: a-miscellaneous <96189996+a-miscellaneous@users.noreply.github.com>
+// SPDX-FileCopyrightText: Anton Kriese <anton.kriese@fu-berlin.de>
 package ui.components.diffScreen
 
 import androidx.compose.foundation.layout.Row

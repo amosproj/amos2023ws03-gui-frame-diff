@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: a-miscellaneous <96189996+a-miscellaneous@users.noreply.github.com>
+// SPDX-FileCopyrightText: Luis Günther <52202194+zino212@users.noreply.github.com>
+// SPDX-FileCopyrightText: simonsasse <simonsasse97@gmail.com>
+// SPDX-FileCopyrightText: zino212 <luisguenther@gmx.de>
 package ui.components.settingsScreen
 
 import androidx.compose.foundation.Image

@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: Anton Kriese <anton.kriese@fu-berlin.de>
+// SPDX-FileCopyrightText: Fabian Seitz <github@seitzfabian.de>
+// SPDX-FileCopyrightText: simonsasse <simonsasse97@gmail.com>
+// SPDX-FileCopyrightText: Simon Sasse <simonsasse97@gmail.com>
 import org.bytedeco.javacv.FFmpegFrameGrabber
 
 /**

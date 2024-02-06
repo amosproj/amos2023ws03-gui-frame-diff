@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: a-miscellaneous <96189996+a-miscellaneous@users.noreply.github.com>
+// SPDX-FileCopyrightText: Fabian Seitz <github@seitzfabian.de>
 import java.io.File
 
 class FFMPEGCombiner(private val outputPath: String, private val width: Int, private val height: Int) {

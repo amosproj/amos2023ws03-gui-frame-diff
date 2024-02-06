@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: AlperK61 <92909013+alperk61@users.noreply.github.com>
+// SPDX-FileCopyrightText: Anton Kriese <anton.kriese@fu-berlin.de>
+// SPDX-FileCopyrightText: zino212 <luisguenther@gmx.de>
 package ui.components.diffScreen.timeline
 
 import StatisticalInformation

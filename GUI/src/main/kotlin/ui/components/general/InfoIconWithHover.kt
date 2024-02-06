@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: a-miscellaneous <96189996+a-miscellaneous@users.noreply.github.com>
+// SPDX-FileCopyrightText: Anton Kriese <anton.kriese@fu-berlin.de>
+// SPDX-FileCopyrightText: Luis Günther <52202194+zino212@users.noreply.github.com>
+// SPDX-FileCopyrightText: zino212 <luisguenther@gmx.de>
 package ui.components.general
 
 import androidx.compose.foundation.layout.Box

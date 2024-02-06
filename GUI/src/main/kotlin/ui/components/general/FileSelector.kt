@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: a-miscellaneous <96189996+a-miscellaneous@users.noreply.github.com>
+// SPDX-FileCopyrightText: Fabian Seitz <github@seitzfabian.de>
+// SPDX-FileCopyrightText: simonsasse <simonsasse97@gmail.com>
 package ui.components.general
 
 import javax.swing.JFileChooser

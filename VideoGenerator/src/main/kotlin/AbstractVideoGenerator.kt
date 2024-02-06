@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: a-miscellaneous <96189996+a-miscellaneous@users.noreply.github.com>
+// SPDX-FileCopyrightText: Anton Kriese <anton.kriese@fu-berlin.de>
+
 /**
  * Abstract class for video generators.
  * Extend this class to create your own video generator.

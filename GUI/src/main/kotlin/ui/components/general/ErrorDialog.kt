@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: Anton Kriese <anton.kriese@fu-berlin.de>
+// SPDX-FileCopyrightText: simonsasse <simonsasse97@gmail.com>
+// SPDX-FileCopyrightText: zino212 <luisguenther@gmx.de>
 package ui.components.general
 
 import androidx.compose.material.AlertDialog
