@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: AlperK61 <92909013+AlperK61@users.noreply.github.com>
+// SPDX-FileCopyrightText: a-miscellaneous <96189996+a-miscellaneous@users.noreply.github.com>
+// SPDX-FileCopyrightText: Anton Kriese <anton.kriese@fu-berlin.de>
+
 /**
  * Provides navigation methods for frames in a video.
  *

@@ -1,3 +1,12 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: AlperK61 <92909013+AlperK61@users.noreply.github.com>
+// SPDX-FileCopyrightText: a-miscellaneous <96189996+a-miscellaneous@users.noreply.github.com>
+// SPDX-FileCopyrightText: Anton Kriese <anton.kriese@fu-berlin.de>
+// SPDX-FileCopyrightText: LuisGuenther <luis.guenther@maibornwolff.de>
+// SPDX-FileCopyrightText: Luis Günther <52202194+zino212@users.noreply.github.com>
+// SPDX-FileCopyrightText: simonsasse <simonsasse97@gmail.com>
+// SPDX-FileCopyrightText: Simon Sasse <simonsasse97@gmail.com>
+// SPDX-FileCopyrightText: zino212 <luisguenther@gmx.de>
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp

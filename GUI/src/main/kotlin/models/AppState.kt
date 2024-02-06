@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: a-miscellaneous <96189996+a-miscellaneous@users.noreply.github.com>
+// SPDX-FileCopyrightText: Anton Kriese <anton.kriese@fu-berlin.de>
+// SPDX-FileCopyrightText: Fabian Seitz <github@seitzfabian.de>
+// SPDX-FileCopyrightText: simonsasse <simonsasse97@gmail.com>
 package models
 
 import Screen

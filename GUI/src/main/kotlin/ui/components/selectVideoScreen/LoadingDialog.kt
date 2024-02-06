@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: Anton Kriese <anton.kriese@fu-berlin.de>
+// SPDX-FileCopyrightText: zino212 <luisguenther@gmx.de>
 package ui.components.selectVideoScreen
 
 import androidx.compose.foundation.layout.Box

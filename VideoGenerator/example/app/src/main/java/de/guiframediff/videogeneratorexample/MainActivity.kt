@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: Anton Kriese <anton.kriese@fu-berlin.de>
+// SPDX-FileCopyrightText: Fabian Seitz <github@seitzfabian.de>
+// SPDX-FileCopyrightText: Simon Sasse <simonsasse97@gmail.com>
 package de.guiframediff.videogeneratorexample
 
 import VideoGeneratorImpl
