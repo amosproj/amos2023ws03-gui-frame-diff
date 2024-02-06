@@ -88,7 +88,7 @@ fun ProjectMenu(
                     Text("Save Project", fontSize = MaterialTheme.typography.bodyMedium.fontSize)
                 },
                 onClick = {
-                    openFileSaverAndGetPath(state.value.saveProjectPath) { path -> handleSaveProject(state, path) }
+                    openFileSaverAndGetPath(state.value.saveProjectPath) { path -> handleSaveProject(state, path, errorDialogText) }
                     expanded = false
                 },
                 enabled = state.value.screen == Screen.DiffScreen,
@@ -152,11 +152,20 @@ fun handleOpenProject(
 fun handleSaveProject(
     state: MutableState<AppState>,
     path: String,
+    saveError: MutableState<String?>,
 ) {
+    println("before")
+    println(state.value)
     var savePath = path
+
     // add .mkv extension if not present
     if (!savePath.endsWith(".mkv")) {
         savePath = "$savePath.mkv"
+    }
+
+    if (state.value.outputPath == savePath) {
+        saveError.value = "The project cannot be saved to the same location as the loaded project. Please choose a different location."
+        return
     }
     // set save path
     state.value.saveProjectPath = savePath
@@ -190,4 +199,6 @@ fun handleSaveProject(
 
     // reset unsaved changes
     state.value.hasUnsavedChanges = false
+    println("after")
+    println(state.value)
 }
