@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
@@ -39,9 +40,11 @@ fun TooltipText(
  */
 @Composable
 fun Tooltip(content: @Composable () -> Unit) {
+    val offset = with(LocalDensity.current) { -28.dp.toPx() }
+
     Popup(
         alignment = Alignment.BottomEnd,
-        offset = IntOffset(-28, 0),
+        offset = IntOffset(offset.toInt(), 0),
     ) {
         // Draw a rectangle shape with rounded corners inside the popup
         Box(
