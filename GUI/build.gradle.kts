@@ -49,7 +49,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Exe, TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "GUI"
-            packageVersion = "1.0.0"
+            packageVersion = project.version.toString()
             includeAllModules = true
             macOS {
                 iconFile.set(project.file("src/main/resources/icon.icns"))
