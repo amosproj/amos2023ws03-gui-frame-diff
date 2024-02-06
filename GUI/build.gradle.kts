@@ -49,13 +49,16 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Exe, TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "GUI"
-            packageVersion = "1.0.0"
+            packageVersion = project.version.toString()
             includeAllModules = true
             macOS {
                 iconFile.set(project.file("src/main/resources/icon.icns"))
             }
             windows {
                 iconFile.set(project.file("src/main/resources/icon.ico"))
+                menuGroup = "start-menu-group"
+                dirChooser = true
+                perUserInstall = true
             }
             linux {
                 iconFile.set(project.file("src/main/resources/icon.png"))
@@ -71,6 +74,22 @@ tasks.register<Jar>("createRunnableJar") {
     manifest { attributes["Main-Class"] = "MainKt" }
     archiveFileName.set("GUI-Runnable.jar")
     destinationDirectory.set(file("$buildDir/libs"))
+}
+
+tasks.create("createFatJar", Jar::class) {
+    group = "custom tasks" // OR, for example, "build"
+    description = "Creates a self-contained fat JAR of the application that can be run."
+    manifest.attributes["Main-Class"] = "MainKt"
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    val dependencies =
+        configurations
+            .runtimeClasspath
+            .get()
+            .map(::zipTree)
+    from(dependencies)
+    exclude("../VideoGenerator/MainKt.class")
+    exclude("../DifferenceGenerator/MainKt.class")
+    with(tasks.jar.get())
 }
 
 licenseReport {

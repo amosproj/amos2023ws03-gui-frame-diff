@@ -17,6 +17,13 @@
     - Create an installer for the current operating system
        - `./gradlew packageDistributionForCurrentOS`
        - Installer at `build/compose/binaries/main/{msi|deb|dmg}/`
+       - Note that Compose currently has no option for a portable version of the application.
+         The executables created by this task are all installers for the app.
+       - For these installers, no Java installation is required, as the JRE is included in the installer.
+    - Create a Fat/Uber Jar
+       - `./gradlew createFatJar`
+       - Executable Jar file at `build/libs/`
+       - The Jar file can be run with `java -jar <jar-file-name>.jar` where java is of version 17 or higher.
     - Running without creating an executable
       - `./gradlew :run`
       - There are two videos and a mask included in this Repository that can be used for running the GUI.
