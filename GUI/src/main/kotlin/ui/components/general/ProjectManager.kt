@@ -154,8 +154,6 @@ fun handleSaveProject(
     path: String,
     saveError: MutableState<String?>,
 ) {
-    println("before")
-    println(state.value)
     var savePath = path
 
     // add .mkv extension if not present
@@ -199,6 +197,4 @@ fun handleSaveProject(
 
     // reset unsaved changes
     state.value.hasUnsavedChanges = false
-    println("after")
-    println(state.value)
 }
