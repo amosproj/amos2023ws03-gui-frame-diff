@@ -60,6 +60,8 @@ fun ThumbnailBar(
     val scope = rememberCoroutineScope()
     val totalDiffFrames = navigator.diffSequence.size
 
+    // install a callback in the navigator to scroll to the position in the timeline when the current frame changes
+    // that is only triggered if the indicator is out of view
     navigator.setOnNavigateCallback {
         indicatorOffset = getCenteredThumbnailOffset(scrollState, navigator.currentDiffIndex.value, round(thumbnailWidth.value))
 
@@ -83,6 +85,8 @@ fun ThumbnailBar(
         return frameGrabber.width.toFloat() / frameGrabber.height * height.value * (1 - verticalLabelSpace) / 2
     }
 
+    // gathers information about the scroll state and uses the click offset to determine which thumbnail was clicked
+    // or pointed to while dragging
     fun jumpOffsetHandler(offset: Offset) {
         cursorOffset = offset
         val clickedFrame =
@@ -122,6 +126,7 @@ fun ThumbnailBar(
             thumbnailSize = Size(thumbnailWidth.value, (1 - verticalLabelSpace) / 2 * height.value),
             verticalLabelSpace = verticalLabelSpace,
         )
+
         if (indicatorOffset > 0 && indicatorOffset < width.value) {
             PositionIndicator(indicatorOffset, height.value * verticalLabelSpace)
         }
@@ -131,7 +136,9 @@ fun ThumbnailBar(
 /**
  * A [LazyRow] that displays the thumbnails of the aligned input videos.
  *
- * Thumbnails are only loaded when they are visible.
+ * Thumbnails are only loaded when they are visible. If a thumbnail is visible by scrolling, the image data is
+ * requested from the [ThumbnailCache] and displayed. If the scrolling causes the thumbnail to be out of view, the
+ * image request is cancelled, leading to a more efficient use of resources.
  *
  * @param modifier [Modifier] to apply to the [LazyRow].
  * @param thumbnailCache [ThumbnailCache] that contains logic to grab and cache thumbnails.
@@ -180,8 +187,10 @@ fun AsyncDiffColumn(
     placeholderSize: Size,
     verticalLabelSpace: Float,
 ) {
+    // the two images for the thumbnail boxes
     val images = remember { mutableStateOf<List<ImageBitmap>?>(null) }
 
+    // coroutine scope for the image request
     val scope = rememberCoroutineScope()
 
     // load thumbnails in an IO coroutine which is cancelled when the composable is disposed (out of view)
@@ -195,6 +204,8 @@ fun AsyncDiffColumn(
     val height = with(LocalDensity.current) { placeholderSize.height.toDp() }
 
     val boxModifier = Modifier.border(0.5.dp, Color.Black).background(Color.Gray).height(height).fillMaxWidth()
+
+    // the thumbnail boxes share what's left of the vertical space with the fixed label space
     val verticalBoxSpace = (1 - verticalLabelSpace) / 2
 
     Column(modifier = Modifier.width(width)) {
@@ -207,7 +218,7 @@ fun AsyncDiffColumn(
         Box(modifier = boxModifier.weight(verticalBoxSpace)) {
             if (images.value != null) {
                 Image(
-                    bitmap = (images.value ?: return@Box)[0],
+                    bitmap = images.value!![0],
                     contentDescription = "Reference Thumbnail index $index",
                     modifier = Modifier.fillMaxHeight(),
                 )
@@ -217,7 +228,7 @@ fun AsyncDiffColumn(
         Box(modifier = boxModifier.weight(verticalBoxSpace)) {
             if (images.value != null) {
                 Image(
-                    bitmap = (images.value ?: return@Box)[1],
+                    bitmap = images.value!![1],
                     contentDescription = "Current Thumbnail index $index",
                     modifier = Modifier.fillMaxHeight(),
                 )
