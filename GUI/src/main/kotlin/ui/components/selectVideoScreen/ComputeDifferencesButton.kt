@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.*
+import logic.createThumbnailVideos
 import logic.differenceGeneratorWrapper.DifferenceGeneratorWrapper
 import logic.getVideoMetadata
 import models.AppState
@@ -52,12 +53,14 @@ fun RowScope.ComputeDifferencesButton(
         onClick = {
             try {
                 if (referenceIsOlderThanCurrent(state)) {
-                    calculateVideoDifferences(scope, state, errorDialogText, showDialog)
+                    scope.launch {
+                        runComputation(scope, state, errorDialogText, showDialog)
+                    }
                 } else {
                     showConfirmDialog.value = true
                 }
             } catch (e: Exception) {
-                errorDialogText.value = "An unexpected exception was thrown when checking" +
+                errorDialogText.value = "An unexpected exception was thrown when checking " +
                     "video creation timestamps:\n\n${e.message}"
             }
         },
@@ -85,7 +88,9 @@ fun RowScope.ComputeDifferencesButton(
         text = "The reference video is newer than the current video. Are you sure you want to continue?",
         showDialog = showConfirmDialog.value,
         onConfirm = {
-            calculateVideoDifferences(scope, state, errorDialogText, showDialog)
+            scope.launch {
+                runComputation(scope, state, errorDialogText, showDialog)
+            }
             showConfirmDialog.value = false
         },
         onCancel = {
@@ -94,50 +99,68 @@ fun RowScope.ComputeDifferencesButton(
     )
 }
 
-private fun calculateVideoDifferences(
+suspend fun runComputation(
     scope: CoroutineScope,
     state: MutableState<AppState>,
     errorDialogText: MutableState<String?>,
     isLoading: MutableState<Boolean>,
 ) {
-    scope.launch(Dispatchers.Default) {
-        isLoading.value = true
-        AlgorithmExecutionState.getInstance().reset()
-
-        // generate the differences
-        lateinit var generator: DifferenceGeneratorWrapper
-        try {
-            generator = DifferenceGeneratorWrapper(state)
-        } catch (e: DifferenceGeneratorException) {
-            errorDialogText.value = e.toString()
-            return@launch
-        } catch (e: Exception) {
-            errorDialogText.value = "An unexpected exception was thrown when creating" +
-                "the DifferenceGenerator instance:\n\n${e.message}"
-            return@launch
+    isLoading.value = true
+    val computeJob =
+        scope.launch(Dispatchers.Default) {
+            calculateVideoDifferences(state, errorDialogText)
         }
 
-        try {
-            generator.getDifferences(state.value.outputPath!!)
-        } catch (e: DifferenceGeneratorStoppedException) {
-            println("stopped by canceling...")
-            return@launch
-        } catch (e: Exception) {
-            errorDialogText.value = "An unexpected exception was thrown when running" +
-                "the difference computation:\n\n${e.message}"
-            return@launch
+    computeJob.invokeOnCompletion { isLoading.value = false }
+
+    val videoScaleJob =
+        scope.launch(Dispatchers.Default) {
+            createThumbnailVideos(state)
         }
 
-        // check for cancellation one last time before switching to the diff screen
-        if (!AlgorithmExecutionState.getInstance().isAlive()) {
-            return@launch
-        }
+    // wait for both jobs to finish before transitioning to the diff screen
+    listOf(computeJob, videoScaleJob).joinAll()
 
-        // set the sequence and screen
-        state.value = state.value.copy(sequenceObj = generator.getSequence(), screen = Screen.DiffScreen, hasUnsavedChanges = true)
-    }.invokeOnCompletion {
-        isLoading.value = false
+    state.value = state.value.copy(screen = Screen.DiffScreen, hasUnsavedChanges = true)
+}
+
+private fun calculateVideoDifferences(
+    state: MutableState<AppState>,
+    errorDialogText: MutableState<String?>,
+) {
+    AlgorithmExecutionState.getInstance().reset()
+
+    // generate the differences
+    lateinit var generator: DifferenceGeneratorWrapper
+    try {
+        generator = DifferenceGeneratorWrapper(state)
+    } catch (e: DifferenceGeneratorException) {
+        errorDialogText.value = e.toString()
+        return
+    } catch (e: Exception) {
+        errorDialogText.value = "An unexpected exception was thrown when creating" +
+            "the DifferenceGenerator instance:\n\n${e.message}"
+        return
     }
+
+    try {
+        generator.getDifferences(state.value.outputPath!!)
+    } catch (e: DifferenceGeneratorStoppedException) {
+        println("stopped by canceling...")
+        return
+    } catch (e: Exception) {
+        errorDialogText.value = "An unexpected exception was thrown when running" +
+            "the difference computation:\n\n${e.message}"
+        return
+    }
+
+    // check for cancellation one last time before switching to the diff screen
+    if (!AlgorithmExecutionState.getInstance().isAlive()) {
+        return
+    }
+
+    // set the sequence
+    state.value = state.value.copy(sequenceObj = generator.getSequence())
 }
 
 fun getVideoCreationDate(videoPath: String): Long {

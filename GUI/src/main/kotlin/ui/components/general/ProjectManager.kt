@@ -17,12 +17,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.fasterxml.jackson.module.kotlin.readValue
+import logic.createThumbnailVideos
 import logic.getVideoMetadata
 import models.AppState
 import models.JsonMapper
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.FFmpegFrameRecorder
 import org.bytedeco.javacv.Frame
+import java.io.File
 
 /**
  * Dropdown menu to open and save projects
@@ -138,6 +140,15 @@ fun handleOpenProject(
         state.value.outputPath = path
         // reset unsaved changes
         state.value.hasUnsavedChanges = false
+
+        // if the temp thumbnail videos exist, use them. Otherwise, create them again which might take a few seconds
+        if (!(
+                state.value.thumbnailVideoPathReference?.let { File(it).exists() } == true &&
+                    state.value.thumbnailVideoPathCurrent?.let { File(it).exists() } == true
+            )
+        ) {
+            createThumbnailVideos(state)
+        }
     } else {
         errorText.value = "The selected file does not contain a valid project."
     }

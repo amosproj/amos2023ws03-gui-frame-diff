@@ -56,8 +56,14 @@ fun DiffScreen(state: MutableState<AppState>) {
     // create the navigator, which implements the jumping logic
     val navigator = FrameNavigation(state)
     val showConfirmationDialog = remember { mutableStateOf(false) }
-    val frameGrabber = FrameGrabber(state)
-    val thumbnailGrabber = FrameGrabber(state)
+    val frameGrabber =
+        FrameGrabber(state.value.videoReferencePath!!, state.value.videoCurrentPath!!, state.value.outputPath!!, state.value.sequenceObj)
+    val thumbnailGrabber =
+        FrameGrabber(
+            state.value.thumbnailVideoPathReference!!,
+            state.value.thumbnailVideoPathCurrent!!,
+            diffSequence = state.value.sequenceObj,
+        )
 
     DisposableEffect(state.value) {
         onDispose {
